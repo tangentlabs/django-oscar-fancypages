@@ -1,0 +1,7 @@
+*.sw[op]
+*.py[co]
+*.egg-info
+*.sqlite3
+*.db
+
+docs/build
