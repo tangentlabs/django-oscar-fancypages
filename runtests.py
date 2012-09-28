@@ -57,6 +57,7 @@ if not settings.configured:
             'django.contrib.admin',
         ] + OSCAR_CORE_APPS + [
             'fancypages',
+            'model_utils',
         ],
         AUTHENTICATION_BACKENDS=(
             'oscar.apps.customer.auth_backends.Emailbackend',
@@ -69,7 +70,7 @@ if not settings.configured:
                 'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
             },
         },
-        NOSE_ARGS=['-s', '-x'],
+        NOSE_ARGS=['-s', '--with-spec',],  #'--with-progressive'],
         **OSCAR_SETTINGS
     )
 

@@ -18,6 +18,7 @@ setup(
         'versiontools>=1.9.1',
         'Django>=1.4.1',
         'django-oscar>=0.3.3',
+        'django-model-utils>=1.1.0',
     ],
     # See http://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[

@@ -113,8 +113,10 @@ INSTALLED_APPS = [
     'haystack',
     'sorl.thumbnail',
     'south',
+    'model_utils',
 
     'fancypages',
+    'fancypages.pages',
 ]
 
 from oscar import get_core_apps
