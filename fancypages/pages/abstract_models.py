@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.template import loader
+from django.core.exceptions import ImproperlyConfigured
 from django.utils.translation import ugettext_lazy as _
 
 from model_utils.managers import PassThroughManager
@@ -63,7 +64,11 @@ class AbstractPage(models.Model):
             for cnode in container_nodes:
                 var_name = cnode.container_name.var
                 if var_name in container_names:
-                    raise Exception("duplicate container name in template")
+                    raise ImproperlyConfigured(
+                        "duplicate container name '%s' in template '%s'",
+                        var_name,
+                        self.template_name
+                    )
                     continue
                 container_names.append(var_name)
 
@@ -75,6 +80,16 @@ class AbstractPage(models.Model):
 
 class AbstractArticlePage(AbstractPage):
     template_name = "fancypages/pages/article_page.html"
+
+    class Meta:
+        abstract = True
+
+
+class AbstractContainer(models.Model):
+    # this is the name of the variable used in the template tag
+    # e.g. {% fancypages-container var-name %}
+    variable_name = models.SlugField(_("Variable name"), max_length=50)
+    #page = models.ForeignKey('pages.
 
     class Meta:
         abstract = True
