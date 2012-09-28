@@ -1,4 +1,4 @@
-Fancy CMS-style page editting for Oscar
-=======================================
+Fancy CMS-style page editing for Oscar
+======================================
 
-This extension provides fancy page editting for Oscar.
+This extension provides fancy page editing for Oscar.
