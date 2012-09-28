@@ -1,0 +1,1 @@
+from fancypages import abstract_models

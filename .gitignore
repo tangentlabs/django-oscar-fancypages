@@ -5,3 +5,4 @@
 *.db
 
 docs/build
+.tox
