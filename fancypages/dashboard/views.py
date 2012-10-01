@@ -4,20 +4,27 @@ from django.db.models import get_model
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
-from fancypages.dashboard.forms import PageTypeSelectForm
+from fancypages.dashboard import forms
 
 
 Page = get_model('fancypages', 'Page')
 PageType = get_model('fancypages', 'PageType')
 
 
+class PageTypeListView(generic.ListView):
+    model = PageType
+    context_object_name = 'page_type_list'
+    template_name = "fancypages/dashboard/page_type_list.html"
+
+
 class PageListView(generic.ListView):
-    template_name = "fancypages/dashboard/page_list.html"
     model = Page
+    context_object_name = 'page_list'
+    template_name = "fancypages/dashboard/page_list.html"
 
     def get_context_data(self, **kwargs):
         ctx = super(PageListView, self).get_context_data(**kwargs)
-        ctx['page_type_form'] = PageTypeSelectForm()
+        ctx['page_type_form'] = forms.PageTypeSelectForm()
         return ctx
 
 
@@ -42,6 +49,7 @@ class PageCreateRedirectView(generic.RedirectView):
 
 class PageCreateView(generic.CreateView):
     template_name = "fancypages/dashboard/page_update.html"
+    form_class = forms.PageForm
     model = Page
 
     def get_context_data(self, **kwargs):

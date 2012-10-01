@@ -16,6 +16,25 @@ class AbstractPageType(models.Model):
 
     template_name = models.CharField(_("Template name"), max_length=500)
 
+    def get_container_names(self):
+        if not self.template_name:
+            return []
+
+        container_names = []
+        for node in loader.get_template(self.template_name):
+            container_nodes = node.get_nodes_by_type(FancyContainerNode)
+
+            for cnode in container_nodes:
+                var_name = cnode.container_name.var
+                if var_name in container_names:
+                    raise ImproperlyConfigured(
+                        "duplicate container name '%s' in template '%s'",
+                        var_name,
+                        self.template_name
+                    )
+                container_names.append(var_name)
+        return container_names
+
     def save(self, *args, **kwargs):
         if not self.code:
             self.code = slugify(self.name)
@@ -73,35 +92,11 @@ class AbstractPage(models.Model):
     date_visible_start = models.DateTimeField(_("Visible from"), null=True, blank=True)
     date_visible_end = models.DateTimeField(_("Visible until"), null=True, blank=True)
 
-    # overrides the visibility date range when set to false making the 
+    # overrides the visibility date range when set to false making the
     # page invisible
-    is_active = models.BooleanField(_("Is visible"), default=True)
+    is_active = models.BooleanField(_("Is active"), default=True)
 
     objects = PassThroughManager.for_queryset_class(PageQuerySet)()
-
-    def get_container_names(self):
-        try: 
-            page_type = self.page_type
-        except models.get_model('fancypages', 'PageType').DoesNotExist:
-            return []
-
-        if not page_type.template_name:
-            return []
-
-        container_names = []
-        for node in loader.get_template(self.page_type.template_name):
-            container_nodes = node.get_nodes_by_type(FancyContainerNode)
-
-            for cnode in container_nodes:
-                var_name = cnode.container_name.var
-                if var_name in container_names:
-                    raise ImproperlyConfigured(
-                        "duplicate container name '%s' in template '%s'",
-                        var_name,
-                        self.page_type.template_name
-                    )
-                container_names.append(var_name)
-        return container_names
 
     @property
     def is_visible(self):

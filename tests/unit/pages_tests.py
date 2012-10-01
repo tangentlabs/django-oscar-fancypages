@@ -8,7 +8,7 @@ from django.core.exceptions import ImproperlyConfigured
 from fancypages import models
 
 
-class TestPage(TestCase):
+class TestPageType(TestCase):
 
     def setUp(self):
         tempdir = tempfile.gettempdir()
@@ -30,7 +30,7 @@ class TestPage(TestCase):
     #    article.title = "Some Title"
 
     def test_empty_container_name_list_is_returned_when_unknown_page_type(self):
-        basic_page = models.Page()
+        page_type = models.PageType()
         self.prepare_template_file("""{% load fancypages_tags %}
 {% block main-content %}
 {% fancypages-container first-container %}
@@ -38,14 +38,11 @@ class TestPage(TestCase):
 {% endblock %}
 {% fancypages-container another-container %}
 """)
-        self.assertSequenceEqual(basic_page.get_container_names(), [])
+        self.assertSequenceEqual(page_type.get_container_names(), [])
 
     def test_can_extract_container_names_from_template(self):
         page_type = models.PageType.objects.create(name='Article', code='article',
                                                    template_name=self.template_name)
-        basic_page = models.Page.objects.create(
-            page_type=page_type
-        )
         self.prepare_template_file("""{% load fancypages_tags %}
 {% block main-content %}
 {% fancypages-container first-container %}
@@ -54,14 +51,13 @@ class TestPage(TestCase):
 {% fancypages-container another-container %}
 """)
         self.assertSequenceEqual(
-            basic_page.get_container_names(),
+            page_type.get_container_names(),
             [u'first-container', u'another-container']
         )
 
     def test_cannot_be_used_with_duplicate_container_names(self):
         page_type = models.PageType.objects.create(name='Article', code='article',
                                                    template_name=self.template_name)
-        basic_page = models.Page.objects.create(page_type=page_type)
 
         self.prepare_template_file("""{% load fancypages_tags %}
 {% block main-content %}
@@ -72,7 +68,7 @@ class TestPage(TestCase):
 """)
         self.assertRaises(
             ImproperlyConfigured,
-            basic_page.get_container_names
+            page_type.get_container_names
         )
 
 

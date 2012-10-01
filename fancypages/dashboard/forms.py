@@ -2,6 +2,7 @@ from django import forms
 from django.db.models import get_model
 
 
+Page = get_model('fancypages', 'Page')
 PageType = get_model('fancypages', 'PageType')
 
 
@@ -18,3 +19,10 @@ class PageTypeSelectForm(forms.Form):
             )
 
         self.fields['page_type'].choices = page_type_choices
+
+
+class PageForm(forms.ModelForm):
+
+    class Meta:
+        model = Page
+        exclude = ('code', 'page_type', 'relative_url')
