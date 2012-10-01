@@ -35,14 +35,19 @@
 {% block dashboard_content %}
 <form class="form" action="." method="post">
     {% csrf_token %}
-    {{ form }}
+    <div class="well well-blank">
+        <div class="subheader">
+            <h2>Page settings</h2>
+        </div>
+        {{ form }}
+    </div>
 
     {% for name in page_type.get_container_names %}
     <div class="well well-blank">
         <div class="subheader">
             <h2>
                 {% blocktrans with name=name %}
-                Page container '{{ name }}'
+                Container <tt style="font-weight: normal;">"{{ name }}"</tt>
                 {% endblocktrans %}
             </h2>
         </div>
