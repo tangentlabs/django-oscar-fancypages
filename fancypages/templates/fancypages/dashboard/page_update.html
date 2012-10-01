@@ -1,0 +1,91 @@
+{% extends 'dashboard/layout.html' %}
+{% load i18n %}
+
+{% block body_class %}fancypages{% endblock %}
+{% block title %}
+{% blocktrans with name=page_type.name %}Create new '{{ name }}' page{% endblocktrans %} | {{ block.super }}
+{% endblock %}
+
+{% comment %}
+{% block breadcrumbs %}
+<ul class="breadcrumb">
+    <li>
+        <a href="{% url dashboard:index %}">{% trans "Dashboard" %}</a>
+        <span class="divider">/</span>
+    </li>
+    <li class="active"><a href=".">{% trans "Stores" %}</a></li>
+</ul>
+{% endblock %}
+{% endcomment %}
+
+{% block header %}
+<div class="page-header">
+    <h1>
+    {% blocktrans with name=page_type.name %}Create new '{{ name }}' page{% endblocktrans %} | {{ block.super }}
+    </h1>
+</div>
+{% endblock header %}
+
+{% block dashboard_content %}
+
+<div class="well well-info">
+    <form class="form form-horizontal" method="get"
+          action="{% url fancypages-dashboard:page-create %}">
+        {% include "partials/form_fields_inline.html" with form=page_type_form %}
+        <button class="btn btn-primary">{% trans "Create new page" %}</button>
+    </form>
+</div>
+
+{% comment %}
+<div class="sub-header">
+    <h2>{{ queryset_description }}</h2>
+</div>
+{% endcomment %}
+
+{% if page_list|length %}
+<form action="." method="post" class="order_table">
+    {% csrf_token %}
+    <table class="table table-striped table-bordered">
+        <tr>
+            {# <th></th> #}
+            <th>{% trans "Title" %}</th>
+            <th>{% trans "Page type" %}</th>
+            <th>{% trans "Containers" %}</th>
+            <th></th>
+            <th></th>
+        </tr>
+        {% for page in page_list %}
+        <tr>
+            {# <td><input type="checkbox" name="selected_order" class="selected_order" value="{{ order.id }}"/> #}
+            <td>{{ page.name }}</td>
+            <td>{{ page.page_type }}</td>
+            <td>
+                {% for container in page.containers.all %}
+                    {{ container.variable_name }}{% if not forloop.last %}<br />{% endif %}
+                {% endfor %}
+            </td>
+            <td>
+            {% if page.is_visible %}
+                <span class="label label-success">{% trans "visible" %}</span> 
+            {% else %}
+                <span class="label label-danger">{% trans "not visible" %}</span> 
+            {% endif %}
+
+            <span class="label">{{ page.status }}</span> 
+            </td>
+            <td>
+                {% comment %}
+                <a class="btn btn-info" href="{% url stores-dashboard:store-update store.id %}">{% trans "Edit" %}</a>
+                <a class="btn btn-danger" href="{% url stores-dashboard:store-delete store.id %}">{% trans "Delete" %}</a>
+                {% endcomment %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</form>
+
+{% else %}
+    <p>{% trans "No stores found." %}</p>
+{% endif %}
+
+{% endblock dashboard_content %}

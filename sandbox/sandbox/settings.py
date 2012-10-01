@@ -116,7 +116,6 @@ INSTALLED_APPS = [
     'model_utils',
 
     'fancypages',
-    'fancypages.pages',
 ]
 
 from oscar import get_core_apps
@@ -141,7 +140,8 @@ OSCAR_ALLOW_ANON_CHECKOUT = True
 # Haystack settings
 HAYSTACK_CONNECTIONS = {
     'default': {
-        'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
+        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+        'PATH': os.path.join(os.path.dirname(__file__), 'whoosh_index'),
     },
 }
 

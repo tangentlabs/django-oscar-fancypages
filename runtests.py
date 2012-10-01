@@ -2,6 +2,7 @@
 import os
 import sys
 import logging
+import tempfile
 from optparse import OptionParser
 
 from django.conf import settings
@@ -56,8 +57,9 @@ if not settings.configured:
             'django.contrib.staticfiles',
             'django.contrib.admin',
         ] + OSCAR_CORE_APPS + [
-            'fancypages',
             'model_utils',
+
+            'fancypages',
         ],
         AUTHENTICATION_BACKENDS=(
             'oscar.apps.customer.auth_backends.Emailbackend',
@@ -67,10 +69,11 @@ if not settings.configured:
         APPEND_SLASH=True,
         HAYSTACK_CONNECTIONS={
             'default': {
-                'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
+                'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+                'PATH': tempfile.mkdtemp()+'/whoosh_index/',
             },
         },
-        NOSE_ARGS=['-s', '--with-spec',],  #'--with-progressive'],
+        NOSE_ARGS=['-s', '--with-spec'],  #'--with-progressive'],
         **OSCAR_SETTINGS
     )
 
@@ -79,7 +82,7 @@ logging.disable(logging.CRITICAL)
 
 def run_tests(*test_args):
     from django_nose import NoseTestSuiteRunner
-    test_runner = NoseTestSuiteRunner()
+    test_runner = NoseTestSuiteRunner(verbosity=1)
     if not test_args:
         test_args = ['tests']
     num_failures = test_runner.run_tests(test_args)
