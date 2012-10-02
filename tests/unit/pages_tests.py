@@ -99,7 +99,7 @@ class TestContainer(TestCase):
         basic_page = models.Page()
         basic_page.page_type = page_type
 
-        container_names = basic_page.get_container_names()
+        container_names = page_type.get_container_names()
         self.assertEquals(container_names, [u'test-container'])
 
         basic_page.title = "Some Title"
@@ -123,7 +123,7 @@ class TestContainer(TestCase):
         basic_page = models.Page()
         basic_page.page_type = page_type
 
-        container_names = basic_page.get_container_names()
+        container_names = page_type.get_container_names()
         self.assertEquals(container_names, [u'test-container'])
 
         basic_page.title = "Some Title"
