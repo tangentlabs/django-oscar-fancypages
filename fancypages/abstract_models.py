@@ -152,12 +152,23 @@ class AbstractContainer(models.Model):
 
 class AbstractWidget(models.Model):
     name = None
+    code = None
     template_name = None
     context_object_name = 'object'
 
     container = models.ForeignKey('fancypages.Container',
                                   verbose_name=_("Container"),
                                   related_name="widgets")
+
+    def get_available_widgets(self):
+        widget_choices = []
+        for subclass in self.__subclasses__():
+            if not subclass.name or not subclass.code:
+                raise ImproperlyConfigured(
+                    "widget subclasses have to provide 'code' and 'name' attributes"
+                )
+            widget_choices.append((subclass.code, subclass.name))
+        return widget_choices
 
     def render(self, request=None):
         if not self.template_name:
@@ -179,6 +190,7 @@ class AbstractWidget(models.Model):
 
 class AbstractTextWidget(models.Model):
     name = _("Text widget")
+    code = 'text-widget'
     template_name = "fancypages/widgets/text_widget.html"
 
     text = models.CharField(_("Text"), max_length=2000)
@@ -189,6 +201,7 @@ class AbstractTextWidget(models.Model):
 
 class AbstractTitleTextWidget(models.Model):
     name = _("Title and text widget")
+    code = 'title-text-widget'
     template_name = "fancypages/widgets/title_text_widget.html"
 
     title = models.CharField(_("Title"), max_length=100)
@@ -200,6 +213,7 @@ class AbstractTitleTextWidget(models.Model):
 
 class AbstractImageWidget(models.Model):
     name = _("Image widget")
+    code = 'image-widget'
     template_name = "fancypages/widgets/image_widget.html"
 
     image = models.ImageField(_("Image"), upload_to="fancypages/%y/%m/")

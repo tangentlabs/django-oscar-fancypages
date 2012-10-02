@@ -1,7 +1,7 @@
 # Django settings for sandbox project.
 import os
 PROJECT_DIR = os.path.dirname(__file__)
-location = lambda x: os.path.join(os.path.dirname(os.path.realpath(__file__)), x)
+location = lambda x: os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../%s" % x)
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -98,6 +98,9 @@ TEMPLATE_DIRS = (
     os.path.join(OSCAR_MAIN_TEMPLATE_DIR, 'templates'),
     OSCAR_MAIN_TEMPLATE_DIR,
 )
+FANCYPAGES_TEMPLATE_DIRS = [
+    location('fancypages/templates/fancypages/pages'),
+]
 
 INSTALLED_APPS = [
     'django.contrib.auth',

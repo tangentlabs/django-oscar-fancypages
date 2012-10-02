@@ -17,6 +17,45 @@ class PageTypeListView(generic.ListView):
     template_name = "fancypages/dashboard/page_type_list.html"
 
 
+class PageTypeCreateView(generic.CreateView):
+    model = PageType
+    form_class = forms.PageTypeForm
+    context_object_name = 'page_type'
+    template_name = "fancypages/dashboard/page_type_update.html"
+
+    def get_context_data(self, **kwargs):
+        ctx = super(PageTypeCreateView, self).get_context_data(**kwargs)
+        ctx['page_title'] = _("Create new page type")
+        return ctx
+
+    def get_success_url(self):
+        return reverse('fancypages-dashboard:page-type-list')
+
+
+class PageTypeUpdateView(generic.UpdateView):
+    model = PageType
+    form_class = forms.PageTypeForm
+    context_object_name = 'page_type'
+    template_name = "fancypages/dashboard/page_type_update.html"
+
+    def get_context_data(self, **kwargs):
+        ctx = super(PageTypeUpdateView, self).get_context_data(**kwargs)
+        ctx['page_title'] = _("Update page type %s") % self.object.name
+        return ctx
+
+    def get_success_url(self):
+        return reverse('fancypages-dashboard:page-type-list')
+
+
+class PageTypeDeleteView(generic.DeleteView):
+    model = PageType
+    context_object_name = 'page_type'
+    template_name = "fancypages/dashboard/page_type_delete.html"
+
+    def get_success_url(self):
+        return reverse('fancypages-dashboard:page-type-list')
+
+
 class PageListView(generic.ListView):
     model = Page
     context_object_name = 'page_list'

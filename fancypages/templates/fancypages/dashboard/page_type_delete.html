@@ -3,7 +3,7 @@
 
 {% block body_class %}fancypages{% endblock %}
 {% block title %}
-{% blocktrans with name=page_type.name %}Create new '{{ name }}' page{% endblocktrans %} | {{ block.super }}
+{% trans "Page management" %} | {{ block.super }}
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -16,28 +16,40 @@
         <a href="{% url fancypages-dashboard:page-type-list %}">{% trans "Page types" %}</a>
         <span class="divider">/</span>
     </li>
-    <li class="active"><a href=".">{{ page_title }}</a></li>
+    <li class="active">
+        <a href=".">
+            {% blocktrans with name=page_type.name %}
+            Delete page types {{ name }}
+            {% endblocktrans %}
+        </a>
+    </li>
 </ul>
 {% endblock %}
 
 {% block header %}
 <div class="page-header">
-    <h1>{{ page_title }}</h1>
+<h1>
+{% blocktrans with name=page_type.name %}
+Delete page types {{ name }}
+{% endblocktrans %}
+</h1>
 </div>
 {% endblock header %}
 
 {% block dashboard_content %}
-<form action="." method="post">
+
+<form action="." method="post" class="order_table">
     {% csrf_token %}
-    {{ form }}
+    {% blocktrans with name=page_type.name %}
+    Do you really want to delete the page type "{{ name }}"?
+    {% endblocktrans %}
+    <hr />
     <div class="control-group">
         <div class="controls">
-            <button class="btn btn-primary btn-large" type="submit">{% trans "Save" %}</button>
-            {% trans "or" %}
-            <a class="btn btn-large" href="{% url fancypages-dashboard:page-type-list %}">
-                {% trans "Cancel" %}
-            </a>
+            <button class="btn btn-info" type="submit">{% trans "Delete" %}</button>
+            <a class="btn" href="{% url fancypages-dashboard:page-type-list %}">{% trans "Cancel" %}</a>
         </div>
     </div>
 </form>
+
 {% endblock dashboard_content %}

@@ -16,6 +16,10 @@ register(node, 100)
 class FancypagesDashboardApplication(Application):
     name = 'fancypages-dashboard'
     page_type_list_view = views.PageTypeListView
+    page_type_create_view = views.PageTypeCreateView
+    page_type_update_view = views.PageTypeUpdateView
+    page_type_delete_view = views.PageTypeDeleteView
+
     page_list_view = views.PageListView
     page_create_redirect_view = views.PageCreateRedirectView
     page_create_view = views.PageCreateView
@@ -24,6 +28,12 @@ class FancypagesDashboardApplication(Application):
         urlpatterns = patterns('',
             url(r'types/$', self.page_type_list_view.as_view(),
                 name='page-type-list'),
+            url(r'type/create/$', self.page_type_create_view.as_view(),
+                name='page-type-create'),
+            url(r'type/update/(?P<pk>\d+)/$', self.page_type_update_view.as_view(),
+                name='page-type-update'),
+            url(r'type/delete/(?P<pk>\d+)/$', self.page_type_delete_view.as_view(),
+                name='page-type-delete'),
 
             url(r'^$', self.page_list_view.as_view(), name='page-list'),
             url(r'create/$',

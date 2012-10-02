@@ -48,6 +48,9 @@ if not settings.configured:
             os.path.join(OSCAR_MAIN_TEMPLATE_DIR, 'templates'),
             OSCAR_MAIN_TEMPLATE_DIR,
         ),
+        FANCYPAGES_TEMPLATE_DIRS=[
+            location('templates/fancypages/pages'),
+        ],
         INSTALLED_APPS=[
             'django.contrib.auth',
             'django.contrib.contenttypes',
