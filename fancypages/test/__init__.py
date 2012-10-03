@@ -18,6 +18,7 @@ class MockTemplateMixin(object):
         self.template_file = os.path.join(tempdir, self.template_name)
 
     def tearDown(self):
+        os.remvoe(self.template_file)
         # make sure that other tests don't rely on these settings
         settings.TEMPLATE_DIRS = self.default_template_dirs
 
