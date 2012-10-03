@@ -52,6 +52,7 @@ class TestAStaffMember(test.FancyPagesWebTest):
         page = create_form.submit()
 
         self.assertRedirects(page, reverse('fancypages-dashboard:page-list'))
+        page = page.follow()
 
         article_page = Page.objects.get(title="A new page")
         self.assertEquals(article_page.containers.count(), 2)
