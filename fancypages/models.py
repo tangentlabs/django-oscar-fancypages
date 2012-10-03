@@ -19,3 +19,7 @@ class TextWidget(abstract_models.AbstractTextWidget):
 
 class TitleTextWidget(abstract_models.AbstractTitleTextWidget):
     pass
+
+
+class ImageWidget(abstract_models.AbstractImageWidget):
+    pass

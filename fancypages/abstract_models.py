@@ -5,7 +5,8 @@ from django.template import loader, Context, RequestContext
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.translation import ugettext_lazy as _
 
-from model_utils.managers import PassThroughManager, InheritanceQuerySet
+from model_utils.managers import (PassThroughManager, InheritanceQuerySet,
+                                  InheritanceManager)
 
 from fancypages.templatetags.fancypages_tags import FancyContainerNode
 
@@ -73,7 +74,7 @@ class AbstractPage(models.Model):
                                   related_name="pages")
 
     parent = models.ForeignKey('self', verbose_name=_(u"Parent page"),
-                               null=True, blank=True, 
+                               null=True, blank=True,
                                related_name="children")
 
     # this is the *cached* relative URL for this page taking parent
@@ -141,7 +142,7 @@ class AbstractPage(models.Model):
                 )
 
     def __unicode__(self):
-        return "%s with title '%s'" % (self.page_type.name, self.title)
+        return u"%s with title '%s'" % (self.page_type.name, self.title)
 
     class Meta:
         abstract = True
@@ -155,6 +156,12 @@ class AbstractContainer(models.Model):
     page = models.ForeignKey('fancypages.Page', verbose_name=_("Page"),
                              related_name='containers')
 
+    def render(self):
+        return u''
+
+    def __unicode__(self):
+        return u"Container '%s' in '%s'" % (self.variable_name, self.page.title)
+
     class Meta:
         abstract = True
 
@@ -167,7 +174,11 @@ class AbstractWidget(models.Model):
 
     container = models.ForeignKey('fancypages.Container',
                                   verbose_name=_("Container"),
-                                  related_name="widgets")
+                                  related_name="%(class)ss")
+
+    display_order = models.PositiveIntegerField()
+
+    objects = InheritanceManager()
 
     def get_available_widgets(self):
         widget_choices = []
@@ -193,22 +204,28 @@ class AbstractWidget(models.Model):
         ctx[self.context_object_name] = self
         return tmpl.render(ctx)
 
+    def __unicode__(self):
+        return self.name
+
     class Meta:
         abstract = True
 
 
-class AbstractTextWidget(models.Model):
+class AbstractTextWidget(AbstractWidget):
     name = _("Text widget")
     code = 'text-widget'
     template_name = "fancypages/widgets/text_widget.html"
 
     text = models.CharField(_("Text"), max_length=2000)
 
+    def __unicode__(self):
+        return self.text[:20]
+
     class Meta:
         abstract = True
 
 
-class AbstractTitleTextWidget(models.Model):
+class AbstractTitleTextWidget(AbstractWidget):
     name = _("Title and text widget")
     code = 'title-text-widget'
     template_name = "fancypages/widgets/title_text_widget.html"
@@ -216,11 +233,14 @@ class AbstractTitleTextWidget(models.Model):
     title = models.CharField(_("Title"), max_length=100)
     text = models.CharField(_("Text"), max_length=2000)
 
+    def __unicode__(self):
+        return self.title
+
     class Meta:
         abstract = True
 
 
-class AbstractImageWidget(models.Model):
+class AbstractImageWidget(AbstractWidget):
     name = _("Image widget")
     code = 'image-widget'
     template_name = "fancypages/widgets/image_widget.html"
@@ -228,6 +248,9 @@ class AbstractImageWidget(models.Model):
     image = models.ImageField(_("Image"), upload_to="fancypages/%y/%m/")
     caption = models.CharField(_("Caption"), max_length=200,
                                null=True, blank=True)
+
+    def __unicode__(self):
+        return self.image.path
 
     class Meta:
         abstract = True

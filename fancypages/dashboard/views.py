@@ -119,5 +119,28 @@ class PageCreateView(generic.CreateView):
         return reverse('fancypages-dashboard:page-list')
 
 
-class PageCustomiseView(generic.UpdateView):
-    pass
+class PageUpdateView(generic.UpdateView):
+    template_name = "fancypages/dashboard/page_update.html"
+    context_object_name = 'page'
+    form_class = forms.PageForm
+    model = Page
+
+    def get_context_data(self, **kwargs):
+        ctx = super(PageUpdateView, self).get_context_data(**kwargs)
+        return ctx
+
+    def get_form(self, form_class):
+        return form_class(
+            self.object.page_type,
+            **self.get_form_kwargs()
+        )
+
+    def get_success_url(self):
+        return reverse('fancypages-dashboard:page-list')
+
+
+class PageCustomiseView(PageUpdateView):
+    template_name = "fancypages/dashboard/page_customise.html"
+
+    def get_success_url(self):
+        return reverse('fancypages-dashboard:page-list')

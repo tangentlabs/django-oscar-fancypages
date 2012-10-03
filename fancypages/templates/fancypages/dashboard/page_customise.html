@@ -1,0 +1,60 @@
+{% extends 'dashboard/layout.html' %}
+{% load i18n %}
+
+{% block body_class %}fancypages{% endblock %}
+{% block title %}
+{% blocktrans with title=page.title %}Customise page "{{ title }}" {% endblocktrans %} | {{ block.super }}
+{% endblock %}
+
+{% block breadcrumbs %}
+<ul class="breadcrumb">
+    <li>
+        <a href="{% url dashboard:index %}">{% trans "Dashboard" %}</a>
+        <span class="divider">/</span>
+    </li>
+    <li>
+        <a href="{% url fancypages-dashboard:page-list %}">
+            {% trans "Pages" %}
+        </a>
+        <span class="divider">/</span>
+    </li>
+    <li class="active">
+        <a href=".">{% trans "Customise page" %}</a>
+    </li>
+</ul>
+{% endblock %}
+
+{% block header %}
+<div class="page-header">
+    <h1>
+    {% blocktrans with title=page.title %}Customise page "{{ title }}" {% endblocktrans %}
+    </h1>
+</div>
+{% endblock header %}
+
+{% block dashboard_content %}
+<form class="form" action="." method="post">
+    {% csrf_token %}
+
+    {% for name in page.page_type.get_container_names %}
+    <div class="well well-blank">
+        <div class="subheader">
+            <h2>
+                {% blocktrans with name=name %}
+                Container <tt style="font-weight: normal;">"{{ name }}"</tt>
+                {% endblocktrans %}
+            </h2>
+        </div>
+    </div>
+    {% endfor %}
+
+    <hr />
+    <div class="control-group pull-right">
+        <div class="controls">
+            <button type='submit' class="btn btn-primary btn-large">{% trans "Save" %}</button>
+            {% trans "or" %}
+            <a href="{% url fancypages-dashboard:page-list %}" class="btn btn-large">{% trans "Cancel" %}</a>
+        </div>
+    </div>
+</form>
+{% endblock dashboard_content %}
