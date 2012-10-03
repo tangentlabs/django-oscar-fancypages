@@ -51,6 +51,19 @@ class PageTypeForm(forms.ModelForm):
 
 class PageForm(forms.ModelForm):
 
+    def __init__(self, page_type, *args, **kwargs):
+        super(PageForm, self).__init__(*args, **kwargs)
+        self.page_type = page_type
+
+    def save(self, commit=True):
+        instance = super(PageForm, self).save(commit=False)
+        instance.page_type = self.page_type
+
+        if commit:
+            instance.save()
+
+        return instance
+
     class Meta:
         model = Page
         exclude = ('code', 'page_type', 'relative_url')

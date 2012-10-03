@@ -96,6 +96,9 @@ class PageCreateView(generic.CreateView):
         ctx['page_type'] = self.page_type
         return ctx
 
+    def get_form(self, form_class):
+        return form_class(self.page_type, **self.get_form_kwargs())
+
     def get_page_type(self):
         code = self.kwargs.get('page_type_code', None)
         try:
@@ -111,3 +114,10 @@ class PageCreateView(generic.CreateView):
     def post(self, request, **kwargs):
         self.page_type = self.get_page_type()
         return super(PageCreateView, self).post(request, **kwargs)
+
+    def get_success_url(self):
+        return reverse('fancypages-dashboard:page-list')
+
+
+class PageCustomiseView(generic.UpdateView):
+    pass

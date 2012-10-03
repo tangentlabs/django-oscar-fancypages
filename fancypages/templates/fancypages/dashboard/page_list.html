@@ -48,12 +48,12 @@
             <th>{% trans "Page type" %}</th>
             <th>{% trans "Containers" %}</th>
             <th></th>
-            <th></th>
+            <th style="width: 200px"></th>
         </tr>
         {% for page in page_list %}
         <tr>
             {# <td><input type="checkbox" name="selected_order" class="selected_order" value="{{ order.id }}"/> #}
-            <td>{{ page.name }}</td>
+            <td>{{ page.title }}</td>
             <td>{{ page.page_type }}</td>
             <td>
                 {% for container in page.containers.all %}
@@ -70,10 +70,9 @@
             <span class="label">{{ page.status }}</span> 
             </td>
             <td>
-                {% comment %}
-                <a class="btn btn-info" href="{% url stores-dashboard:store-update store.id %}">{% trans "Edit" %}</a>
-                <a class="btn btn-danger" href="{% url stores-dashboard:store-delete store.id %}">{% trans "Delete" %}</a>
-                {% endcomment %}
+                <a class="btn btn-info" href="{#{% url stores-dashboard:store-update store.id %}#}">{% trans "Edit" %}</a>
+                <a class="btn btn-info" href="{% url fancypages-dashboard:page-customise page.id %}">{% trans "Customise" %}</a>
+                <a class="btn btn-danger" href="{# url stores-dashboard:store-delete store.id #}">{% trans "Delete" %}</a>
             </td>
         </tr>
         {% endfor %}

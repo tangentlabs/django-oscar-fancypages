@@ -1,51 +1,27 @@
 from django.db.models import get_model
-from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
-from django_webtest import WebTest
+from fancypages import test
 
+Page = get_model('fancypages', 'Page')
 PageType = get_model('fancypages', 'PageType')
 
 
-class PageWebTest(WebTest):
-    username = 'testuser'
-    email = 'testuser@example.com'
-    password = 'mysecretpassword'
-    is_anonymous = True
-    is_staff = False
-
-    def setUp(self):
-        super(PageWebTest, self).setUp()
-        self.user = None
-
-        if self.is_staff:
-            self.is_anonymous = False
-
-        if self.is_staff or not self.is_anonymous:
-            self.user = User.objects.create_user(username=self.username,
-                                                 email=self.email,
-                                                 password=self.password)
-            self.user.is_staff = self.is_staff
-            self.user.save()
-
-    def get(self, *args, **kwargs):
-        kwargs['user'] = self.user
-        return self.app.get(*args, **kwargs)
-
-    def post(self, *args, **kwargs):
-        kwargs['user'] = self.user
-        return self.app.post(*args, **kwargs)
-
-
-class TestAStaffMember(PageWebTest):
+class TestAStaffMember(test.FancyPagesWebTest):
     is_staff = True
 
     def setUp(self):
         super(TestAStaffMember, self).setUp()
         self.article_type = PageType.objects.create(name='Article', code='article',
-                                template_name="")
+                                template_name=self.template_name)
         self.other_type = PageType.objects.create(name='Other', code='other',
                                                   template_name="")
+
+        self.prepare_template_file(
+            "{% load fancypages_tags%}"
+            "{% fancypages-container first-container %}"
+            "{% fancypages-container second-container %}"
+        )
 
     def test_can_see_a_list_of_page_types(self):
         page = self.get(reverse('fancypages-dashboard:page-list'))
@@ -53,7 +29,7 @@ class TestAStaffMember(PageWebTest):
         self.assertContains(page, 'Article')
         self.assertContains(page, 'Other')
 
-    def test_can_create_a_new_article_page(self):
+    def test_can_create_a_new_toplevel_article_page(self):
         page = self.get(reverse('fancypages-dashboard:page-list'))
 
         type_form = page.form
@@ -70,3 +46,16 @@ class TestAStaffMember(PageWebTest):
         )
         page = page.follow()
         self.assertContains(page, "Create new 'Article' page")
+
+        create_form = page.form
+        create_form['title'] = "A new page"
+        page = create_form.submit()
+
+        self.assertRedirects(page, reverse('fancypages-dashboard:page-list'))
+
+        article_page = Page.objects.get(title="A new page")
+        self.assertEquals(article_page.containers.count(), 2)
+
+        self.assertEquals(article_page.status, Page.DRAFT)
+        self.assertEquals(article_page.is_visible, False)
+        self.assertContains(page, u"not visible")

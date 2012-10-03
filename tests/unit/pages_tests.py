@@ -1,29 +1,10 @@
-import os
-import tempfile
-
-from django.conf import settings
-from django.test import TestCase
 from django.core.exceptions import ImproperlyConfigured
 
+from fancypages import test
 from fancypages import models
 
 
-class TestPageType(TestCase):
-
-    def setUp(self):
-        tempdir = tempfile.gettempdir()
-        self.default_template_dirs = settings.TEMPLATE_DIRS
-        settings.TEMPLATE_DIRS = list(settings.TEMPLATE_DIRS) + [tempdir]
-        self.template_name = 'test_article_page.html'
-        self.template_file = os.path.join(tempdir, self.template_name)
-
-    def tearDown(self):
-        # make sure that other tests don't rely on these settings
-        settings.TEMPLATE_DIRS = self.default_template_dirs
-
-    def prepare_template_file(self, content):
-        with open(self.template_file, 'w') as tmpl_file:
-            tmpl_file.write(content)
+class TestPageType(test.FancyPagesTestCase):
 
     #def test_is_generating_a_slug_from_title(self):
     #    article = models.Page()
@@ -71,20 +52,30 @@ class TestPageType(TestCase):
             page_type.get_container_names
         )
 
+class TestAPage(test.FancyPagesTestCase):
 
-class TestContainer(TestCase):
+    def test_creates_containers_when_saved(self):
+        page_type = models.PageType.objects.create(name='Article', code='article',
+                                                   template_name=self.template_name)
 
-    def setUp(self):
-        tempdir = tempfile.gettempdir()
-        self.default_template_dirs = settings.TEMPLATE_DIRS
-        settings.TEMPLATE_DIRS = list(settings.TEMPLATE_DIRS) + [tempdir]
+        self.prepare_template_file("""{% load fancypages_tags %}
+{% block main-content %}
+{% fancypages-container first-container %}
+{% fancypages-container second-container %}
+{% templatetag opencomment %}
+{% endblock %}
+""")
+        article_page = models.Page.objects.create(
+            title='This is an article',
+            page_type=page_type,
+        )
+        article_page.save()
 
-        __, self.template_path = tempfile.mkstemp(suffix=".html")
-        self.template_name = os.path.basename(self.template_path)
+        article_page = models.Page.objects.get(id=article_page.id)
+        self.assertEquals(article_page.containers.count(), 2)
 
-    def tearDown(self):
-        # make sure that other tests don't rely on these settings
-        settings.TEMPLATE_DIRS = self.default_template_dirs
+
+class TestContainer(test.FancyPagesTestCase):
 
     def test_can_be_assigned_to_a_page(self):
         page_type = models.PageType.objects.create(
@@ -92,9 +83,8 @@ class TestContainer(TestCase):
             template_name=self.template_name
         )
 
-        with open(self.template_path, 'w') as fh:
-            fh.write("{% load fancypages_tags %}"
-                     "{% fancypages-container test-container %}")
+        self.prepare_template_file("{% load fancypages_tags %}"
+                                   "{% fancypages-container test-container %}")
 
         basic_page = models.Page()
         basic_page.page_type = page_type
@@ -105,9 +95,6 @@ class TestContainer(TestCase):
         basic_page.title = "Some Title"
         basic_page.save()
 
-        basic_page.containers.create(variable_name=container_names[0])
-        basic_page.save()
-
         self.assertEquals(basic_page.containers.count(), 1)
 
     def test_cannot_assign_multiple_instance_to_page(self):
@@ -116,9 +103,8 @@ class TestContainer(TestCase):
             template_name=self.template_name
         )
 
-        with open(self.template_path, 'w') as fh:
-            fh.write("{% load fancypages_tags %}"
-                     "{% fancypages-container test-container %}")
+        self.prepare_template_file("{% load fancypages_tags %}"
+                                   "{% fancypages-container test-container %}")
 
         basic_page = models.Page()
         basic_page.page_type = page_type

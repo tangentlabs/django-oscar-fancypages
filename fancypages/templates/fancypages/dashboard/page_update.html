@@ -42,6 +42,7 @@
         {{ form }}
     </div>
 
+    {% comment %}
     {% for name in page_type.get_container_names %}
     <div class="well well-blank">
         <div class="subheader">
@@ -53,6 +54,7 @@
         </div>
     </div>
     {% endfor %}
+    {% endcomment %}
 
     <hr />
     <div class="control-group pull-right">

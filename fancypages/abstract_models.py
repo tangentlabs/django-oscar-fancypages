@@ -41,7 +41,7 @@ class AbstractPageType(models.Model):
         super(AbstractPageType, self).save(*args, **kwargs)
 
     def __unicode__(self):
-        return "Page type: %s" % self.name
+        return self.name
 
     class Meta:
         abstract = True
@@ -129,10 +129,19 @@ class AbstractPage(models.Model):
     def save(self, *args, **kwargs):
         if not self.code:
             self.code = slugify(self.title)
+
         super(AbstractPage, self).save(*args, **kwargs)
 
+        existing_containers = [c.variable_name for c in self.containers.all()]
+        for cname in self.page_type.get_container_names():
+            if cname not in existing_containers:
+                self.containers.create(
+                    page=self,
+                    variable_name=cname,
+                )
+
     def __unicode__(self):
-        return "%s with title '%s'" % (self.type.name, self.title)
+        return "%s with title '%s'" % (self.page_type.name, self.title)
 
     class Meta:
         abstract = True

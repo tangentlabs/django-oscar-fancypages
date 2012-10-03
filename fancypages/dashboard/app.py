@@ -23,6 +23,7 @@ class FancypagesDashboardApplication(Application):
     page_list_view = views.PageListView
     page_create_redirect_view = views.PageCreateRedirectView
     page_create_view = views.PageCreateView
+    page_customise_view = views.PageCustomiseView
 
     def get_urls(self):
         urlpatterns = patterns('',
@@ -40,6 +41,9 @@ class FancypagesDashboardApplication(Application):
                 self.page_create_redirect_view.as_view(), name='page-create'),
             url(r'create/(?P<page_type_code>[\w-]+)/$',
                 self.page_create_view.as_view(), name='page-create'),
+
+            url(r'customise/(?P<pk>\d+)/$',
+                self.page_customise_view.as_view(), name='page-customise'),
         )
         return self.post_process_urls(urlpatterns)
 
