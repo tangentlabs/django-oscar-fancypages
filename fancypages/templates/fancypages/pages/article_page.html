@@ -1,15 +1,17 @@
+{% extends "layout_2_col.html" %}
 {% load fancypages_tags %}
 
-{% block main-content %}
-THis is the main content.
-
-{% fancypages-container left-column %}
-
-{% fancypages-container main-container %}
-
+{% block title %}
+{{ page.title }} | {{ block.super }}
 {% endblock %}
 
+{% block column_left %}
+{% fancypages-container left-column %}
+{% endblock %}
 
-{% block footer %}
-Some footer text.
+{% block content %}
+<div class="subheader">
+    <h2>{{ page.title }}</h2>
+</div>
+{% fancypages-container main-container %}
 {% endblock %}

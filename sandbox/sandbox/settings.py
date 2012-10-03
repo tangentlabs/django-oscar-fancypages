@@ -1,7 +1,7 @@
 # Django settings for sandbox project.
 import os
 PROJECT_DIR = os.path.dirname(__file__)
-location = lambda x: os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../%s" % x)
+location = lambda x: os.path.join(os.path.dirname(os.path.realpath(__file__)), "../%s" % x)
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -94,7 +94,7 @@ WSGI_APPLICATION = 'sandbox.wsgi.application'
 from oscar import OSCAR_MAIN_TEMPLATE_DIR
 
 FANCYPAGES_TEMPLATE_DIRS = [
-    location('fancypages/templates/fancypages/pages'),
+    location('../fancypages/templates/fancypages/pages'),
 ]
 TEMPLATE_DIRS = [
     location('templates'),

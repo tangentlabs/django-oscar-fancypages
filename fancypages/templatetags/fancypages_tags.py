@@ -9,7 +9,12 @@ class FancyContainerNode(template.Node):
         self.container_name = template.Variable(container_name)
 
     def render(self, context):
-        return ''
+        try:
+            container = self.container_name.resolve(context)
+        except template.VariableDoesNotExist:
+            return u''
+
+        return container.render(context.get('request', None))
 
 
 @register.tag(name='fancypages-container')
@@ -18,5 +23,8 @@ def fancypages_container(parser, token):
         # split_contents() knows not to split quoted strings.
         tag_name, container_name = token.split_contents()
     except ValueError:
-        raise template.TemplateSyntaxError("%r tag requires exactly one arguments" % token.contents.split()[0])
+        raise template.TemplateSyntaxError(
+            "%r tag requires exactly one arguments" \
+            % token.contents.split()[0]
+        )
     return FancyContainerNode(container_name)

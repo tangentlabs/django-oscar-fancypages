@@ -5,8 +5,7 @@ from django.template import loader, Context, RequestContext
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.translation import ugettext_lazy as _
 
-from model_utils.managers import (PassThroughManager, InheritanceQuerySet,
-                                  InheritanceManager)
+from model_utils.managers import PassThroughManager, InheritanceQuerySet
 
 from fancypages.templatetags.fancypages_tags import FancyContainerNode
 
@@ -149,6 +148,7 @@ class AbstractPage(models.Model):
 
 
 class AbstractContainer(models.Model):
+    template_name = 'fancypages/container.html'
     # this is the name of the variable used in the template tag
     # e.g. {% fancypages-container var-name %}
     variable_name = models.SlugField(_("Variable name"), max_length=50)
@@ -156,8 +156,40 @@ class AbstractContainer(models.Model):
     page = models.ForeignKey('fancypages.Page', verbose_name=_("Page"),
                              related_name='containers')
 
-    def render(self):
-        return u''
+    def get_ordered_widgets(self):
+        # TODO: this need to be cleaned up and made to work with multi-level
+        # inheritance. Currently only flat hierarchies work for POC
+        # purposes
+        subclasses =[]
+        for sub in AbstractWidget.itersubclasses():
+            if not sub._meta.abstract:
+                subclasses.append(sub)
+
+        widgets = []
+        for widget_class in subclasses:
+            widget_attr = "%s_related" % widget_class.__name__.lower()
+
+            queryset = getattr(self, widget_attr).all()
+            if queryset:
+                widgets += list(queryset)
+
+        return sorted(widgets, cmp=lambda x, y: cmp(x.display_order, y.display_order))
+
+    def render(self, request=None):
+        ordered_widgets = self.get_ordered_widgets()
+
+        tmpl = loader.get_template(self.template_name)
+
+        if request:
+            ctx = RequestContext(request)
+        else:
+            ctx = Context()
+
+        ctx['rendered_widgets'] = []
+        for widget in ordered_widgets:
+            ctx['rendered_widgets'].append(widget.render(request))
+
+        return tmpl.render(ctx)
 
     def __unicode__(self):
         return u"Container '%s' in '%s'" % (self.variable_name, self.page.title)
@@ -174,21 +206,44 @@ class AbstractWidget(models.Model):
 
     container = models.ForeignKey('fancypages.Container',
                                   verbose_name=_("Container"),
-                                  related_name="%(class)ss")
+                                  related_name="%(class)s_related")
 
     display_order = models.PositiveIntegerField()
 
-    objects = InheritanceManager()
-
     def get_available_widgets(self):
         widget_choices = []
-        for subclass in self.__subclasses__():
-            if not subclass.name or not subclass.code:
-                raise ImproperlyConfigured(
-                    "widget subclasses have to provide 'code' and 'name' attributes"
-                )
-            widget_choices.append((subclass.code, subclass.name))
+        for subclass in self._itersubclasses():
+            if not subclass._meta.abstract:
+                if not subclass.name or not subclass.code:
+                    raise ImproperlyConfigured(
+                        "widget subclasses have to provide 'code' and 'name' attributes"
+                    )
+                widget_choices.append((subclass.code, subclass.name))
         return widget_choices
+
+    @classmethod
+    def itersubclasses(cls, _seen=None):
+        """
+        I have taken this method from:
+
+        http://code.activestate.com/recipes/576949-find-all-subclasses-of-a-given-class/
+
+        so that I don't have to do this all myself :)
+        """
+        if not isinstance(cls, type):
+            raise TypeError('itersubclasses must be called with '
+                            'new-style classes, not %.100r' % cls)
+        if _seen is None: _seen = set()
+        try:
+            subs = cls.__subclasses__()
+        except TypeError: # fails only when cls is type
+            subs = cls.__subclasses__(cls)
+        for sub in subs:
+            if sub not in _seen:
+                _seen.add(sub)
+                yield sub
+                for sub in sub.itersubclasses(_seen):
+                    yield sub
 
     def render(self, request=None):
         if not self.template_name:
