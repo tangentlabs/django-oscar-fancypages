@@ -10,7 +10,6 @@ This project is currently a better proof of concept and will most
 likely break or not work. Please use with care until this message
 disappears!!!
 
-
 Running the sandbox
 ===================
 
@@ -21,23 +20,11 @@ shop with fancy pages enabled::
     $ cd django-oscar-fancypages
     $ mkvirtualenv fancypages
 
-Then install all the requirements::
+Then run::
 
-    $ python setup.py develop
-    $ pip install -r requirements.txt
+    $ make sandbox
 
-Now change into the sandbox directory and create the sample database
-to use for fancypages::
-
-    $ cd sandbox
-    $ ./manage.py syncdb --noinput
-    $ ./manage.py migrate
-
-And finally, load some sample data into the database including a 
-superuser::
-
-    $ ./manage.py loaddata fixtures/auth.json
-    $ ./manage.py loaddata fixtures/fancypages.json
+This will install dependencies, create the database and load some fixtures.
 
 The credentials for the superuser are::
 
