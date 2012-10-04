@@ -1,14 +1,20 @@
 from django.views import generic
 from django.contrib import messages
 from django.db.models import get_model
+from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.forms.models import modelform_factory
 from django.utils.translation import ugettext_lazy as _
+
+from oscar.core.loading import get_class
 
 from fancypages.dashboard import forms
 
 
 Page = get_model('fancypages', 'Page')
 PageType = get_model('fancypages', 'PageType')
+Widget = get_model('fancypages', 'Widget')
+Container = get_model('fancypages', 'Container')
 
 
 class PageTypeListView(generic.ListView):
@@ -142,5 +148,87 @@ class PageUpdateView(generic.UpdateView):
 class PageCustomiseView(PageUpdateView):
     template_name = "fancypages/dashboard/page_customise.html"
 
+    def get_context_data(self, **kwargs):
+        ctx = super(PageCustomiseView, self).get_context_data(**kwargs)
+        ctx['select_widget_form'] = forms.WidgetCreateSelectForm()
+        return ctx
+
     def get_success_url(self):
         return reverse('fancypages-dashboard:page-list')
+
+
+class WidgetCreateView(generic.CreateView):
+    model = Widget
+    template_name = "fancypages/dashboard/widget_create.html"
+
+    def get_initial(self):
+        return {
+            'display_order': self.container.widgets.count(),
+        }
+
+    def get(self, request, *args, **kwargs):
+        container_name = self.kwargs.get('container_name')
+        self.container = Container.objects.get(variable_name=container_name)
+        return super(WidgetCreateView, self).get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        container_name = self.kwargs.get('container_name')
+        self.container = Container.objects.get(variable_name=container_name)
+        return super(WidgetCreateView, self).post(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        ctx = super(WidgetCreateView, self).get_context_data(**kwargs)
+        ctx['container'] = self.container
+        ctx['widget_code'] = self.kwargs.get('code')
+        return ctx
+
+    def get_form_class(self):
+        for widget_class in Widget.itersubclasses():
+            if widget_class._meta.abstract:
+                continue
+
+            if widget_class.code == self.kwargs.get('code'):
+                model = widget_class
+                break
+
+        form_class = getattr(forms, "%sForm" % model.__name__, forms.WidgetForm)
+        form_class = modelform_factory(model, form=form_class)
+        return form_class
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.container = self.container
+        self.object.save()
+
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_success_url(self):
+        return reverse('fancypages-dashboard:widget-update',
+                       args=(self.object.id,))
+
+
+class WidgetUpdateView(generic.UpdateView):
+    model = Widget
+    context_object_name = 'widget'
+    template_name = "fancypages/dashboard/widget_update.html"
+
+    def get_object(self, queryset=None):
+        try:
+            return self.model.objects.select_subclasses().get(
+                id=self.kwargs.get('pk')
+            )
+        except self.model.DoesNotExist:
+            return self.model.objects.none()
+
+    def get_form_class(self):
+        model = self.object.__class__
+        form_class = getattr(
+            forms,
+            "%sForm" % model.__name__,
+            forms.WidgetForm
+        )
+        return modelform_factory(model, form=form_class)
+
+    def get_success_url(self):
+        return reverse('fancypages-dashboard:widget-update',
+                       args=(self.object.id,))

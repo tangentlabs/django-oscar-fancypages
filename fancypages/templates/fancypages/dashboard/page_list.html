@@ -70,7 +70,7 @@
             <span class="label">{{ page.status }}</span> 
             </td>
             <td>
-                <a class="btn btn-info" href="{#{% url stores-dashboard:store-update store.id %}#}">{% trans "Edit" %}</a>
+                <a class="btn btn-info" href="{% url fancypages-dashboard:page-update page.id %}#}">{% trans "Edit" %}</a>
                 <a class="btn btn-info" href="{% url fancypages-dashboard:page-customise page.id %}">{% trans "Customise" %}</a>
                 <a class="btn btn-danger" href="{# url stores-dashboard:store-delete store.id #}">{% trans "Delete" %}</a>
             </td>

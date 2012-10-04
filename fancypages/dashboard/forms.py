@@ -3,7 +3,7 @@ import os
 from django import forms
 from django.conf import settings
 from django.db.models import get_model
-
+from django.utils.translation import ugettext_lazy as _
 
 Page = get_model('fancypages', 'Page')
 PageType = get_model('fancypages', 'PageType')
@@ -67,3 +67,51 @@ class PageForm(forms.ModelForm):
     class Meta:
         model = Page
         exclude = ('code', 'page_type', 'relative_url')
+
+
+class WidgetCreateSelectForm(forms.Form):
+    widget_code = forms.ChoiceField(label=_("Add a new widget:"))
+
+    def __init__(self, *args, **kwargs):
+        super(WidgetCreateSelectForm, self).__init__(*args, **kwargs)
+        widget_model = get_model('fancypages', 'Widget')
+        self.fields['widget_code'].choices = widget_model.get_available_widgets()
+
+
+class WidgetUpdateSelectForm(forms.Form):
+    widget_code = forms.ChoiceField(label=_("Edit widget:"))
+
+    def __init__(self, container, *args, **kwargs):
+        super(WidgetUpdateSelectForm, self).__init__(*args, **kwargs)
+
+        widget_choices = []
+        for widget in container.widgets.select_subclasses():
+            widget_choices.append((widget.id, unicode(widget)))
+
+        self.fields['widget_code'].choices = widget_choices
+
+
+class WidgetForm(forms.ModelForm):
+    class Meta:
+        exclude = ('container',)
+        widgets = {
+            'display_order': forms.HiddenInput()
+        }
+
+
+class TextWidgetForm(forms.ModelForm):
+    class Meta:
+        exclude = ('container',)
+        widgets = {
+            'display_order': forms.HiddenInput(),
+            'text': forms.Textarea(attrs={'cols': 80, 'rows': 10}),
+        }
+
+
+class TitleTextWidgetForm(forms.ModelForm):
+    class Meta:
+        exclude = ('container',)
+        widgets = {
+            'display_order': forms.HiddenInput(),
+            'text': forms.Textarea(attrs={'cols': 80, 'rows': 10}),
+        }

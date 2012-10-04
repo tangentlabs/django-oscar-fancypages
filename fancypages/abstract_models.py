@@ -7,7 +7,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from model_utils.managers import PassThroughManager, InheritanceQuerySet
 
-from fancypages.templatetags.fancypages_tags import FancyContainerNode
 
 
 class AbstractPageType(models.Model):
@@ -17,12 +16,13 @@ class AbstractPageType(models.Model):
     template_name = models.CharField(_("Template name"), max_length=500)
 
     def get_container_names(self):
+        from fancypages.templatetags import fancypages_tags
         if not self.template_name:
             return []
 
         container_names = []
         for node in loader.get_template(self.template_name):
-            container_nodes = node.get_nodes_by_type(FancyContainerNode)
+            container_nodes = node.get_nodes_by_type(fancypages_tags.FancyContainerNode)
 
             for cnode in container_nodes:
                 var_name = cnode.container_name.var
@@ -117,6 +117,12 @@ class AbstractPage(models.Model):
 
         return True
 
+    def get_container_from_name(self, name):
+        try:
+            return self.containers.get(variable_name=name)
+        except models.get_model('fancypages', 'Container').DoesNotExist:
+            return None
+
     def create_container(self, name):
         if self.containers.filter(variable_name=name).count():
             return
@@ -156,27 +162,8 @@ class AbstractContainer(models.Model):
     page = models.ForeignKey('fancypages.Page', verbose_name=_("Page"),
                              related_name='containers')
 
-    def get_ordered_widgets(self):
-        # TODO: this need to be cleaned up and made to work with multi-level
-        # inheritance. Currently only flat hierarchies work for POC
-        # purposes
-        subclasses =[]
-        for sub in AbstractWidget.itersubclasses():
-            if not sub._meta.abstract:
-                subclasses.append(sub)
-
-        widgets = []
-        for widget_class in subclasses:
-            widget_attr = "%s_related" % widget_class.__name__.lower()
-
-            queryset = getattr(self, widget_attr).all()
-            if queryset:
-                widgets += list(queryset)
-
-        return sorted(widgets, cmp=lambda x, y: cmp(x.display_order, y.display_order))
-
     def render(self, request=None):
-        ordered_widgets = self.get_ordered_widgets()
+        ordered_widgets = self.widgets.select_subclasses()
 
         tmpl = loader.get_template(self.template_name)
 
@@ -193,119 +180,6 @@ class AbstractContainer(models.Model):
 
     def __unicode__(self):
         return u"Container '%s' in '%s'" % (self.variable_name, self.page.title)
-
-    class Meta:
-        abstract = True
-
-
-class AbstractWidget(models.Model):
-    name = None
-    code = None
-    template_name = None
-    context_object_name = 'object'
-
-    container = models.ForeignKey('fancypages.Container',
-                                  verbose_name=_("Container"),
-                                  related_name="%(class)s_related")
-
-    display_order = models.PositiveIntegerField()
-
-    def get_available_widgets(self):
-        widget_choices = []
-        for subclass in self._itersubclasses():
-            if not subclass._meta.abstract:
-                if not subclass.name or not subclass.code:
-                    raise ImproperlyConfigured(
-                        "widget subclasses have to provide 'code' and 'name' attributes"
-                    )
-                widget_choices.append((subclass.code, subclass.name))
-        return widget_choices
-
-    @classmethod
-    def itersubclasses(cls, _seen=None):
-        """
-        I have taken this method from:
-
-        http://code.activestate.com/recipes/576949-find-all-subclasses-of-a-given-class/
-
-        so that I don't have to do this all myself :)
-        """
-        if not isinstance(cls, type):
-            raise TypeError('itersubclasses must be called with '
-                            'new-style classes, not %.100r' % cls)
-        if _seen is None: _seen = set()
-        try:
-            subs = cls.__subclasses__()
-        except TypeError: # fails only when cls is type
-            subs = cls.__subclasses__(cls)
-        for sub in subs:
-            if sub not in _seen:
-                _seen.add(sub)
-                yield sub
-                for sub in sub.itersubclasses(_seen):
-                    yield sub
-
-    def render(self, request=None):
-        if not self.template_name:
-            raise ImproperlyConfigured(
-                "a template name is required for a widget to be rendered"
-            )
-
-        tmpl = loader.get_template(self.template_name)
-        if request:
-            ctx = RequestContext(request)
-        else:
-            ctx = Context()
-        ctx[self.context_object_name] = self
-        return tmpl.render(ctx)
-
-    def __unicode__(self):
-        return self.name
-
-    class Meta:
-        abstract = True
-
-
-class AbstractTextWidget(AbstractWidget):
-    name = _("Text widget")
-    code = 'text-widget'
-    template_name = "fancypages/widgets/text_widget.html"
-
-    text = models.CharField(_("Text"), max_length=2000)
-
-    def __unicode__(self):
-        return self.text[:20]
-
-    class Meta:
-        abstract = True
-
-
-class AbstractTitleTextWidget(AbstractWidget):
-    name = _("Title and text widget")
-    code = 'title-text-widget'
-    template_name = "fancypages/widgets/title_text_widget.html"
-
-    title = models.CharField(_("Title"), max_length=100)
-    text = models.CharField(_("Text"), max_length=2000)
-
-    def __unicode__(self):
-        return self.title
-
-    class Meta:
-        abstract = True
-
-
-class AbstractImageWidget(AbstractWidget):
-    name = _("Image widget")
-    code = 'image-widget'
-    template_name = "fancypages/widgets/image_widget.html"
-
-    image = models.ImageField(_("Image"), upload_to="fancypages/%y/%m/")
-    caption = models.CharField(_("Caption"), max_length=200,
-                               null=True, blank=True)
-
-    def __unicode__(self):
-        return self.image.path
 
     class Meta:
         abstract = True

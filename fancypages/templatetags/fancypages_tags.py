@@ -1,5 +1,7 @@
 from django import template
 
+from fancypages.dashboard.forms import WidgetUpdateSelectForm
+
 register = template.Library()
 
 
@@ -28,3 +30,11 @@ def fancypages_container(parser, token):
             % token.contents.split()[0]
         )
     return FancyContainerNode(container_name)
+
+
+@register.assignment_tag
+def update_widgets_form(page, container_name):
+    container = page.get_container_from_name(container_name)
+    if not container:
+        return None
+    return WidgetUpdateSelectForm(container)

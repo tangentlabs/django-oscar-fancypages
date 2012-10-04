@@ -5,6 +5,8 @@ from fancypages import test
 
 Page = get_model('fancypages', 'Page')
 PageType = get_model('fancypages', 'PageType')
+TextWidget = get_model('fancypages', 'TextWidget')
+TitleTextWidget = get_model('fancypages', 'TitleTextWidget')
 
 
 class TestAStaffMember(test.FancyPagesWebTest):
@@ -60,3 +62,24 @@ class TestAStaffMember(test.FancyPagesWebTest):
         self.assertEquals(article_page.status, Page.DRAFT)
         self.assertEquals(article_page.is_visible, False)
         self.assertContains(page, u"not visible")
+
+
+class TestTheWidgetCreateView(test.FancyPagesWebTest):
+    is_staff = True
+
+    def test_shows_the_correct_form_for_a_text_widget(self):
+        page = self.get(
+            reverse(
+                'fancypages-dashboard:widget-create',
+                args=(TextWidget.code(),)
+            )
+        )
+
+        self.assertContains(
+            page,
+            '<input id="id_text" type="text" name="text" maxlength="2000" />'
+        )
+        self.assertContains(
+            page,
+            '<input type="hidden" name="display_order" id="id_display_order" />'
+        )
