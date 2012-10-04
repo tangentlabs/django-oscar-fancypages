@@ -39,27 +39,27 @@
 
         <div class="tabbable">
             <ul class="nav nav-tabs">
-                {% for name in page.page_type.get_container_names %}
+                {% for container in page.containers.all %}
                 <li {% if forloop.first %}class="active"{% endif %}>
-                    <a href="#{{ name }}" data-toggle="tab">{{ name }}</a>
+                    <a href="#{{ container.variable_name }}" data-toggle="tab">{{ container.variable_name }}</a>
                 </li>
                 {% endfor %}
             </ul>
 
              <div class="tab-content">
-                {% for name in page.page_type.get_container_names %}
-                <div class="tab-pane {% if forloop.first %}active{% endif %}" id="{{ name }}">
-                    <form id="{{ name }}_add_widget_form" class="form-inline" method="get" action="/dashboard/fancypages/widget/{{ name }}/">
+                {% for container in page.containers.all %}
+                <div class="tab-pane {% if forloop.first %}active{% endif %}" id="{{ container.variable_name }}">
+                    <form id="{{ container.variable_name }}_add_widget_form" class="form-inline" method="get" action="/dashboard/fancypages/widget/{{ container.id }}/">
                         {% include "partials/form_fields_inline.html" with form=select_widget_form %}
                         <button data-behaviours="widget-add" class="btn btn-info" type="submit">{% trans "Add" %}</button>
                     </form>
 
-                    {% update_widgets_form page name as form %}
-                    <form id="{{ name }}_update_widget_form" class="form-inline" method="get" action=".">
+                    {% update_widgets_form page container.variable_name as form %}
+                    <form id="{{ container.variable_name }}_update_widget_form" class="form-inline" method="get" action=".">
                         {% include "partials/form_fields_inline.html" with form=form %}
                     </form>
 
-                    <div id="{{ name }}_widget_input_wrapper"></div>
+                    <div id="{{ container.variable_name }}_widget_input_wrapper"></div>
                 </div>
                 {% endfor %}
             </div>

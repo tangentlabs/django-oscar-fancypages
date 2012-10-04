@@ -6,8 +6,6 @@ from django.core.urlresolvers import reverse
 from django.forms.models import modelform_factory
 from django.utils.translation import ugettext_lazy as _
 
-from oscar.core.loading import get_class
-
 from fancypages.dashboard import forms
 
 
@@ -167,13 +165,13 @@ class WidgetCreateView(generic.CreateView):
         }
 
     def get(self, request, *args, **kwargs):
-        container_name = self.kwargs.get('container_name')
-        self.container = Container.objects.get(variable_name=container_name)
+        container_id = self.kwargs.get('container_id')
+        self.container = Container.objects.get(id=container_id)
         return super(WidgetCreateView, self).get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        container_name = self.kwargs.get('container_name')
-        self.container = Container.objects.get(variable_name=container_name)
+        container_id = self.kwargs.get('container_id')
+        self.container = Container.objects.get(id=container_id)
         return super(WidgetCreateView, self).post(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):

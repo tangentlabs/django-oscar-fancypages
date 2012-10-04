@@ -1,7 +1,7 @@
 {% load i18n %}
 
 <form id="{{ widget.container.variable_name }}_widget_form" data-behaviours="widget-create" class="form" method="post"
-      action="{% url fancypages-dashboard:widget-create container.variable_name widget_code %}">
+      action="{% url fancypages-dashboard:widget-create container.id widget_code %}">
     {% csrf_token %}
     {% include "partials/form_fields.html" %}
     <div class="control-group">
