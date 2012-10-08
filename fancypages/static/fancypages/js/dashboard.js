@@ -42,11 +42,25 @@ fancypages.dashboard = {
                 ev.preventDefault();
                 fancypages.dashboard.pages.submitWidgetForm($(this));
             });
+
+            fancypages.dashboard.pages.addStyleSheet();
+
+            previewDoc = fancypages.dashboard.pages.getPreviewDocument();
+            $('.edit-button', previewDoc).click(function(ev) {
+                var widget = $(this).parents('.widget');
+                console.log('clicked a button', widget);
+
+                var widgetUrl = "/dashboard/fancypages/widget/update/"+$(widget).data('widget-id')+"/";
+
+                fancypages.dashboard.pages.loadWidgetForm(widgetUrl, $(widget).data('container-name'));
+            });
         },
 
         loadWidgetForm: function(url, containerName) {
+            console.log('trying to get data');
             $.ajax(url).done(function(data){
-                var widgetWrapper = $('div[id='+containerName+'_widget_input_wrapper]');
+                var widgetWrapper = $('div[id=widget_input_wrapper]');
+                console.log('data received', widgetWrapper);
                 widgetWrapper.html(data);
             });
         },
@@ -59,6 +73,22 @@ fancypages.dashboard = {
             }).done(function(data) {
                 $('iframe').attr('src', $('iframe').attr('src'));
             });
+        },
+
+        getPreviewDocument: function(elem) {
+            return $('iframe').contents();
+        },
+
+        addStyleSheet: function() {
+            var contents = fancypages.dashboard.pages.getPreviewDocument();
+
+            var head = contents.find("head");
+            var body = contents.find("body");
+            head.append($("<link/>", {
+                rel: "stylesheet",
+                href: "/static/fancypages/monster/src/css/monster.css",
+                type: "text/css"
+            }));
         }
     }
 };

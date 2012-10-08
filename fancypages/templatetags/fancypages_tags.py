@@ -16,19 +16,25 @@ class FancyContainerNode(template.Node):
         except template.VariableDoesNotExist:
             return u''
 
-        return container.render(context.get('request', None))
+        return container.render(
+            context.get('request', None),
+            edit_mode=context['edit_mode']
+        )
 
 
 @register.tag(name='fancypages-container')
 def fancypages_container(parser, token):
-    try:
-        # split_contents() knows not to split quoted strings.
-        tag_name, container_name = token.split_contents()
-    except ValueError:
+    # split_contents() knows not to split quoted strings.
+    args = token.split_contents()
+
+    if len(args) < 2:
         raise template.TemplateSyntaxError(
-            "%r tag requires exactly one arguments" \
+            "%r tag requires at least one arguments" \
             % token.contents.split()[0]
         )
+
+    tag_name, args = args[:1], args[1:]
+    container_name = args.pop(0)
     return FancyContainerNode(container_name)
 
 

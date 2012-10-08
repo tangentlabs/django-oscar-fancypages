@@ -91,6 +91,16 @@ ROOT_URLCONF = 'sandbox.urls'
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'sandbox.wsgi.application'
 
+# Compressor and pre-compiler settings for django-compressor
+COMPRESS_ENABLED = DEBUG
+COMPRESS_OUTPUT_DIR = 'cache'
+COMPRESS_OFFLINE = False
+
+COMPRESS_PRECOMPILERS = (
+    ('text/coffeescript', 'coffee --compile --stdio'),
+    ('text/less', 'lessc {infile} {outfile}'),
+)
+
 from oscar import OSCAR_MAIN_TEMPLATE_DIR
 
 FANCYPAGES_TEMPLATE_DIRS = [

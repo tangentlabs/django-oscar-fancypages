@@ -19,6 +19,7 @@ setup(
         'Django>=1.4.1',
         'django-oscar>=0.3.3',
         'django-model-utils>=1.1.0',
+        'django-compressor>=1.2',
     ],
     # See http://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[

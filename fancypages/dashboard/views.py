@@ -7,6 +7,7 @@ from django.forms.models import modelform_factory
 from django.utils.translation import ugettext_lazy as _
 
 from fancypages.dashboard import forms
+from fancypages.views import PageDetailView
 
 
 Page = get_model('fancypages', 'Page')
@@ -68,6 +69,14 @@ class PageListView(generic.ListView):
     def get_context_data(self, **kwargs):
         ctx = super(PageListView, self).get_context_data(**kwargs)
         ctx['page_type_form'] = forms.PageTypeSelectForm()
+        return ctx
+
+
+class PagePreviewView(PageDetailView):
+
+    def get_context_data(self, **kwargs):
+        ctx = super(PagePreviewView, self).get_context_data(**kwargs)
+        ctx['edit_mode'] = True
         return ctx
 
 

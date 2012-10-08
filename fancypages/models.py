@@ -231,7 +231,7 @@ class Widget(models.Model):
                 for sub in sub.itersubclasses(_seen):
                     yield sub
 
-    def render(self, request=None):
+    def render(self, request=None, **kwargs):
         if not self.template_name:
             raise ImproperlyConfigured(
                 "a template name is required for a widget to be rendered"
@@ -243,6 +243,7 @@ class Widget(models.Model):
         else:
             ctx = Context()
         ctx[self.context_object_name] = self
+        ctx.update(kwargs)
         return tmpl.render(ctx)
 
     def __unicode__(self):

@@ -25,6 +25,7 @@ class FancypagesDashboardApplication(Application):
     page_create_view = views.PageCreateView
     page_update_view = views.PageUpdateView
     page_customise_view = views.PageCustomiseView
+    page_preview_view = views.PagePreviewView
 
     widget_create_view = views.WidgetCreateView
     widget_update_view = views.WidgetUpdateView
@@ -50,6 +51,8 @@ class FancypagesDashboardApplication(Application):
 
             url(r'^customise/(?P<pk>\d+)/$',
                 self.page_customise_view.as_view(), name='page-customise'),
+            url(r'^preview/(?P<code>[\w-]+)/$',
+                self.page_preview_view.as_view(), name='page-preview'),
 
             url(r'^widget/(?P<container_id>\d+)/(?P<code>[\w-]+)/create/$',
                 self.widget_create_view.as_view(),

@@ -36,6 +36,8 @@
 <div class="row-fluid">
     <div class="span4">
 
+        <div id="widget_input_wrapper"></div>
+        {% comment %}
         <div class="tabbable">
             <ul class="nav nav-tabs">
                 {% for container in page.containers.all %}
@@ -64,10 +66,11 @@
             </div>
 
         </div>
+        {% endcomment %}
     </div>
 
     <div class="span8">
-        <iframe frameborder='0' style="width: 100%; min-height: 1200px;" src="{% url fancypages:page-detail page.code %}"></iframe>
+        <iframe frameborder='0' style="width: 100%; min-height: 1200px;" src="{% url fancypages-dashboard:page-preview page.code %}"></iframe>
     </div>
 </div>
 {% endblock dashboard_content %}
