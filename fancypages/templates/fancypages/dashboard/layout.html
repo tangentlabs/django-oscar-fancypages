@@ -1,0 +1,15 @@
+{% extends 'dashboard/layout.html' %}
+{% load i18n %}
+{% load staticfiles %}
+{% load fancypages_tags %}
+
+{% block body_class %}fancypages{% endblock %}
+
+{% block extrascripts %}
+    {{ block.super }}
+    <script src="{% static "fancypages/js/dashboard.js" %}" type="text/javascript" charset="utf-8"></script>
+{% endblock %}
+
+{% block onbodyload %}
+fancypages.dashboard.pages.init();
+{% endblock %}

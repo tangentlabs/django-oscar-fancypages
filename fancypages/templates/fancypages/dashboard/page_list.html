@@ -1,10 +1,5 @@
-{% extends 'dashboard/layout.html' %}
+{% extends 'fancypages/dashboard/layout.html' %}
 {% load i18n %}
-
-{% block body_class %}fancypages{% endblock %}
-{% block title %}
-{% trans "Page management" %} | {{ block.super }}
-{% endblock %}
 
 {% block breadcrumbs %}
 <ul class="breadcrumb">
@@ -72,7 +67,7 @@
             <td>
                 <a class="btn btn-info" href="{% url fancypages-dashboard:page-update page.id %}#}">{% trans "Edit" %}</a>
                 <a class="btn btn-info" href="{% url fancypages-dashboard:page-customise page.id %}">{% trans "Customise" %}</a>
-                <a class="btn btn-danger" href="{# url stores-dashboard:store-delete store.id #}">{% trans "Delete" %}</a>
+                <a class="btn btn-danger" href=".">{% trans "Delete (TODO)" %}</a>
             </td>
         </tr>
         {% endfor %}

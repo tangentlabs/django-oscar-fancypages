@@ -1,7 +1,6 @@
-{% extends 'dashboard/layout.html' %}
+{% extends 'fancypages/dashboard/layout.html' %}
 {% load i18n %}
 
-{% block body_class %}fancypages{% endblock %}
 {% block title %}
 {% blocktrans with name=page_type.name %}Create new '{{ name }}' page{% endblocktrans %} | {{ block.super }}
 {% endblock %}

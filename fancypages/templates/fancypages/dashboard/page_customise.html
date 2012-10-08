@@ -1,8 +1,7 @@
-{% extends 'dashboard/layout.html' %}
+{% extends 'fancypages/dashboard/layout.html' %}
 {% load i18n %}
 {% load fancypages_tags %}
 
-{% block body_class %}fancypages{% endblock %}
 {% block title %}
 {% blocktrans with title=page.title %}Customise page "{{ title }}" {% endblocktrans %} | {{ block.super }}
 {% endblock %}
@@ -72,78 +71,3 @@
     </div>
 </div>
 {% endblock dashboard_content %}
-
-{% block onbodyload %}
-$('a[data-toggle="tab"]').on('shown', function (e) {
-    e.target // activated tab
-    e.relatedTarget // previous tab
-})
-
-var create_forms = $('form[id$=add_widget_form]');
-create_forms.submit(function(ev) {
-    ev.preventDefault();
-
-    var selection = $("select", this);
-    var widgetUrl = $(this).attr('action')+selection.val()+"/create/";
-    var containerName = $(this).attr('id').replace('_add_widget_form', '');
-    console.log('submit create', widgetUrl);
-
-    $.ajax(widgetUrl).done(function(data){
-        var widgetWrapper = $('div[id='+containerName+'_widget_input_wrapper]');
-        widgetWrapper.html(data);
-    });
-});
-
-var update_forms = $('form[id$=update_widget_form]');
-update_forms.each(function(idx, form){
-
-    var selection = $("select", form);
-    var containerName = $(form).attr('id').replace('_update_widget_form', '');
-    console.log('container name', containerName);
-
-    var widgetUrl = "/dashboard/fancypages/widget/update/"+selection.val()+"/";
-
-    // load initial form
-    $.ajax(widgetUrl).done(function(data){
-        var widgetWrapper = $('div[id='+containerName+'_widget_input_wrapper]');
-        widgetWrapper.html(data);
-    });
-
-    selection.change(function(ev) {
-        var widgetUrl = "/dashboard/fancypages/widget/update/"+$(this).val()+"/";
-        console.log('changed to', widgetUrl);
-
-        // load initial form
-        $.ajax(widgetUrl).done(function(data){
-            var widgetWrapper = $('div[id='+containerName+'_widget_input_wrapper]');
-            widgetWrapper.html(data);
-        });
-    });
-});
-
-$('form[data-behaviours~=widget-create]').live('submit', function(ev){
-    ev.preventDefault();
-    $.ajax({
-        type: "POST",
-        url: $(this).attr('action'),
-        data: $(this).serialize()
-    }).done(function(data) {
-        $('iframe').attr('src', $('iframe').attr('src'));
-        //FIXME: the for now has to be removed and replaced with the update
-        // form. We also have to update the drop down of widgets
-    });
-});
-
-$('form[data-behaviours~=widget-update]').live('submit', function(ev){
-    ev.preventDefault();
-
-    $.ajax({
-        type: "POST",
-        url: $(this).attr('action'),
-        data: $(this).serialize()
-    }).done(function(data) {
-        $('iframe').attr('src', $('iframe').attr('src'));
-    });
-});
-
-{% endblock %}
