@@ -162,7 +162,7 @@ class Container(models.Model):
     page = models.ForeignKey('fancypages.Page', verbose_name=_("Page"),
                              related_name='containers')
 
-    def render(self, request=None):
+    def render(self, request=None, **kwargs):
         ordered_widgets = self.widgets.select_subclasses()
 
         tmpl = loader.get_template(self.template_name)
@@ -172,10 +172,14 @@ class Container(models.Model):
         else:
             ctx = Context()
 
+        ctx['container_name'] = self.variable_name
         ctx['rendered_widgets'] = []
         for widget in ordered_widgets:
-            ctx['rendered_widgets'].append(widget.render(request))
+            ctx['rendered_widgets'].append(
+                (widget.id, widget.render(request))
+            )
 
+        ctx.update(kwargs)
         return tmpl.render(ctx)
 
     def __unicode__(self):
