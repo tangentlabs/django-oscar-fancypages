@@ -93,7 +93,9 @@ fancypages.dashboard = {
                     toolbar:      $(".wysihtml5-toolbar", this).get(0),
                     parserRules:  wysihtml5ParserRules
                 });
+
                 editor.on('change', function(ev) {console.log('text in wysihtml5 changed');});
+                editor.on('keyup', function(ev) {console.log('text in wysihtml5 changed');});
             });
         }
     }

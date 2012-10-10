@@ -1,4 +1,5 @@
 from django import template
+from django.template import defaultfilters
 
 from fancypages.dashboard.forms import WidgetUpdateSelectForm
 
@@ -46,3 +47,23 @@ def update_widgets_form(page, container_name):
     if not container:
         return None
     return WidgetUpdateSelectForm(container)
+
+
+@register.simple_tag(takes_context=True)
+def render_attribute(context, attr_name, *args):
+    """
+    Render an attribute based on editing mode.
+    """
+    widget = context.get('object')
+    value = getattr(widget, attr_name)
+
+    for arg in args:
+        flt = getattr(defaultfilters, arg)
+        if flt:
+            value = flt(value)
+
+    if not context.get('edit_mode', False):
+        return unicode(value)
+
+    wrapped_attr = u'<div id="widget-%d-%s">%s</div>'
+    return wrapped_attr % (widget.id, attr_name, unicode(value))

@@ -176,7 +176,7 @@ class Container(models.Model):
         ctx['rendered_widgets'] = []
         for widget in ordered_widgets:
             ctx['rendered_widgets'].append(
-                (widget.id, widget.render(request))
+                (widget.id, widget.render(request, **kwargs))
             )
 
         ctx.update(kwargs)

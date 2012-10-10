@@ -1,1 +1,6 @@
-{{ object.text|safe }}
+{% extends "fancypages/base/widget.html" %}
+{% load fancypages_tags %}
+
+{% block widget %}
+{% render_attribute "text" "safe" %}
+{% endblock %}
