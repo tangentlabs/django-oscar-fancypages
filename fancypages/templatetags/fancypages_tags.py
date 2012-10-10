@@ -18,7 +18,9 @@ class FancyContainerNode(template.Node):
 
         return container.render(
             context.get('request', None),
-            edit_mode=context['edit_mode']
+            edit_mode=context['edit_mode'],
+            container=container,
+            widget_create_form=context["widget_create_form"],
         )
 
 

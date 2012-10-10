@@ -1,5 +1,6 @@
 {% extends "layout_2_col.html" %}
 {% load fancypages_tags %}
+{% load staticfiles %}
 
 {% block title %}
 {{ page.title }} | {{ block.super }}
@@ -9,9 +10,19 @@
 {% fancypages-container left-column edit_mode %}
 {% endblock %}
 
+{% block header %}
+    <h1>{{ page.title }}</h1>
+{% endblock %}
+
 {% block content %}
-<div class="subheader">
-    <h2>{{ page.title }}</h2>
-</div>
 {% fancypages-container main-container %}
 {% endblock %}
+
+{% if edit_mode %}
+    {% block extrahead %}
+        {{ block.super }}
+        <link rel="stylesheet" href="{% static "fancypages/monster/src/css/monster.css" %}" type="text/css">
+        <link rel="stylesheet" href="{% static "fancypages/monster/lib/css/ui-lightness/jquery-ui-1.8.20.custom.css" %}"
+              type="text/css">
+    {% endblock %}
+{% endif %}

@@ -1,12 +1,11 @@
 {% load i18n %}
-
-<form id="{{ widget.container.variable_name }}_widget_form" data-behaviours="widget-create" class="form" method="post"
+<form id="{{ widget.container.variable_name }}_widget_form"
+      data-behaviours="widget-create" class="form" method="post"
       action="{% url fancypages-dashboard:widget-create container.id widget_code %}">
     {% csrf_token %}
-    {% include "partials/form_fields.html" %}
-    <div class="control-group">
-        <div class="controls">
-            <button class="btn btn-primary">{% trans "Save" %}</button>
-        </div>
+    {% include "fancypages/partials/editor_form_fields.html" %}
+    <div class="buttons">
+        <a href="" class="btn">{% trans "Cancel" %}</a>
+        <button type="submit" class="btn btn-success">{% trans "Save" %}</button>
     </div>
 </form>

@@ -7,8 +7,10 @@ fancypages.dashboard = {
                 //e.relatedTarget // previous tab
             });
 
+            var previewDoc = fancypages.dashboard.pages.getPreviewDocument();
+
             // initialise drop-down to create a new widget
-            $('form[id$=add_widget_form]').submit(function(ev) {
+            $('form[id$=add_widget_form]', previewDoc).submit(function(ev) {
                 ev.preventDefault();
 
                 var selection = $("select", this);
@@ -33,6 +35,15 @@ fancypages.dashboard = {
             });
 
 
+            $('.edit-button', previewDoc).click(function(ev) {
+                var widget = $(this).parents('.widget');
+                console.log('clicked a button', widget);
+
+                var widgetUrl = "/dashboard/fancypages/widget/update/"+$(widget).data('widget-id')+"/";
+
+                fancypages.dashboard.pages.loadWidgetForm(widgetUrl, $(widget).data('container-name'));
+            });
+
             $('form[data-behaviours~=widget-create]').live('submit', function(ev){
                 ev.preventDefault();
                 fancypages.dashboard.pages.submitWidgetForm($(this));
@@ -42,27 +53,19 @@ fancypages.dashboard = {
                 ev.preventDefault();
                 fancypages.dashboard.pages.submitWidgetForm($(this));
             });
-
-            fancypages.dashboard.pages.addStyleSheet();
-
-            previewDoc = fancypages.dashboard.pages.getPreviewDocument();
-            $('.edit-button', previewDoc).click(function(ev) {
-                var widget = $(this).parents('.widget');
-                console.log('clicked a button', widget);
-
-                var widgetUrl = "/dashboard/fancypages/widget/update/"+$(widget).data('widget-id')+"/";
-
-                fancypages.dashboard.pages.loadWidgetForm(widgetUrl, $(widget).data('container-name'));
-            });
         },
 
         loadWidgetForm: function(url, containerName) {
-            console.log('trying to get data');
+            console.log('trying to get widget form');
             $.ajax(url).done(function(data){
                 var widgetWrapper = $('div[id=widget_input_wrapper]');
                 console.log('data received', widgetWrapper);
                 widgetWrapper.html(data);
+
+                console.log("calling for rich text");
+                fancypages.dashboard.pages.initialiseRichtextEditor(widgetWrapper);
             });
+
         },
 
         submitWidgetForm: function(elem) {
@@ -71,24 +74,27 @@ fancypages.dashboard = {
                 url: elem.attr('action'),
                 data: elem.serialize()
             }).done(function(data) {
-                $('iframe').attr('src', $('iframe').attr('src'));
+                $('div[id=widget_input_wrapper]').html("");
+                $('#page-preview').attr('src', $('#page-preview').attr('src'));
             });
         },
 
         getPreviewDocument: function(elem) {
-            return $('iframe').contents();
+            return $('#page-preview').contents();
         },
 
-        addStyleSheet: function() {
-            var contents = fancypages.dashboard.pages.getPreviewDocument();
-
-            var head = contents.find("head");
-            var body = contents.find("body");
-            head.append($("<link/>", {
-                rel: "stylesheet",
-                href: "/static/fancypages/monster/src/css/monster.css",
-                type: "text/css"
-            }));
+        initialiseRichtextEditor: function(wrapperElement) {
+            console.log('initialising rich text editor');
+            wrapperElement = wrapperElement || document;
+            // initialise wysihtml5 rich-text for editor
+            console.log('using',  $('.wysihtml5-wrapper>textarea', wrapperElement));
+            $('.wysihtml5-wrapper', wrapperElement).each(function(elem) {
+                var editor = new wysihtml5.Editor($('textarea', this).get(0), {
+                    toolbar:      $(".wysihtml5-toolbar", this).get(0),
+                    parserRules:  wysihtml5ParserRules
+                });
+                editor.on('change', function(ev) {console.log('text in wysihtml5 changed');});
+            });
         }
     }
 };

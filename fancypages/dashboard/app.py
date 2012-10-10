@@ -57,7 +57,6 @@ class FancypagesDashboardApplication(Application):
             url(r'^widget/(?P<container_id>\d+)/(?P<code>[\w-]+)/create/$',
                 self.widget_create_view.as_view(),
                 name='widget-create'),
-
             url(r'^widget/update/(?P<pk>\d+)/$',
                 self.widget_update_view.as_view(),
                 name='widget-update'),

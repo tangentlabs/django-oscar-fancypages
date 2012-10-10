@@ -1,16 +1,38 @@
 {% for widget_id,rendered_widget in rendered_widgets %}
-<div class="widget" data-container-name="{{ container_name }}" data-widget-id="{{ widget_id }}" style="border: 2px cyan solid;">
+<div id="widget-{{ widget_id }}" class="widget ui-sortable"
+     data-container-name="{{ container_name }}" data-widget-id="{{ widget_id }}">
     {% if edit_mode %}<span class="edit-button">Edit</span>{% endif %}
     {{ rendered_widget }}
-    {% if editk_mode %}
-    <div class="ui-widget-header ui-helper-clearfix ui-corner-all" style="z-index: 9999; position: absolute; top: -2px; right: -2px; width: 32px; height: 16px; padding: 2px; display: none; ">
-      <span class="move ui-corner-all">
-        <span style="position: absolute; left: 1; top: 1;" class="ui-icon ui-icon-arrow-4">Move</span>
-      </span>
-      <span class="delete ui-corner-all">
-        <span style="position: absolute; left: 17px; top: 1;" class="ui-icon ui-icon-trash">Remove</span>
-      </span>
+    {% if edit_mode %}
+    <div class="ui-widget-header ui-helper-clearfix ui-corner-all widget-move-delete">
+        <span class="delete ui-corner-all">
+            <span style="position: absolute; left: 0px; top: 1;" class="ui-icon ui-icon-trash">Remove</span>
+        </span>
+        {% comment %}
+        <span class="move ui-corner-all">
+            <span style="position: absolute; left: 1; top: 1;" class="ui-icon ui-icon-arrow-4">Move</span>
+        </span>
+        {% endcomment %}
     </div>
     {% endif %}
 </div>
 {% endfor %}
+
+{% if edit_mode %}
+<div class="widget-add-control">
+    <form id="{{ container.variable_name }}_add_widget_form"
+          data-behaviours='widget-create' data-container-name="{{ container.variable_name }}"
+          method="get" action="/dashboard/fancypages/widget/{{ container.id }}/">
+
+        <div class="ui-widget-header ui-helper-clearfix ui-corner-all"
+             style="z-index: 9999; margin: 0 0 10px; padding: 5px; padding-bottom: 0px;">
+
+            {% for field in widget_create_form %}
+                {{ field }}
+            {% endfor %}
+
+            <button type='submit' class="btn btn-success"><i class="ui-icon ui-icon-plus"></i></button>
+        </div>
+    </form>
+</div>
+{% endif %}

@@ -64,6 +64,7 @@ STATIC_ROOT = location('public')
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'compressor.finders.CompressorFinder',
 )
 
 # Make this unique, and don't share it with anybody.
@@ -122,11 +123,12 @@ INSTALLED_APPS = [
     'django.contrib.admin',
 
     'django_extensions',
-    'debug_toolbar',
-    'haystack',
     'sorl.thumbnail',
-    'south',
+    'debug_toolbar',
     'model_utils',
+    'compressor',
+    'haystack',
+    'south',
 
     'fancypages',
 ]

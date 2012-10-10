@@ -35,42 +35,11 @@
 {% block dashboard_content %}
 <div class="row-fluid">
     <div class="span4">
-
-        <div id="widget_input_wrapper"></div>
-        {% comment %}
-        <div class="tabbable">
-            <ul class="nav nav-tabs">
-                {% for container in page.containers.all %}
-                <li {% if forloop.first %}class="active"{% endif %}>
-                    <a href="#{{ container.variable_name }}" data-toggle="tab">{{ container.variable_name }}</a>
-                </li>
-                {% endfor %}
-            </ul>
-
-             <div class="tab-content">
-                {% for container in page.containers.all %}
-                <div class="tab-pane {% if forloop.first %}active{% endif %}" id="{{ container.variable_name }}">
-                    <form id="{{ container.variable_name }}_add_widget_form" class="form-inline" method="get" action="/dashboard/fancypages/widget/{{ container.id }}/">
-                        {% include "partials/form_fields_inline.html" with form=select_widget_form %}
-                        <button data-behaviours="widget-add" class="btn btn-info" type="submit">{% trans "Add" %}</button>
-                    </form>
-
-                    {% update_widgets_form page container.variable_name as form %}
-                    <form id="{{ container.variable_name }}_update_widget_form" class="form-inline" method="get" action=".">
-                        {% include "partials/form_fields_inline.html" with form=form %}
-                    </form>
-
-                    <div id="{{ container.variable_name }}_widget_input_wrapper"></div>
-                </div>
-                {% endfor %}
-            </div>
-
+        <div class="editor">
+            <div id="widget_input_wrapper"></div>
         </div>
-        {% endcomment %}
     </div>
 
-    <div class="span8">
-        <iframe frameborder='0' style="width: 100%; min-height: 1200px;" src="{% url fancypages-dashboard:page-preview page.code %}"></iframe>
-    </div>
+    <iframe id="page-preview" frameborder='0' style="width: 80%; height: 90%;" src="{% url fancypages-dashboard:page-preview page.code %}"></iframe>
 </div>
 {% endblock dashboard_content %}

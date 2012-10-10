@@ -35,3 +35,43 @@ body:hover span.edit-button:hover {
     background-color: #5BB75B;
     opacity: 0.5;
 }
+
+.widget {
+    position: relative;
+}
+
+.widget:hover {
+    background-color: #ddd;
+}
+
+.widget-move-delete {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 16px;
+    height: 16px;
+    padding: 2px !important;
+    opacity: 0;
+    z-index: 9999;
+}
+
+body:hover .widget-move-delete {
+    opacity: 0.5;
+}
+
+body:hover .widget-move-delete:hover {
+    opacity: 1.0;
+}
+
+.ui-widget-header {
+    padding: 10px;
+}
+
+.widget-add-control {
+    margin-top: 30px;
+}
+
+.widget-add-control select {
+    float: left;
+    max-width: 80%;
+}
