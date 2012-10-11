@@ -4,10 +4,8 @@
     {% if edit_mode %}<span class="edit-button">Edit</span>{% endif %}
     {{ rendered_widget }}
     {% if edit_mode %}
-    <div class="ui-widget-header ui-helper-clearfix ui-corner-all widget-move-delete">
-        <span class="delete ui-corner-all">
-            <span style="position: absolute; left: 0px; top: 1;" class="ui-icon ui-icon-trash">Remove</span>
-        </span>
+    <div class="widget-move-delete">
+        <i class="icon-trash icon-large"></i>
         {% comment %}
         <span class="move ui-corner-all">
             <span style="position: absolute; left: 1; top: 1;" class="ui-icon ui-icon-arrow-4">Move</span>
@@ -23,16 +21,10 @@
     <form id="{{ container.variable_name }}_add_widget_form"
           data-behaviours='widget-create' data-container-name="{{ container.variable_name }}"
           method="get" action="/dashboard/fancypages/widget/{{ container.id }}/">
-
-        <div class="ui-widget-header ui-helper-clearfix ui-corner-all"
-             style="z-index: 9999; margin: 0 0 10px; padding: 5px; padding-bottom: 0px;">
-
-            {% for field in widget_create_form %}
-                {{ field }}
-            {% endfor %}
-
-            <button type='submit' class="btn btn-success"><i class="ui-icon ui-icon-plus"></i></button>
-        </div>
+        {% for field in widget_create_form %}
+            {{ field }}
+        {% endfor %}
+        <button type='submit' class="btn btn-success"><i class="icon-plus icon-large"></i></button>
     </form>
 </div>
 {% endif %}

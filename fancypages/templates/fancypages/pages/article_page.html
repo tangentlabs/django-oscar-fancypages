@@ -1,6 +1,7 @@
 {% extends "layout_2_col.html" %}
 {% load fancypages_tags %}
 {% load staticfiles %}
+{% load compress %}
 
 {% block title %}
 {{ page.title }} | {{ block.super }}
@@ -21,8 +22,9 @@
 {% if edit_mode %}
     {% block extrahead %}
         {{ block.super }}
-        <link rel="stylesheet" href="{% static "fancypages/monster/src/css/monster.css" %}" type="text/css">
-        <link rel="stylesheet" href="{% static "fancypages/monster/lib/css/ui-lightness/jquery-ui-1.8.20.custom.css" %}"
-              type="text/css">
+        {% compress css %}
+        <link rel="stylesheet" type="text/less" href="{% static "fancypages/less/font-awesome.less" %}">
+        <link rel="stylesheet" type="text/less" href="{% static "fancypages/less/editor.less" %}">
+        {% endcompress %}
     {% endblock %}
 {% endif %}

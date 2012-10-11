@@ -18,26 +18,7 @@
 
             {% if field.widget_type == "Textarea" %}
             <div class="wysihtml5-wrapper">
-                <div class="wysihtml5-toolbar" >
-                    <ul>
-                        <li><a class="toolbar-bold" data-wysihtml5-command="bold"
-                               title="CTRL+B" href="javascript:;" unselectable="on">bold</a></li>
-                        <li><a class="toolbar-italic" data-wysihtml5-command="italic"
-                               title="CTRL+I" href="javascript:;" unselectable="on">italic</a></li>
-                        <li><a class="toolbar-link" data-wysihtml5-command="createLink"
-                               title="Insert a link" href="javascript:;" unselectable="on">Add Link</a></li>
-                        <li><a class="toolbar-insert">Insert</a></li>
-                        <li><a class="toolbar-unordered" data-wysihtml5-command="insertUnorderedList"
-                               href="javascript:;" unselectable="on">Unordered List</a></li>
-                        <li><a class="toolbar-ordered" data-wysihtml5-command="insertOrderedList"
-                               href="javascript:;" unselectable="on">Ordered List</a></li>
-                        <li><a class="toolbar-break" data-wysihtml5-command="insertLineBreak"
-                               href="javascript:;" unselectable="on">Line break</a></li>
-                        <li><a class="toolbar-html" data-wysihtml5-action="change_view"
-                               href="javascript:;" unselectable="on">html view</a></li>
-                        <li><a class="toolbar-snippets">snippets</a></li>
-                    </ul>
-                </div>
+                {% include "fancypages/partials/wysihtml5_toolbar.html" %}
             {% else %}
             <div class="text-field">
             {% endif %}
