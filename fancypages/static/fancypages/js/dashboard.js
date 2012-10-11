@@ -37,7 +37,6 @@ fancypages.dashboard = {
 
             $('.edit-button', previewDoc).click(function(ev) {
                 var widget = $(this).parents('.widget');
-                console.log('clicked a button', widget);
 
                 var widgetUrl = "/dashboard/fancypages/widget/update/"+$(widget).data('widget-id')+"/";
 
@@ -53,16 +52,26 @@ fancypages.dashboard = {
                 ev.preventDefault();
                 fancypages.dashboard.pages.submitWidgetForm($(this));
             });
+
+            // attach live update listener to all regular input field
+            $('div[data-behaviours~=field-live-update]').live('change keyup', function(ev){
+                ev.preventDefault();
+
+                var fieldElem = $('input', this);
+                var widgetId = $(this).parents('form').data('widget-id');
+                var fieldName = $(fieldElem).attr('id').replace('id_', '');
+
+                var previewDoc = fancypages.dashboard.pages.getPreviewDocument();
+                var previewField = $('#widget-' + widgetId + '-' + fieldName, previewDoc);
+                previewField.html($(fieldElem).val());
+            });
         },
 
         loadWidgetForm: function(url, containerName) {
-            console.log('trying to get widget form');
             $.ajax(url).done(function(data){
                 var widgetWrapper = $('div[id=widget_input_wrapper]');
-                console.log('data received', widgetWrapper);
                 widgetWrapper.html(data);
 
-                console.log("calling for rich text");
                 fancypages.dashboard.pages.initialiseRichtextEditor(widgetWrapper);
             });
 
@@ -84,18 +93,46 @@ fancypages.dashboard = {
         },
 
         initialiseRichtextEditor: function(wrapperElement) {
-            console.log('initialising rich text editor');
             wrapperElement = wrapperElement || document;
             // initialise wysihtml5 rich-text for editor
-            console.log('using',  $('.wysihtml5-wrapper>textarea', wrapperElement));
             $('.wysihtml5-wrapper', wrapperElement).each(function(elem) {
                 var editor = new wysihtml5.Editor($('textarea', this).get(0), {
                     toolbar:      $(".wysihtml5-toolbar", this).get(0),
                     parserRules:  wysihtml5ParserRules
                 });
 
-                editor.on('change', function(ev) {console.log('text in wysihtml5 changed');});
-                editor.on('keyup', function(ev) {console.log('text in wysihtml5 changed');});
+                editor.observe("load", function() {
+                    editor.composer.element.addEventListener("keyup", function() {
+                        var fieldElem = $(editor.textarea.element);
+
+                        var widgetId = $(fieldElem).parents('form').data('widget-id');
+                        var fieldName = $(fieldElem).attr('id').replace('id_', '');
+
+                        var previewDoc = fancypages.dashboard.pages.getPreviewDocument();
+                        var previewField = $('#widget-' + widgetId + '-' + fieldName, previewDoc);
+                        previewField.html($(fieldElem).val());
+                    });
+                });
+                editor.on("change", function() {
+                    var fieldElem = $(editor.textarea.element);
+
+                    var widgetId = $(fieldElem).parents('form').data('widget-id');
+                    var fieldName = $(fieldElem).attr('id').replace('id_', '');
+
+                    var previewDoc = fancypages.dashboard.pages.getPreviewDocument();
+                    var previewField = $('#widget-' + widgetId + '-' + fieldName, previewDoc);
+                    previewField.html($(fieldElem).val());
+                });
+                editor.on("aftercommand:composer", function() {
+                    var fieldElem = $(editor.textarea.element);
+
+                    var widgetId = $(fieldElem).parents('form').data('widget-id');
+                    var fieldName = $(fieldElem).attr('id').replace('id_', '');
+
+                    var previewDoc = fancypages.dashboard.pages.getPreviewDocument();
+                    var previewField = $('#widget-' + widgetId + '-' + fieldName, previewDoc);
+                    previewField.html($(editor.composer.element).html());
+                });
             });
         }
     }
