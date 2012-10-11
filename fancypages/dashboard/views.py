@@ -240,3 +240,20 @@ class WidgetUpdateView(generic.UpdateView):
     def get_success_url(self):
         return reverse('fancypages-dashboard:widget-update',
                        args=(self.object.id,))
+
+
+class WidgetDeleteView(generic.DeleteView):
+    model = Widget
+    context_object_name = 'widget'
+    template_name = "fancypages/dashboard/widget_delete.html"
+
+    def get_object(self, queryset=None):
+        try:
+            return self.model.objects.select_subclasses().get(
+                id=self.kwargs.get('pk')
+            )
+        except self.model.DoesNotExist:
+            return self.model.objects.none()
+
+    def get_success_url(self):
+        return reverse('fancypages-dashboard:page-list')

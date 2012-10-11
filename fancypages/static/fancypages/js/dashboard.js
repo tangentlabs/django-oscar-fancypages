@@ -120,6 +120,9 @@ fancypages.dashboard = {
             });
         },
 
+        /**
+         * Load the the widget form for the specified url
+         */
         loadWidgetForm: function(url, containerName) {
             $.ajax(url).done(function(data){
                 var widgetWrapper = $('div[id=widget_input_wrapper]');
@@ -130,6 +133,12 @@ fancypages.dashboard = {
 
         },
 
+        /**
+         * Submit the widget form using an AJAX call and create or update the
+         * corresponding widget. The form is submitted to the URL specified in 
+         * the action attribute and is removed from the editor panel right after
+         * submission was successful.
+         */
         submitWidgetForm: function(elem) {
             $.ajax({
                 type: "POST",
@@ -141,6 +150,10 @@ fancypages.dashboard = {
             });
         },
 
+        /**
+         * Convenience method to get the current preview document root for handling
+         * selectors within the preview page.
+         */
         getPreviewDocument: function(elem) {
             return $('#page-preview').contents();
         }

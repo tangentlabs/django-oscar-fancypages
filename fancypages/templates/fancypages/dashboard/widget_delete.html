@@ -1,0 +1,6 @@
+<form action="." method="post">
+    {% csrf_token %}
+    {{ form }}
+    <p>Are you sure you want to delete '{{ widget }}'?</p>
+    <button type="submit" class="btn btn-danger">Delete</button> or <a href="" class="btn">Cancel</a>
+</form>

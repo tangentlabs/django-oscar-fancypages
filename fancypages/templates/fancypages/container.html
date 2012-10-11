@@ -1,8 +1,8 @@
 {% for widget_id,rendered_widget in rendered_widgets %}
 <div id="widget-{{ widget_id }}" class="widget ui-sortable"
      data-container-name="{{ container_name }}" data-widget-id="{{ widget_id }}">
-    {% if edit_mode %}<span class="edit-button">Edit</span>{% endif %}
-    {{ rendered_widget }}
+    {% if edit_mode %}<div class="edit-button"><i class="icon-edit icon-large"></i> <span>Edit</span></div>{% endif %}
+        {{ rendered_widget }}
     {% if edit_mode %}
     <div class="widget-move-delete">
         <i class="icon-trash icon-large"></i>
