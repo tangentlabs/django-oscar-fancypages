@@ -250,6 +250,11 @@ class Widget(models.Model):
         ctx.update(kwargs)
         return tmpl.render(ctx)
 
+    def save(self, **kwargs):
+        if self.display_order is None:
+            self.display_order = self.container.widgets.count()
+        super(Widget, self).save(**kwargs)
+
     def __unicode__(self):
         return self.name
 

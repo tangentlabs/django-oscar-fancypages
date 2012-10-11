@@ -255,5 +255,12 @@ class WidgetDeleteView(generic.DeleteView):
         except self.model.DoesNotExist:
             return self.model.objects.none()
 
+    def delete(self, request, *args, **kwargs):
+        response = super(WidgetDeleteView, self).delete(request, *args, **kwargs)
+        for idx, widget in enumerate(self.object.container.widgets.all().select_subclasses()):
+            widget.display_order = idx
+            widget.save()
+        return response
+
     def get_success_url(self):
         return reverse('fancypages-dashboard:page-list')

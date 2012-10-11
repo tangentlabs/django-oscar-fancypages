@@ -1,8 +1,6 @@
 from django.db.models import get_model
 from django.core.urlresolvers import reverse
 
-from django_dynamic_fixture import get as G
-
 from fancypages import test
 
 Page = get_model('fancypages', 'Page')
@@ -86,31 +84,57 @@ class TestAWidget(test.FancyPagesWebTest):
         self.text_widget = TextWidget.objects.create(
             container=self.page.get_container_from_name('main-container'),
             text="some text",
-            display_order=0,
         )
 
-        self.second_text_widget = TextWidget.objects.create(
+        self.other_text_widget = TextWidget.objects.create(
+            container=self.page.get_container_from_name('main-container'),
+            text="some text",
+        )
+
+        self.third_text_widget = TextWidget.objects.create(
             container=self.page.get_container_from_name('main-container'),
             text="second text",
-            display_order=1,
         )
+        self.assertEquals(self.text_widget.display_order, 0)
+        self.assertEquals(self.other_text_widget.display_order, 1)
+        self.assertEquals(self.third_text_widget.display_order, 2)
 
     def test_can_be_deleted(self):
         page = self.get(reverse(
             'fancypages-dashboard:widget-delete',
-            args=(self.second_text_widget.id,)
+            args=(self.third_text_widget.id,)
         ))
         # we need to fake a body as the template does not
         # contain that
         page.body = "<body>%s</body>" % page.body
         page = page.form.submit()
 
-        self.assertEquals(TextWidget.objects.count(), 1)
+        self.assertEquals(TextWidget.objects.count(), 2)
         self.assertRaises(
             TextWidget.DoesNotExist,
             TextWidget.objects.get,
-            id=self.second_text_widget.id
+            id=self.third_text_widget.id
         )
 
     def test_can_be_deleted_and_remaining_widgets_are_reordered(self):
-        pass
+        page = self.get(reverse(
+            'fancypages-dashboard:widget-delete',
+            args=(self.other_text_widget.id,)
+        ))
+        # we need to fake a body as the template does not
+        # contain that
+        page.body = "<body>%s</body>" % page.body
+        page = page.form.submit()
+
+        self.assertEquals(TextWidget.objects.count(), 2)
+        self.assertRaises(
+            TextWidget.DoesNotExist,
+            TextWidget.objects.get,
+            id=self.other_text_widget.id
+        )
+
+        widget = TextWidget.objects.get(id=self.text_widget.id)
+        self.assertEquals(widget.display_order, 0)
+
+        widget = TextWidget.objects.get(id=self.third_text_widget.id)
+        self.assertEquals(widget.display_order, 1)
