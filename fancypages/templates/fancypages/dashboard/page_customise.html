@@ -6,23 +6,7 @@
 {% blocktrans with title=page.title %}Customise page "{{ title }}" {% endblocktrans %} | {{ block.super }}
 {% endblock %}
 
-{% block breadcrumbs %}
-<ul class="breadcrumb">
-    <li>
-        <a href="{% url dashboard:index %}">{% trans "Dashboard" %}</a>
-        <span class="divider">/</span>
-    </li>
-    <li>
-        <a href="{% url fancypages-dashboard:page-list %}">
-            {% trans "Pages" %}
-        </a>
-        <span class="divider">/</span>
-    </li>
-    <li class="active">
-        <a href=".">{% trans "Customise page" %}</a>
-    </li>
-</ul>
-{% endblock %}
+{% block breadcrumbs %}{% endblock %}
 
 {% block header %}
 <div class="page-header">
@@ -34,12 +18,19 @@
 
 {% block dashboard_content %}
 <div class="row-fluid">
-    <div class="span4">
+    <div class="span3" style="margin: 0px;">
         <div class="editor">
+            <div class="subheader">
+                <h3> Editor </h3>
+            </div>
             <div id="widget_input_wrapper"></div>
         </div>
     </div>
 
-    <iframe id="page-preview" frameborder='0' style="width: 80%; height: 90%;" src="{% url fancypages-dashboard:page-preview page.code %}"></iframe>
+    <div class="span9" style="margin: 0px; min-height: 80%;">
+        <div class="preview span12">
+            <iframe id="page-preview" frameborder='0' src="{% url fancypages-dashboard:page-preview page.code %}"></iframe>
+        </div>
+    </div>
 </div>
 {% endblock dashboard_content %}

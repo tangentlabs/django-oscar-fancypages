@@ -1,12 +1,65 @@
 var fancypages = fancypages || {};
-fancypages.dashboard = {
-    pages: {
-        init: function (){
-            $('a[data-toggle="tab"]').on('shown', function (e) {
-                //e.target // activated tab
-                //e.relatedTarget // previous tab
-            });
 
+fancypages.dashboard = {
+    editor: {
+        init: function() {
+            var wrapperElement = $('div[id=widget_input_wrapper]') || document;
+
+            // initialise wysihtml5 rich-text for editor
+            $('.wysihtml5-wrapper', wrapperElement).each(function(elem) {
+
+                var editor = new wysihtml5.Editor($('textarea', this).get(0), {
+                    toolbar: $(".wysihtml5-toolbar", this).get(0),
+                    parserRules: wysihtml5ParserRules
+                });
+
+                // This is the only way to get the 'keyup' event from the wysihtml5
+                // editor according to https://github.com/jezdez/django_compressor/issues/99
+                editor.observe("load", function() {
+                    editor.composer.element.addEventListener("keyup", function() {
+                        fancypages.dashboard.editor.updatePreview(editor);
+                    });
+                });
+                // Update the preview whenever the editor window fires the 'change' event
+                // meaning whenever the focus is set to another element. "change" applies
+                // to both the textarea or the composer.
+                editor.on("change", function() {
+                    fancypages.dashboard.editor.updatePreview(editor);
+                });
+                // Listen to this event to be able to update the preview when a command
+                // such as "bold" or "italic" is applied to the content. This event is 
+                // used by wysihtml5 internally to update the textarea with the composer
+                // content which means the textarea might not be up-to-date when this
+                // event is received. Make sure you use the composer content in this
+                // case.
+                editor.on("aftercommand:composer", function() {
+                    fancypages.dashboard.editor.updatePreview(editor);
+                });
+            });
+        },
+
+        /*
+         * Update the preview whenever the content in the editor changes. The editor
+         * instance provides the details for referencing the corresponding field in
+         * the preview.
+         *
+         * @param {wysihtml5.Editor} Wysihtml5 Editor instance that provide the
+         *      content to update the corresponding preview field with.
+         */
+        updatePreview: function(editor) {
+            var fieldElem = $(editor.textarea.element),
+                previewDoc = fancypages.dashboard.pages.getPreviewDocument();
+
+            var widgetId = $(fieldElem).parents('form').data('widget-id');
+            var fieldName = $(fieldElem).attr('id').replace('id_', '');
+
+            var previewField = $('#widget-' + widgetId + '-' + fieldName, previewDoc);
+            previewField.html($(editor.composer.element).html());
+        }
+    },
+
+    pages: {
+        init: function () {
             var previewDoc = fancypages.dashboard.pages.getPreviewDocument();
 
             // initialise drop-down to create a new widget
@@ -72,7 +125,7 @@ fancypages.dashboard = {
                 var widgetWrapper = $('div[id=widget_input_wrapper]');
                 widgetWrapper.html(data);
 
-                fancypages.dashboard.pages.initialiseRichtextEditor(widgetWrapper);
+                fancypages.dashboard.editor.init();
             });
 
         },
@@ -90,50 +143,6 @@ fancypages.dashboard = {
 
         getPreviewDocument: function(elem) {
             return $('#page-preview').contents();
-        },
-
-        initialiseRichtextEditor: function(wrapperElement) {
-            wrapperElement = wrapperElement || document;
-            // initialise wysihtml5 rich-text for editor
-            $('.wysihtml5-wrapper', wrapperElement).each(function(elem) {
-                var editor = new wysihtml5.Editor($('textarea', this).get(0), {
-                    toolbar:      $(".wysihtml5-toolbar", this).get(0),
-                    parserRules:  wysihtml5ParserRules
-                });
-
-                editor.observe("load", function() {
-                    editor.composer.element.addEventListener("keyup", function() {
-                        var fieldElem = $(editor.textarea.element);
-
-                        var widgetId = $(fieldElem).parents('form').data('widget-id');
-                        var fieldName = $(fieldElem).attr('id').replace('id_', '');
-
-                        var previewDoc = fancypages.dashboard.pages.getPreviewDocument();
-                        var previewField = $('#widget-' + widgetId + '-' + fieldName, previewDoc);
-                        previewField.html($(fieldElem).val());
-                    });
-                });
-                editor.on("change", function() {
-                    var fieldElem = $(editor.textarea.element);
-
-                    var widgetId = $(fieldElem).parents('form').data('widget-id');
-                    var fieldName = $(fieldElem).attr('id').replace('id_', '');
-
-                    var previewDoc = fancypages.dashboard.pages.getPreviewDocument();
-                    var previewField = $('#widget-' + widgetId + '-' + fieldName, previewDoc);
-                    previewField.html($(fieldElem).val());
-                });
-                editor.on("aftercommand:composer", function() {
-                    var fieldElem = $(editor.textarea.element);
-
-                    var widgetId = $(fieldElem).parents('form').data('widget-id');
-                    var fieldName = $(fieldElem).attr('id').replace('id_', '');
-
-                    var previewDoc = fancypages.dashboard.pages.getPreviewDocument();
-                    var previewField = $('#widget-' + widgetId + '-' + fieldName, previewDoc);
-                    previewField.html($(editor.composer.element).html());
-                });
-            });
         }
     }
 };

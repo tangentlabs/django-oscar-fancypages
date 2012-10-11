@@ -1,44 +1,49 @@
+{% load i18n %}
+
 <div class="wysihtml5-toolbar" >
-    <ul>
-        <li>
-            <a class="toolbar-bold" data-wysihtml5-command="bold" title="CTRL+B" href="javascript:;" unselectable="on">
-                <i class="icon-bold"></i>
-            </a>
-        </li>
-        <li>
-            <a class="toolbar-italic" data-wysihtml5-command="italic" title="CTRL+I" href="javascript:;" unselectable="on">
-                <i class="icon-italic"></i>
-            </a>
-        </li>
-        <li>
-            <a class="toolbar-link" data-wysihtml5-command="createLink"
-               title="Insert a link" href="javascript:;" unselectable="on">
-                <i class="icon-link"></i>
-            </a>
-        </li>
-        <li>
-            <a class="toolbar-unordered" data-wysihtml5-command="insertUnorderedList"
-                   href="javascript:;" unselectable="on">
-                <i class="icon-list-ul"></i>
-            </a>
-        </li>
-        <li>
-            <a class="toolbar-ordered" data-wysihtml5-command="insertOrderedList"
+    <div class="btn-group">
+        <a class="btn" data-wysihtml5-command="bold" title="CTRL+B" href="javascript:;" unselectable="on">
+            <i class="icon-bold"></i>
+        </a>
+        <a class="btn" data-wysihtml5-command="italic" title="CTRL+I" href="javascript:;" unselectable="on">
+            <i class="icon-italic"></i>
+        </a>
+        <div data-wysihtml5-dialog="createLink" style="display: none;" class="modal fade in"
+             id="createLinkModal" tab-index="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <h3 id="createLinkmodal">{% trans "Create link" %}</h3>
+            </div>
+
+            <div class="modal-body">
+                <label>
+                    Link: <input data-wysihtml5-dialog-field="href" value="http://">
+                </label>
+            </div>
+
+            <div class="modal-footer">
+                <a class="btn pull-left" data-wysihtml5-dialog-action="cancel">Cancel</a>
+                <a class="btn btn-success pull-right" data-wysihtml5-dialog-action="save">OK</a>
+            </div>
+        </div>
+
+        <a href="#createLinkModal" class="btn" title="Insert Link" data-wysihtml5-command="createLink" role="button" data-toggle="modal">
+            <i class="icon-share icon-white"></i>
+        </a>
+        <a class="btn" data-wysihtml5-command="insertUnorderedList"
                href="javascript:;" unselectable="on">
-                <i class="icon-list-ol"></i>
-            </a>
-        </li>
-        <li>
-            <a class="toolbar-break" data-wysihtml5-command="insertLineBreak"
-               href="javascript:;" unselectable="on">
-                &lt;br/&gt;
-            </a>
-        </li>
-        <li>
-            <a class="toolbar-html" data-wysihtml5-action="change_view"
-               href="javascript:;" unselectable="on">
-                &lt;/&gt;
-            </a>
-        </li>
-    </ul>
+            <i class="icon-list-ul"></i>
+        </a>
+        <a class="btn" data-wysihtml5-command="insertOrderedList"
+           href="javascript:;" unselectable="on">
+            <i class="icon-list-ol"></i>
+        </a>
+        <a class="btn" data-wysihtml5-command="insertLineBreak"
+           href="javascript:;" unselectable="on">
+            &lt;br/&gt;
+        </a>
+        <a class="btn" style="font-family: monospace;" data-wysihtml5-action="change_view"
+           href="javascript:;" unselectable="on">
+            html
+        </a>
+    </div>
 </div>
