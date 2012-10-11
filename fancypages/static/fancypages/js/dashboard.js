@@ -145,7 +145,6 @@ fancypages.dashboard = {
 
                 fancypages.dashboard.editor.init();
             });
-
         },
 
         /**
