@@ -28,6 +28,7 @@ if not settings.configured:
         STATICFILES_FINDERS=(
             'django.contrib.staticfiles.finders.FileSystemFinder',
             'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+            'compressor.finders.CompressorFinder',
         ),
         TEMPLATE_LOADERS=(
             'django.template.loaders.filesystem.Loader',
@@ -59,6 +60,7 @@ if not settings.configured:
             'django.contrib.messages',
             'django.contrib.staticfiles',
             'django.contrib.admin',
+            'compressor',
         ] + OSCAR_CORE_APPS + [
             'model_utils',
 
