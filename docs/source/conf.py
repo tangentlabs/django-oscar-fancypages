@@ -14,7 +14,6 @@
 import sys, os
 
 sys.path.insert(0, os.path.abspath('../../sandbox/'))
-print sys.path
 # setup Django
 from sandbox import settings
 from django.core.management import setup_environ
@@ -147,7 +146,6 @@ html_static_path = ['_static']
 
 # If true, the index is split into individual pages for each letter.
 #html_split_index = False
-print sys.path
 
 # If true, links to the reST sources are added to the pages.
 #html_show_sourcelink = True

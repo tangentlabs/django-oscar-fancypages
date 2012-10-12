@@ -312,7 +312,6 @@ class WidgetMoveView(JSONResponseMixin, generic.edit.BaseDetailView):
             }
 
         new_pos = int(self.kwargs.get('index'))
-        print 'new position', new_pos
 
         if new_pos == moved_widget.display_order:
             return {
@@ -320,18 +319,15 @@ class WidgetMoveView(JSONResponseMixin, generic.edit.BaseDetailView):
             }
 
         if new_pos > moved_widget.display_order:
-            print 'larger new pos'
             widgets = moved_widget.container.widgets.filter(
                 ~Q(id=moved_widget.id) &
                 Q(display_order__lte=new_pos)
             )
             for idx, widget in enumerate(widgets):
-                print widget.id, widget.display_order, idx
                 widget.display_order = idx
                 widget.save()
 
         else:
-            print 'smaller arger new pos'
             widgets = moved_widget.container.widgets.filter(
                 ~Q(id=moved_widget.id) &
                 Q(display_order__gte=new_pos)
