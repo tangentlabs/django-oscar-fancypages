@@ -20,6 +20,16 @@
 <div class="row-fluid">
     <div class="span3" style="margin: 0px;">
         <div class="editor">
+            <div id="page-settings">
+                <form method="post" action=".">
+                    {% csrf_token %}
+                    {% include "fancypages/partials/editor_form_fields.html" %}
+                    <div class="buttons">
+                        <a href="" class="btn">{% trans "Cancel" %}</a>
+                        <button type="submit" class="btn btn-success">{% trans "Save" %}</button>
+                    </div>
+                </form>
+            </div>
             <div id="widget_input_wrapper"></div>
         </div>
     </div>

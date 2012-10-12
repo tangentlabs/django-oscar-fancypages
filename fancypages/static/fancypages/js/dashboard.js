@@ -162,6 +162,7 @@ fancypages.dashboard = {
             $.ajax(url).done(function (data) {
                 var widgetWrapper = $('div[id=widget_input_wrapper]');
                 widgetWrapper.html(data);
+                $('#page-settings').hide();
 
                 fancypages.dashboard.editor.init();
             });
@@ -181,6 +182,7 @@ fancypages.dashboard = {
             }).done(function (data) {
                 $('div[id=widget_input_wrapper]').html("");
                 $('#page-preview').attr('src', $('#page-preview').attr('src'));
+                $('#page-settings').show();
             });
         },
 

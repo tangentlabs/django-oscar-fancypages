@@ -162,7 +162,10 @@ class PageCustomiseView(PageUpdateView):
         return ctx
 
     def get_success_url(self):
-        return reverse('fancypages-dashboard:page-list')
+        return reverse(
+            'fancypages-dashboard:page-customise',
+            args=(self.object.id,)
+        )
 
 
 class WidgetCreateView(generic.CreateView):
