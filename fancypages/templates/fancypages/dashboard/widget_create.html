@@ -1,6 +1,6 @@
 {% load i18n %}
-<form id="{{ widget.container.variable_name }}_widget_form"
-      data-behaviours="widget-create" class="form" method="post"
+<form id="{{ container.variable_name }}_widget_form"
+      data-behaviours="submit-widget-form" class="form" method="post"
       action="{% url fancypages-dashboard:widget-create container.id widget_code %}">
     {% csrf_token %}
     {% include "fancypages/partials/editor_form_fields.html" %}

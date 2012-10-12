@@ -1,6 +1,26 @@
 var fancypages = fancypages || {};
 
 fancypages.dashboard = {
+    preview: {
+        init: function () {
+            $('.sortable').sortable({
+                cursor: 'move',
+                handle: '.move',
+                update: function (ev, ui) {
+                    var dropIndex = ui.item.index(),
+                        widgetId = ui.item.data('widget-id');
+
+                    $.getJSON('/dashboard/fancypages/widget/move/' + widgetId + '/' + dropIndex + '/', function (data) {
+                        if (data.success) {
+                            parent.fancypages.dashboard.pages.refreshPreview();
+                        } else {
+                            alert('ERROR');
+                        }
+                    });
+                }
+            });
+        }
+    },
     editor: {
         init: function () {
             var wrapperElement = $('div[id=widget_input_wrapper]') || document;
@@ -27,7 +47,7 @@ fancypages.dashboard = {
                     fancypages.dashboard.editor.updatePreview(editor);
                 });
                 // Listen to this event to be able to update the preview when a command
-                // such as "bold" or "italic" is applied to the content. This event is 
+                // such as "bold" or "italic" is applied to the content. This event is
                 // used by wysihtml5 internally to update the textarea with the composer
                 // content which means the textarea might not be up-to-date when this
                 // event is received. Make sure you use the composer content in this
@@ -95,12 +115,10 @@ fancypages.dashboard = {
 
         removeModal: function (elem) {
             var modalElem = $(elem).parents('#delete-modal');
-            console.log('removing modal', modalElem);
             modalElem.remove();
         },
 
         addPreviewListeners: function () {
-            console.log('setting up preview listener');
             var previewDoc = fancypages.dashboard.pages.getPreviewDocument();
 
             // initialise drop-down to create a new widget
@@ -111,7 +129,6 @@ fancypages.dashboard = {
                 var containerName = $(this).attr('id').replace('_add_widget_form', '');
 
                 var widgetUrl = $(this).attr('action') + selection.val() + "/create/";
-                console.log('url', widgetUrl);
                 fancypages.dashboard.pages.loadWidgetForm(widgetUrl, containerName);
             });
 
@@ -139,10 +156,8 @@ fancypages.dashboard = {
 
             $('div.delete', previewDoc).click(function (ev) {
                 var widget = $(this).parents('.widget');
-                console.log('button clicked to delete', widget.data('widget-id'));
 
                 var deleteUrl = '/dashboard/fancypages/widget/delete/' + $(widget).data('widget-id') + "/";
-                console.log("Delete URL", deleteUrl);
 
                 $.ajax(deleteUrl).done(function (data) {
                     var widgetWrapper = $('div[id=widget_input_wrapper]');
@@ -192,6 +207,10 @@ fancypages.dashboard = {
          */
         getPreviewDocument: function (elem) {
             return $('#page-preview').contents();
+        },
+
+        refreshPreview: function () {
+            $('#page-preview').attr('src', $('#page-preview').attr('src'));
         }
     }
 };

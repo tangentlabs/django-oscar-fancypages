@@ -1,15 +1,20 @@
+<div class="sortable">
+
 {% for widget_id,rendered_widget in rendered_widgets %}
-<div id="widget-{{ widget_id }}" class="widget ui-sortable"
-     data-container-name="{{ container_name }}" data-widget-id="{{ widget_id }}">
-    {% if edit_mode %}<div class="edit-button"><i class="icon-edit icon-large"></i> <span>Edit</span></div>{% endif %}
-        {{ rendered_widget }}
-    {% if edit_mode %}
-    <div class="widget-move-delete">
-        <div class="delete"><i class="icon-trash icon-large"></i></div>
+    <div id="widget-{{ widget_id }}" class="widget"
+         data-container-name="{{ container_name }}" data-widget-id="{{ widget_id }}">
+        {% if edit_mode %}<div class="edit-button"><i class="icon-edit icon-large"></i> <span>Edit</span></div>{% endif %}
+            {{ rendered_widget }}
+        {% if edit_mode %}
+        <div class="widget-move-delete">
+            <div class="move"><i class="icon-move icon-large"></i></div>
+            <div class="delete"><i class="icon-trash icon-large"></i></div>
+        </div>
+        {% endif %}
     </div>
-    {% endif %}
-</div>
 {% endfor %}
+
+</div>
 
 {% if edit_mode %}
 <div class="widget-add-control">

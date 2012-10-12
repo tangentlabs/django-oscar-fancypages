@@ -1,6 +1,8 @@
+from django import http
 from django.views import generic
 from django.contrib import messages
-from django.db.models import get_model
+from django.db.models import get_model, Q
+from django.utils import simplejson as json
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.forms.models import modelform_factory
@@ -267,3 +269,80 @@ class WidgetDeleteView(generic.DeleteView):
 
     def get_success_url(self):
         return reverse('fancypages-dashboard:page-list')
+
+
+class JSONResponseMixin(object):
+    def render_to_response(self, context):
+        "Returns a JSON response containing 'context' as payload"
+        return self.get_json_response(self.convert_context_to_json(context))
+
+    def get_json_response(self, content, **httpresponse_kwargs):
+        "Construct an `HttpResponse` object."
+        return http.HttpResponse(content,
+                                 content_type='application/json',
+                                 **httpresponse_kwargs)
+
+    def convert_context_to_json(self, context):
+        "Convert the context dictionary into a JSON object"
+        # Note: This is *EXTREMELY* naive; in reality, you'll need
+        # to do much more complex handling to ensure that arbitrary
+        # objects -- such as Django model instances or querysets
+        # -- can be serialized as JSON.
+        return json.dumps(context)
+
+
+class WidgetMoveView(JSONResponseMixin, generic.edit.BaseDetailView):
+    model = Widget
+
+    def get_object(self, queryset=None):
+        try:
+            return self.model.objects.select_subclasses().get(
+                id=self.kwargs.get('pk')
+            )
+        except self.model.DoesNotExist:
+            return self.model.objects.none()
+
+    def get_context_data(self, **kwargs):
+        moved_widget = self.get_object()
+
+        if not moved_widget:
+            return {
+                'success': False,
+                'reason': "widget does not exist"
+            }
+
+        new_pos = int(self.kwargs.get('index'))
+        print 'new position', new_pos
+
+        if new_pos == moved_widget.display_order:
+            return {
+                'success': True
+            }
+
+        if new_pos > moved_widget.display_order:
+            print 'larger new pos'
+            widgets = moved_widget.container.widgets.filter(
+                ~Q(id=moved_widget.id) &
+                Q(display_order__lte=new_pos)
+            )
+            for idx, widget in enumerate(widgets):
+                print widget.id, widget.display_order, idx
+                widget.display_order = idx
+                widget.save()
+
+        else:
+            print 'smaller arger new pos'
+            widgets = moved_widget.container.widgets.filter(
+                ~Q(id=moved_widget.id) &
+                Q(display_order__gte=new_pos)
+            )
+            for idx, widget in enumerate(widgets):
+                widget.display_order = new_pos + idx + 1
+                widget.save()
+
+        moved_widget.display_order = new_pos
+        moved_widget.save()
+
+        return {
+            'success': True,
+        }
