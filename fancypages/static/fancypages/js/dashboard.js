@@ -60,20 +60,23 @@ fancypages.dashboard = {
 
     pages: {
         init: function () {
-            fancypages.dashboard.pages.addPreviewListeners();
-
             $('#page-preview').load(function () {
                 fancypages.dashboard.pages.addPreviewListeners();
             });
 
-            $('form[data-behaviours~=widget-create]').live('submit', function (ev) {
+            $('form[data-behaviours~=submit-widget-form]').live('submit', function (ev) {
                 ev.preventDefault();
+                $('button[type=submit]').attr("disabled", true).html("Processing...");
+                $('button').attr("disabled", true);
+                fancypages.dashboard.pages.removeModal(this);
                 fancypages.dashboard.pages.submitWidgetForm($(this));
             });
 
-            $('form[data-behaviours~=widget-update]').live('submit', function (ev) {
+            // Listen on modal cancel buttons and hide and remove the modal
+            // when clicked.
+            $("button[data-behaviours~=remove-modal]").live('click', function (ev) {
                 ev.preventDefault();
-                fancypages.dashboard.pages.submitWidgetForm($(this));
+                fancypages.dashboard.pages.removeModal(this);
             });
 
             // attach live update listener to all regular input field
@@ -90,7 +93,14 @@ fancypages.dashboard = {
             });
         },
 
+        removeModal: function (elem) {
+            var modalElem = $(elem).parents('#delete-modal');
+            console.log('removing modal', modalElem);
+            modalElem.remove();
+        },
+
         addPreviewListeners: function () {
+            console.log('setting up preview listener');
             var previewDoc = fancypages.dashboard.pages.getPreviewDocument();
 
             // initialise drop-down to create a new widget
@@ -127,11 +137,21 @@ fancypages.dashboard = {
                 fancypages.dashboard.pages.loadWidgetForm(widgetUrl, $(widget).data('container-name'));
             });
 
-            $('.widget-move-delete', previewDoc).click(function (ev) {
+            $('div.delete', previewDoc).click(function (ev) {
                 var widget = $(this).parents('.widget');
-                console.log('widget', widget.data('widget-id'));
+                console.log('button clicked to delete', widget.data('widget-id'));
 
                 var deleteUrl = '/dashboard/fancypages/widget/delete/' + $(widget).data('widget-id') + "/";
+                console.log("Delete URL", deleteUrl);
+
+                $.ajax(deleteUrl).done(function (data) {
+                    var widgetWrapper = $('div[id=widget_input_wrapper]');
+                    widgetWrapper.after(data);
+
+                    $(data).load(function () {
+                        $(this).modal('show');
+                    });
+                });
             });
         },
 
@@ -161,8 +181,6 @@ fancypages.dashboard = {
             }).done(function (data) {
                 $('div[id=widget_input_wrapper]').html("");
                 $('#page-preview').attr('src', $('#page-preview').attr('src'));
-
-
             });
         },
 

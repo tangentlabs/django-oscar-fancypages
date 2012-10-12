@@ -5,7 +5,7 @@
         {{ rendered_widget }}
     {% if edit_mode %}
     <div class="widget-move-delete">
-        <i class="icon-trash icon-large"></i>
+        <div class="delete"><i class="icon-trash icon-large"></i></div>
     </div>
     {% endif %}
 </div>
@@ -14,7 +14,7 @@
 {% if edit_mode %}
 <div class="widget-add-control">
     <form id="{{ container.variable_name }}_add_widget_form"
-          data-behaviours='widget-create' data-container-name="{{ container.variable_name }}"
+          data-behaviours='submit-widget-form' data-container-name="{{ container.variable_name }}"
           method="get" action="/dashboard/fancypages/widget/{{ container.id }}/">
         {% for field in widget_create_form %}
             {{ field }}

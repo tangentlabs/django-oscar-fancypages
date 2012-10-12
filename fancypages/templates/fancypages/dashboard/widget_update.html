@@ -2,7 +2,7 @@
 
 <form id="{{ widget.container.variable_name }}_widget_form"
       data-widget-id='{{ widget.id }}' data-container-name="{{ widget.container.variable_name }}"
-      data-behaviours="widget-update" class="form" method="post"
+      data-behaviours="submit-widget-form" class="form" method="post"
       action="{% url fancypages-dashboard:widget-update widget.id %}">
     {% csrf_token %}
     {% include "fancypages/partials/editor_form_fields.html" %}
