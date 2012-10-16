@@ -5,6 +5,8 @@ from django.conf import settings
 from django.db.models import get_model
 from django.utils.translation import ugettext_lazy as _
 
+from fancypages.widgets import SelectWidgetRadioFieldRenderer
+
 Page = get_model('fancypages', 'Page')
 PageType = get_model('fancypages', 'PageType')
 
@@ -70,12 +72,18 @@ class PageForm(forms.ModelForm):
 
 
 class WidgetCreateSelectForm(forms.Form):
-    widget_code = forms.ChoiceField(label=_("Add a new widget:"))
+    widget_code = forms.ChoiceField(
+        label=_("Add a new widget:"),
+        widget=forms.RadioSelect(renderer=SelectWidgetRadioFieldRenderer)
+    )
 
     def __init__(self, *args, **kwargs):
         super(WidgetCreateSelectForm, self).__init__(*args, **kwargs)
-        widget_model = get_model('fancypages', 'Widget')
-        self.fields['widget_code'].choices = widget_model.get_available_widgets()
+        choices = get_model('fancypages', 'Widget').get_available_widgets()
+        self.fields['widget_code'].choices = choices
+
+        if len(choices):
+            self.fields['widget_code'].initial = choices[0][0]
 
 
 class WidgetUpdateSelectForm(forms.Form):

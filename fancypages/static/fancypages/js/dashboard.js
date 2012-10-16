@@ -125,7 +125,7 @@ fancypages.dashboard = {
             $('form[id$=add_widget_form]', previewDoc).submit(function (ev) {
                 ev.preventDefault();
 
-                var selection = $("select", this);
+                var selection = $("input[type='radio']:checked", this);
                 var containerName = $(this).attr('id').replace('_add_widget_form', '');
 
                 var widgetUrl = $(this).attr('action') + selection.val() + "/create/";
