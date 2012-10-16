@@ -65,6 +65,7 @@ class TestAStaffMember(test.FancyPagesWebTest):
 
 
 class TestAWidget(test.FancyPagesWebTest):
+    is_staff = True
 
     def setUp(self):
         super(TestAWidget, self).setUp()
@@ -138,3 +139,30 @@ class TestAWidget(test.FancyPagesWebTest):
 
         widget = TextWidget.objects.get(id=self.third_text_widget.id)
         self.assertEquals(widget.display_order, 1)
+
+
+class TestAnAnonymousUser(test.FancyPagesWebTest):
+    is_staff = True
+
+    def setUp(self):
+        super(TestAnAnonymousUser, self).setUp()
+        self.page_type = PageType.objects.create(name='Article', code='article',
+                                                 template_name=self.template_name)
+        self.prepare_template_file(
+            "{% load fancypages_tags%}"
+            "{% fancypages-container main-container %}"
+        )
+
+        self.page = Page.objects.create(
+            title="A new page",
+            code='a-new-page',
+            page_type=self.page_type,
+        )
+
+        self.text_widget = TextWidget.objects.create(
+            container=self.page.get_container_from_name('main-container'),
+            text="some text",
+        )
+
+    def test_can_view_a_fancy_page(self):
+        self.app.get(reverse('fancypages:page-detail', args=(self.page.code,)))

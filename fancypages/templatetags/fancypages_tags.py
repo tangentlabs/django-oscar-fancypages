@@ -17,11 +17,18 @@ class FancyContainerNode(template.Node):
         except template.VariableDoesNotExist:
             return u''
 
+        extra_ctx = {
+            'container': container,
+            'edit_mode': context.get('edit_mode', False),
+        }
+
+        form = context.get("widget_create_form", None)
+        if form:
+            extra_ctx['widget_create_form'] = form
+
         return container.render(
             context.get('request', None),
-            edit_mode=context['edit_mode'],
-            container=container,
-            widget_create_form=context["widget_create_form"],
+            **extra_ctx
         )
 
 
