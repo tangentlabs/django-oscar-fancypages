@@ -9,35 +9,37 @@
 {% block breadcrumbs %}{% endblock %}
 
 {% block header %}
-<div class="page-header">
-    <h1>
-    {% blocktrans with title=page.title %}Customise page "{{ title }}" {% endblocktrans %}
-    </h1>
-</div>
 {% endblock header %}
 
 {% block dashboard_content %}
-<div class="row-fluid">
-    <div class="span3" style="margin: 0px;">
-        <div class="editor">
-            <div id="page-settings">
-                <form method="post" action=".">
-                    {% csrf_token %}
-                    {% include "fancypages/partials/editor_form_fields.html" %}
-                    <div class="buttons">
-                        <a href="" class="btn">{% trans "Cancel" %}</a>
-                        <button type="submit" class="btn btn-success">{% trans "Save" %}</button>
-                    </div>
-                </form>
-            </div>
-            <div id="widget_input_wrapper"></div>
+<div class="row-fluid page-wrapper">
+    <div class="editor">
+        <div id="page-settings">
+            <form method="post" action="." class="form-stacked">
+                {% csrf_token %}
+                {% include "fancypages/partials/editor_form_fields.html" %}
+                <div class="buttons">
+                    <a href="" class="btn">{% trans "Cancel" %}</a>
+                    <button type="submit" class="btn btn-primary">{% trans "Save" %}</button>
+                </div>
+            </form>
         </div>
+        <div id="widget_input_wrapper"></div>
+    </div>
+    
+    <div class="page-title">
+        <div class="pull-right form-inline">
+            <label for="preview-check" class="ckeckbox">
+                <input type="checkbox" checked="checked" id="preview-check"  />
+                Page preview
+            </label>
+            <a href="" class="btn">{% trans "Page Properties" %}</a>
+        </div>
+        <h1>{% blocktrans with title=page.title %}Customise page "{{ title }}" {% endblocktrans %}</h1>
     </div>
 
-    <div class="span9" style="margin: 0px; min-height: 80%;">
-        <div class="preview span12">
-            <iframe id="page-preview" frameborder='0' src="{% url fancypages-dashboard:page-preview page.code %}"></iframe>
-        </div>
+    <div class="preview">
+        <iframe id="page-preview" frameborder='0' src="{% url fancypages-dashboard:page-preview page.code %}"></iframe>
     </div>
 </div>
 {% endblock dashboard_content %}

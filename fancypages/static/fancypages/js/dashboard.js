@@ -6,6 +6,8 @@ fancypages.dashboard = {
             $('.sortable').sortable({
                 cursor: 'move',
                 handle: '.move',
+                placeholder: "ui-state-highlight",
+                forcePlaceholderSize: true,
                 update: function (ev, ui) {
                     var dropIndex = ui.item.index(),
                         widgetId = ui.item.data('widget-id');
@@ -110,6 +112,28 @@ fancypages.dashboard = {
                 var previewDoc = fancypages.dashboard.pages.getPreviewDocument();
                 var previewField = $('#widget-' + widgetId + '-' + fieldName, previewDoc);
                 previewField.html($(fieldElem).val());
+            });
+            
+            // Check the height of the page - apply it to the iFrame
+            var pageHeight = $(window).height(),
+                navBarTop = $('.navbar-fixed-top').outerHeight(),
+                subBarTop = $('.subnav-fixed').outerHeight(),
+                pageTitle = $('.page-title').outerHeight();
+            $('#page-preview').css('height', pageHeight - navBarTop - subBarTop - pageTitle);
+            
+            // Add / removed page elements for page preview
+            $('#preview-check').on('change', function(){
+              var doc = window.frames['page-preview'].document;
+              $('body',doc).toggleClass('preview');
+              $('.navbar.accounts',doc).add('.header',doc).fadeToggle('slow');
+            });
+            
+            var doc = window.frames['page-preview'].document;
+            $('.add-content input[type=radio]',doc).on('change', function(ev) {
+                var labelElem = $(this).parent('label'),
+                    parentElem = $(this).parents('ul');
+                $("label", parentElem).removeClass('active');
+                labelElem.addClass('active');
             });
         },
 

@@ -7,11 +7,22 @@ html, body {
     overflow: hidden;
 }
 
+.page-wrapper {
+  position:relative;
+  margin-top:78px;
+}
+
 .editor {
     margin: 0px;
-    height: 98%;
-
-    .buttons {
+    height: 100%;
+    position:absolute;
+    border-right:1px solid #ccc;
+    top:0;
+    left:-20px;
+    bottom:0;
+    width:329px;
+    .box-shadow(inset -3px -7px 10px rgba(0,0,0,.1));
+/*    .buttons {
         position: relative;
         width: 98%;
         background-color: #eee;
@@ -20,21 +31,51 @@ html, body {
         border-top: 1px #fff solid;
         border-bottom: 1px #ccc solid;
         .box-shadow(0 0 5px rgba(0, 0, 0, 0.25));
-    }
+    }*/
 }
-
+#page-settings,
+#widget_input_wrapper {
+  padding:20px;
+}
+.page-title {
+  border-bottom:1px solid #ccc;
+  padding:20px;
+  .clearfix();
+  h1 {
+    margin:0;
+  }
+}
+.editor,
+.page-title {
+  background:lighten(@grayLighter, 4%);
+  border-color:lighten(@grayLight, 20%);
+}
+.preview,
+.page-title {
+  margin: 0px;
+  margin-left:310px;
+  margin-right:-20px;
+}
 .preview {
-    margin: 0px;
+  #page-preview {
+    position: relative;
     width: 100%;
-
-    #page-preview {
-        position: relative;
-        width: 100%;
-        min-height: 98%;
-    }
+  }
+}
+//Modals
+.modal {
+  > form {
+    margin:0;
+  }
+  .modal-header {
+    > button {
+      border:0;
+      padding:0;
+    } 
+  }
 }
 
-.controls {
+/*.controls {
     height: 100%;
     background-color: #eee;
     position: relative;
@@ -124,11 +165,15 @@ html, body {
     font-size: 12px;
     text-transform: uppercase;
     color: #777;
-}
+}*/
 
 .wysihtml5-wrapper {
-    height: 339px;
+/*    height: 339px;*/
     overflow: auto;
+}
+.wysihtml5-wrapper textarea {
+  width:270px;
+  height:300px;
 }
 
 .wysihtml5-toolbar {
