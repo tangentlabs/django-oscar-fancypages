@@ -3,10 +3,87 @@ import os
 from django import forms
 from django.conf import settings
 from django.db.models import get_model
+from django.forms.widgets import SubWidget
 from django.utils.translation import ugettext_lazy as _
+
+from django.conf import settings
+from django.forms.util import flatatt, to_current_timezone
+from django.utils.datastructures import MultiValueDict, MergeDict
+from django.utils.html import escape, conditional_escape
+from django.utils.translation import ugettext, ugettext_lazy
+from django.utils.encoding import StrAndUnicode, force_unicode
+from django.utils.safestring import mark_safe
+from django.utils import datetime_safe, formats
 
 Page = get_model('fancypages', 'Page')
 PageType = get_model('fancypages', 'PageType')
+
+
+class RadioInput(SubWidget):
+    """
+    An object used by RadioFieldRenderer that represents a single
+    <input type='radio'>.
+    """
+
+    def __init__(self, name, value, attrs, choice, index):
+        self.name, self.value = name, value
+        self.attrs = attrs
+        self.choice_value = force_unicode(choice[0])
+        self.choice_label = force_unicode(choice[1])
+        self.index = index
+
+    def __unicode__(self):
+        return self.render()
+
+    def render(self, name=None, value=None, attrs=None, choices=()):
+        name = name or self.name
+        value = value or self.value
+        attrs = attrs or self.attrs
+        if 'id' in self.attrs:
+            label_for = ' for="%s_%s"' % (self.attrs['id'], self.index)
+        else:
+            label_for = ''
+        choice_label = conditional_escape(force_unicode(self.choice_label))
+        if self.choice_value:
+            return mark_safe(u'<label id="%s" %s>%s %s</label>' % (self.choice_value, label_for, self.tag(), choice_label))
+        else:
+            return mark_safe(u'<label %s>%s %s</label>' % (label_for, self.tag(), choice_label))
+
+    def is_checked(self):
+        return self.value == self.choice_value
+
+    def tag(self):
+        if 'id' in self.attrs:
+            self.attrs['id'] = '%s_%s' % (self.attrs['id'], self.index)
+        final_attrs = dict(self.attrs, type='radio', name=self.name, value=self.choice_value)
+        if self.is_checked():
+            final_attrs['checked'] = 'checked'
+        return mark_safe(u'<input%s />' % flatatt(final_attrs))
+
+class RadioWidgetSelectRenderer(StrAndUnicode):
+    """
+    An object used by RadioSelect to enable customization of radio widgets.
+    """
+
+    def __init__(self, name, value, attrs, choices):
+        self.name, self.value, self.attrs = name, value, attrs
+        self.choices = choices
+
+    def __iter__(self):
+        for i, choice in enumerate(self.choices):
+            yield RadioInput(self.name, self.value, self.attrs.copy(), choice, i)
+
+    def __getitem__(self, idx):
+        choice = self.choices[idx] # Let the IndexError propogate
+        return RadioInput(self.name, self.value, self.attrs.copy(), choice, idx)
+
+    def __unicode__(self):
+        return self.render()
+
+    def render(self):
+        """Outputs a <ul> for this set of radio fields."""
+        return mark_safe(u'<ul>\n%s\n</ul>' % u'\n'.join([u'<li>%s</li>'
+                % force_unicode(w) for w in self]))
 
 
 class PageTypeSelectForm(forms.Form):
@@ -70,7 +147,7 @@ class PageForm(forms.ModelForm):
 
 
 class WidgetCreateSelectForm(forms.Form):
-    widget_code = forms.ChoiceField(label=_("Add a new widget:"))
+    widget_code = forms.ChoiceField(label=_("Add a new widget:"), widget=forms.RadioSelect(renderer=RadioWidgetSelectRenderer))
 
     def __init__(self, *args, **kwargs):
         super(WidgetCreateSelectForm, self).__init__(*args, **kwargs)
