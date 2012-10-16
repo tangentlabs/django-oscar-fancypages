@@ -120,21 +120,6 @@ fancypages.dashboard = {
                 subBarTop = $('.subnav-fixed').outerHeight(),
                 pageTitle = $('.page-title').outerHeight();
             $('#page-preview').css('height', pageHeight - navBarTop - subBarTop - pageTitle);
-            
-            // Add / removed page elements for page preview
-            $('#preview-check').on('change', function(){
-              var doc = window.frames['page-preview'].document;
-              $('body',doc).toggleClass('preview');
-              $('.navbar.accounts',doc).add('.header',doc).fadeToggle('slow');
-            });
-            
-            var doc = window.frames['page-preview'].document;
-            $('.add-content input[type=radio]',doc).on('change', function(ev) {
-                var labelElem = $(this).parent('label'),
-                    parentElem = $(this).parents('ul');
-                $("label", parentElem).removeClass('active');
-                labelElem.addClass('active');
-            });
         },
 
         removeModal: function (elem) {
@@ -191,6 +176,20 @@ fancypages.dashboard = {
                         $(this).modal('show');
                     });
                 });
+            });
+            
+            // Add / removed page elements for page preview
+            $('#preview-check').on('change', function(){
+              $('body', previewDoc).toggleClass('preview');
+              $('.navbar.accounts', previewDoc).add('.header', previewDoc).fadeToggle('slow');
+            });
+            
+            // Add active state to radio buttons -- modal add content
+            $('.add-content input[type=radio]',previewDoc).on('change', function(ev) {
+                var labelElem = $(this).parent('label'),
+                    parentElem = $(this).parents('ul');
+                $("label", parentElem).removeClass('active');
+                labelElem.addClass('active');
             });
         },
 
