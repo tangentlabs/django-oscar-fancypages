@@ -6,6 +6,8 @@ fancypages.dashboard = {
             $('.sortable').sortable({
                 cursor: 'move',
                 handle: '.move',
+                placeholder: "ui-state-highlight",
+                forcePlaceholderSize: true,
                 update: function (ev, ui) {
                     var dropIndex = ui.item.index(),
                         widgetId = ui.item.data('widget-id');
@@ -111,6 +113,13 @@ fancypages.dashboard = {
                 var previewField = $('#widget-' + widgetId + '-' + fieldName, previewDoc);
                 previewField.html($(fieldElem).val());
             });
+            
+            // Check the height of the page - apply it to the iFrame
+            var pageHeight = $(window).height(),
+                navBarTop = $('.navbar-fixed-top').outerHeight(),
+                subBarTop = $('.subnav-fixed').outerHeight(),
+                pageTitle = $('.page-title').outerHeight();
+            $('#page-preview').css('height', pageHeight - navBarTop - subBarTop - pageTitle);
         },
 
         removeModal: function (elem) {
@@ -167,6 +176,20 @@ fancypages.dashboard = {
                         $(this).modal('show');
                     });
                 });
+            });
+            
+            // Add / removed page elements for page preview
+            $('#preview-check').on('change', function(){
+              $('body', previewDoc).toggleClass('preview');
+              $('.navbar.accounts', previewDoc).add('.header', previewDoc).fadeToggle('slow');
+            });
+            
+            // Add active state to radio buttons -- modal add content
+            $('.add-content input[type=radio]',previewDoc).on('change', function(ev) {
+                var labelElem = $(this).parent('label'),
+                    parentElem = $(this).parents('ul');
+                $("label", parentElem).removeClass('active');
+                labelElem.addClass('active');
             });
         },
 

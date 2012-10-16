@@ -1,118 +1,238 @@
 @import "bootstrap/variables.less";
 @import "bootstrap/mixins.less";
 
+// Show hide page element on preview
+body.preview {
+  background:#fff;
+}
+.preview .footer {
+  display:none;
+}
+
 .edit-button {
-    position: relative;
-    font-weight: bold;
-    font-size: 12px;
-    text-transform: uppercase;
-    text-decoration: none;
-    width: 10px;
-    padding: 2px 10px;
-    margin-left: 2px;
-    margin-right: 5px;
-    line-height: 12px;
-    display: block;
-    background-color: #5BB75B;
-    color: #fff;
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    opacity: 0;
-    .border-radius(8px);
-    .box-shadow(0px 0px 5px rgba(0, 0, 0, 0.25));
-    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-    border: 2px #fff solid;
-    cursor: pointer;
-    span {
-        display: none;
-    }
+  opacity: 0;
+  margin: 5px;
 }
+/*.edit-button {
+  position: relative;
+  font-weight: bold;
+  font-size: 12px;
+  text-transform: uppercase;
+  text-decoration: none;
+  width: 10px;
+  padding: 2px 10px;
+  margin-left: 2px;
+  margin-right: 5px;
+  line-height: 12px;
+  display: block;
+  background-color: #5BB75B;
+  color: #fff;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  opacity: 0;
+  .border-radius(8px);
+  .box-shadow(0px 0px 5px rgba(0, 0, 0, 0.25));
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  border: 2px #fff solid;
+  cursor: pointer;
+  span {
+    display: none;
+  }
+}*/
 
-body:hover .edit-button {
-    opacity: 0.5;
-}
+/*body:hover .edit-button {
+  opacity: 0.5;
+}*/
 
-body:hover .edit-button:hover {
-    opacity: 1.0;
-    width: 50px;
-    span {
-        display: inline;
-    }
-}
+/*body:hover .edit-button:hover {
+  opacity: 1.0;
+  width: 50px;
+  span {
+    display: inline;
+  }
+}*/
 
 .sortable-placeholder {
-    background-color: #5BB75B;
-    opacity: 0.5;
+  background-color: #5BB75B;
+  opacity: 0.5;
 }
-
 .widget {
-    position: relative;
+  position: relative;
+  border:1px dashed transparent;
+  margin-bottom:@baseLineHeight;
 }
 
 .widget:hover {
-    background-color: #ddd;
+  border:1px dashed #ccc;
+  .widget-move-delete,
+  .edit-button {
+    .opacity(100);
+  }
 }
 
 .widget-move-delete {
-    position: absolute;
-    top: 0px;
-    right: 0px;
-    width: 36px;
-    height: 16px;
-    padding: 2px 3px 2px 2px !important;
-    text-align: center;
-    opacity: 0;
-    z-index: 9999;
-    background-color: orange;
-    .border-radius(5px);
-    .box-shadow(0px 0px 5px rgba(0, 0, 0, 0.25));
-    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-    i {
-        color: white;
-        float: left;
-        margin-left: 5px;
-    }
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  opacity: 0;
 }
 
-body:hover .widget-move-delete {
-    opacity: 0.5;
+.ui-state-highlight { 
+  background-color:lighten(@grayLighter, 3%);
+  border:1px solid lighten(@grayLighter, 2%); 
 }
 
-body:hover .widget-move-delete:hover {
-    opacity: 1.0;
-}
+/*body:hover .widget-move-delete {
+  opacity: 0.5;
+}*/
+
+/*body:hover .widget-move-delete:hover {
+  opacity: 1.0;
+}*/
 
 .widget-add-control {
-    position: relative;
-    margin-top: 30px;
-
-    padding-top: 8px;
-    padding-left: 10px;
-
-    width: 100%;
-
-    background-color: orange;
-    .border-radius(8px);
-    .box-shadow(0px 0px 5px rgba(0, 0, 0, 0.25));
-
-    select {
-        float: left;
-        max-width: 70%;
-    }
-    button {
-        margin-left: 5px;
-        i {
-            color: white;
-        }
-    }
+  position: relative;
+  margin-top: 30px;
+  padding: 10px;
+  background-color:lighten(@grayLighter, 2%);
+  .border-radius(4px);
+  > .btn {
+    padding-left:0;
+    padding-right:0;
+    display:block;
+  }
+  select {
+    float: left;
+    max-width: 70%;
+  }
+  button {
+    margin-left: 5px;
+/*    i {
+      color: white;
+    }*/
+  }
 }
 
 .sortable {
-    list-style-type: none;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  li {
     margin: 0;
     padding: 0;
-    li {
-        margin: 0;
-        padding: 0;
-    }
+  }
 }
+
+//Modals
+.modal {
+  > form {
+    margin:0;
+  }
+  .modal-header {
+    > button {
+      border:0;
+      padding:0;
+    } 
+  }
+}
+
+.add-content {
+  ul {
+    margin:10px 0 0;
+    .clearfix();
+    label.active {
+      border-color: @linkColor;
+      .box-shadow(0 1px 4px rgba(0,105,214,.25));
+    }
+    label {
+      text-align:center;
+      height:60px;
+      font-size:11px;
+      line-height:14px;
+      &:before {
+        font-family: FontAwesome;
+        font-weight: normal;
+        font-style: normal;
+        text-decoration: inherit;
+        font-size:40px;
+        display: block;
+        margin: 10px 0;
+      }
+    }
+    input[type=radio] {
+      position:absolute;
+      left:-9999px;
+    }
+    li {
+      display:block;
+      float:left;
+      width:20%;
+      margin-left:5%;
+      margin-bottom:5%;
+      &:first-child {
+        margin-left:0;
+      }
+    }
+  }
+}
+
+label#text {
+  &:before {
+    content: "\f031";
+  }
+}
+label#title-text {
+  &:before {
+    content: "\f035";
+  }
+}
+label#image {
+  &:before {
+    content: "\f03e";
+  }
+}
+
+.add-content ul label {
+  padding: 10px;
+  color: @grayDark;
+  text-align: center;
+  text-shadow: 0 1px 1px rgba(255,255,255,.75);
+  #gradient > .vertical-three-colors(@white, @white, 25%, darken(@white, 10%)); // Don't use .gradientbar() here since it does a three-color gradient
+  border: 1px solid #ccc;
+  border-bottom-color: #bbb;
+  .border-radius(4px);
+  @shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 1px 2px rgba(0,0,0,.05);
+  .box-shadow(@shadow);
+  cursor: pointer;
+
+  // Give IE7 some love
+  .ie7-restore-left-whitespace();
+}
+// Hover state
+.add-content ul label:hover {
+  color: @grayDark;
+  text-decoration: none;
+  background-color: darken(@white, 10%);
+  background-position: 0 -15px;
+
+  // transition is only when going to hover, otherwise the background
+  // behind the gradient (there for IE<=9 fallback) gets mismatched
+  .transition(background-position .1s linear);
+}
+
+// Focus state for keyboard and accessibility
+.add-content ul label:focus {
+  .tab-focus();
+}
+
+// Active state
+.add-content ul label:active {
+  background-image: none;
+  @shadow: inset 0 2px 4px rgba(0,0,0,.15), 0 1px 2px rgba(0,0,0,.05);
+  .box-shadow(@shadow);
+  background-color: darken(@white, 10%);
+  background-color: darken(@white, 15%) e("\9");
+  color: rgba(0,0,0,.5);
+  outline: 0;
+}
+
 

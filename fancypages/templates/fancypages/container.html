@@ -3,12 +3,12 @@
 {% for widget_id,rendered_widget in rendered_widgets %}
     <div id="widget-{{ widget_id }}" class="widget"
          data-container-name="{{ container_name }}" data-widget-id="{{ widget_id }}">
-        {% if edit_mode %}<div class="edit-button"><i class="icon-edit icon-large"></i> <span>Edit</span></div>{% endif %}
+        {% if edit_mode %}<div class="edit-button btn"><i class="icon-edit icon-large"></i></div>{% endif %}
             {{ rendered_widget }}
         {% if edit_mode %}
-        <div class="widget-move-delete">
-            <div class="move"><i class="icon-move icon-large"></i></div>
-            <div class="delete"><i class="icon-trash icon-large"></i></div>
+        <div class="widget-move-delete btn-group">
+            <div class="btn move"><i class="icon-move icon-large"></i></div>
+            <div class="btn delete"><i class="icon-trash icon-large"></i></div>
         </div>
         {% endif %}
     </div>
@@ -18,13 +18,26 @@
 
 {% if edit_mode %}
 <div class="widget-add-control">
-    <form id="{{ container.variable_name }}_add_widget_form"
-          data-behaviours='submit-widget-form' data-container-name="{{ container.variable_name }}"
-          method="get" action="/dashboard/fancypages/widget/{{ container.id }}/">
-        {% for field in widget_create_form %}
-            {{ field }}
-        {% endfor %}
-        <button type='submit' class="btn btn-success"><i class="icon-plus icon-large"></i></button>
-    </form>
+
+    <a data-toggle="modal" href="#{{ container.variable_name }}_modal" class="btn btn-large"><i class="icon-plus"></i> Add content block</a>
+
+    <div id="{{ container.variable_name }}_modal" class="modal hide fade">
+        <div class="modal-header">
+            <a class="close" data-dismiss="modal">×</a>
+            <h3>Add content block to the: {{ container.variable_name }}</h3>
+        </div>
+        <form id="{{ container.variable_name }}_add_widget_form"
+              data-behaviours='submit-widget-form' data-container-name="{{ container.variable_name }}"
+              method="get" action="/dashboard/fancypages/widget/{{ container.id }}/" class="add-content">
+            <div class="modal-body">
+                {% include "fancypages/partials/editor_form_fields.html" with form=widget_create_form %}
+            </div>
+            <div class="modal-footer">
+                <button type='submit' class="btn btn-large"><i class="icon-plus"></i> Add widget</button>
+            </div>
+        </form>
+    </div>
 </div>
+
+
 {% endif %}
