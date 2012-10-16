@@ -3,6 +3,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from oscar.core.application import Application
 from oscar.apps.dashboard.nav import register, Node
+from oscar.views.decorators import staff_member_required
 
 from fancypages.dashboard import views
 
@@ -70,6 +71,9 @@ class FancypagesDashboardApplication(Application):
                 name='widget-move'),
         )
         return self.post_process_urls(urlpatterns)
+
+    def get_url_decorator(self, url_name):
+                return staff_member_required
 
 
 application = FancypagesDashboardApplication()
