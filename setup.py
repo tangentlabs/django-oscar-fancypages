@@ -20,8 +20,6 @@ setup(
         'django-oscar>=0.4',
         'django-model-utils>=1.1.0',
         'django-compressor>=1.2',
-        'virtual-node>=0.0.1',
-        'virtual-less>=0.0.1',
     ],
     dependency_links=[
         'http://github.com/tangentlabs/django-oscar/tarball/master#egg=django-oscar-0.4'
