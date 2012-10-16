@@ -43,12 +43,16 @@
             <th>{% trans "Page type" %}</th>
             <th>{% trans "Containers" %}</th>
             <th></th>
-            <th style="width: 200px"></th>
+            <th style="width: 400px"></th>
         </tr>
         {% for page in page_list %}
         <tr>
             {# <td><input type="checkbox" name="selected_order" class="selected_order" value="{{ order.id }}"/> #}
-            <td>{{ page.title }}</td>
+            <td>
+                <a href="{% url fancypages:page-detail page.code %}">
+                    {{ page.title }}
+                </a>
+            </td>
             <td>{{ page.page_type }}</td>
             <td>
                 {% for container in page.containers.all %}
