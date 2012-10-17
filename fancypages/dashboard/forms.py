@@ -36,14 +36,18 @@ class PageTypeForm(forms.ModelForm):
         # and specific fancy pages setting to load templates and
         # prevent filesystem IO on creation of every instance of
         # this form.
-        template_dirs = getattr(settings, 'FANCYPAGES_TEMPLATE_DIRS', [])
-        template_files = []
+        from django.utils.importlib import import_module
+        base_dir = os.path.dirname(import_module('fancypages').__file__)
+        template_dirs = [os.path.join(base_dir, 'templates/fancypages/pages')]
+        template_dirs += getattr(settings, 'FANCYPAGES_TEMPLATE_DIRS', [])
+
+        template_files = set()
         for tdir in template_dirs:
             # we just look at files in the current directory and ignore
             # subdirectory as this is a temporary POC solution
             for tmpl_file in os.listdir(tdir):
                 if tmpl_file.endswith('.html'):
-                    template_files.append((tmpl_file, tmpl_file))
+                    template_files.add((tmpl_file, tmpl_file))
 
         self.fields['template_name'].choices = template_files
 
