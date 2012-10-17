@@ -41,6 +41,10 @@ This will install dependencies, create the database and load some fixtures.
     This will install a compiled version of `node.js`_ inside your virtualenv
     alongside with less and a ``lessc`` executable.
 
+.. _`node.js`: http://nodejs.org
+.. _`less`: http://lesscss.org
+.. _`django-compressor`: http://django_compressor.readthedocs.org/en/latest/
+
 The credentials for the superuser are::
 
     username: admin
@@ -69,3 +73,39 @@ page included in the fixture can be found here:
 
     http://localhost:8000/page/a-new-article/
 
+
+Setting up your own project
+===========================
+
+Add  fancypages to your ``INSTALLED_APPS`` in the settings file and make
+sure that ``django-compressor`` is there as well::
+
+    INSTALLED_APPS = [
+        ...
+        'compressor',
+        'fancypages',
+        ...
+    ]
+
+Specify the directories to search for custom page templates in the 
+``FANCYPAGES_TEMPLATE_DIRS`` settings and add it to your usual list
+of template directories::
+
+    FANCYPAGES_TEMPLATE_DIRS = [
+        'templates/myfancypages',
+    ]
+    TEMPLATE_DIRS = [
+        'templates',
+        os.path.join(OSCAR_MAIN_TEMPLATE_DIR, 'templates'),
+        OSCAR_MAIN_TEMPLATE_DIR,
+    ] + FANCYPAGES_TEMPLATE_DIRS
+
+Finally, configure your ``urls.py`` to find the pages and the fancypages
+dashboard. It could look something like this::
+
+    urlpatterns = patterns('',
+        ...
+        url(r'^', include(fancypages_app.urls)),
+        url(r'^dashboard/fancypages/', include(dashboard_app.urls)),
+        ...
+    )
