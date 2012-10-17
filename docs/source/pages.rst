@@ -1,6 +1,6 @@
 Pages
 =====
 
-.. autoclass:: fancypages.pages.models.Page
+.. autoclass:: fancypages.models.Page
     :members:
     :undoc-members:
