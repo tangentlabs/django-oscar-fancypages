@@ -113,7 +113,7 @@ fancypages.dashboard = {
                 var previewField = $('#widget-' + widgetId + '-' + fieldName, previewDoc);
                 previewField.html($(fieldElem).val());
             });
-            
+
             // Check the height of the page - apply it to the iFrame
             var pageHeight = $(window).height(),
                 navBarTop = $('.navbar-fixed-top').outerHeight(),
@@ -131,14 +131,17 @@ fancypages.dashboard = {
             var previewDoc = fancypages.dashboard.pages.getPreviewDocument();
 
             // initialise drop-down to create a new widget
-            $('form[id$=add_widget_form]', previewDoc).submit(function (ev) {
+            $('form[id$=add_widget_form] input[type=radio]', previewDoc).click(function (ev) {
                 ev.preventDefault();
 
-                var selection = $("input[type='radio']:checked", this);
-                var containerName = $(this).attr('id').replace('_add_widget_form', '');
-
-                var widgetUrl = $(this).attr('action') + selection.val() + "/create/";
+                var form = $(this).parents('form');
+                var containerName = $(form).attr('id').replace('_add_widget_form', '');
+                var widgetUrl = $(form).attr('action') + $(this).val() + "/create/";
                 fancypages.dashboard.pages.loadWidgetForm(widgetUrl, containerName);
+
+                //FIXME: this is a dirty hack and needs to be fixed! Stat!
+                $(this).parents('div[class~="modal"]').removeClass('in');
+                $('div[class~="modal-backdrop"]', previewDoc).remove();
             });
 
             // initialise all update widgets
@@ -177,13 +180,13 @@ fancypages.dashboard = {
                     });
                 });
             });
-            
+
             // Add / removed page elements for page preview
             $('#preview-check').on('change', function(){
               $('body', previewDoc).toggleClass('preview');
               $('.navbar.accounts', previewDoc).add('.header', previewDoc).fadeToggle('slow');
             });
-            
+
             // Add active state to radio buttons -- modal add content
             $('.add-content input[type=radio]',previewDoc).on('change', function(ev) {
                 var labelElem = $(this).parent('label'),

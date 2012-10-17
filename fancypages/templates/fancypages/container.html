@@ -21,7 +21,7 @@
 
     <a data-toggle="modal" href="#{{ container.variable_name }}_modal" class="btn btn-large"><i class="icon-plus"></i> Add content block</a>
 
-    <div id="{{ container.variable_name }}_modal" class="modal hide fade">
+    <div id="{{ container.variable_name }}_modal" class="modal hide fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-header">
             <a class="close" data-dismiss="modal">×</a>
             <h3>Add content block to the: {{ container.variable_name }}</h3>
@@ -31,9 +31,6 @@
               method="get" action="/dashboard/fancypages/widget/{{ container.id }}/" class="add-content">
             <div class="modal-body">
                 {% include "fancypages/partials/editor_form_fields.html" with form=widget_create_form %}
-            </div>
-            <div class="modal-footer">
-                <button type='submit' class="btn btn-large"><i class="icon-plus"></i> Add widget</button>
             </div>
         </form>
     </div>
