@@ -16,7 +16,7 @@ setup(
     include_package_data=True,
     install_requires=[
         'versiontools>=1.9.1',
-        'Django>=1.4.1',
+        'Django>=1.4.2',
         'django-oscar>=0.3',
         'django-model-utils>=1.1.0',
         'django-compressor>=1.2',
