@@ -12,14 +12,28 @@ from model_utils.managers import (PassThroughManager,
                                   InheritanceManager)
 
 
+class PageTemplate(models.Model):
+    title = models.CharField(_("Title"), max_length=100)
+    description = models.CharField(_("Description"), max_length=500)
+    icon = models.ImageField(_("Icon"), upload_to="fancypages/icons",
+                             null=True, blank=True)
+
+    template_name = models.CharField(_("Template name"), max_length=255)
+
+    def __unicode__(self):
+        return self.title
+
+
 class PageType(models.Model):
     name = models.CharField(_("Name"), max_length=100)
     code = models.SlugField(_("Code"), max_length=100, unique=True)
 
-    template_name = models.CharField(_("Template name"), max_length=500)
+    template =  models.ForeignKey("fancypages.PageTemplate",
+                                  verbose_name=_("Page template"),
+                                  related_name="page_types")
 
     def get_container_names(self):
-        if not self.template_name:
+        if not self.template.template_name:
             return []
 
         # FIXME: This import should be at the top of the file but causes
@@ -27,7 +41,7 @@ class PageType(models.Model):
         # properly
         from fancypages.templatetags import fancypages_tags
         container_names = []
-        for node in loader.get_template(self.template_name):
+        for node in loader.get_template(self.template.template_name):
             container_nodes = node.get_nodes_by_type(fancypages_tags.FancyContainerNode)
 
             for cnode in container_nodes:
@@ -36,7 +50,7 @@ class PageType(models.Model):
                     raise ImproperlyConfigured(
                         "duplicate container name '%s' in template '%s'",
                         var_name,
-                        self.template_name
+                        self.template.template_name
                     )
                 container_names.append(var_name)
         return container_names

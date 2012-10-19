@@ -33,5 +33,5 @@ class PageDetailView(PageEditorMixin, DetailView):
 
     def get_template_names(self):
         return [
-            self.object.page_type.template_name,
+            self.object.page_type.template.template_name,
         ]

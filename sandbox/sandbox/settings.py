@@ -121,14 +121,11 @@ COMPRESS_PRECOMPILERS = (
 
 from oscar import OSCAR_MAIN_TEMPLATE_DIR
 
-FANCYPAGES_TEMPLATE_DIRS = [
-    location('../fancypages/templates/fancypages/pages'),
-]
 TEMPLATE_DIRS = [
     location('templates'),
     os.path.join(OSCAR_MAIN_TEMPLATE_DIR, 'templates'),
     OSCAR_MAIN_TEMPLATE_DIR,
-] + FANCYPAGES_TEMPLATE_DIRS
+]
 
 INSTALLED_APPS = [
     'django.contrib.auth',

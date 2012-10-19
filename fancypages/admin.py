@@ -30,6 +30,7 @@ class TitleTextWidgetAdmin(admin.ModelAdmin):
 
 admin.site.register(models.Page)
 admin.site.register(models.PageType)
+admin.site.register(models.PageTemplate)
 admin.site.register(models.Container)
 admin.site.register(models.TextWidget, TextWidgetAdmin)
 admin.site.register(models.TitleTextWidget, TitleTextWidgetAdmin)
