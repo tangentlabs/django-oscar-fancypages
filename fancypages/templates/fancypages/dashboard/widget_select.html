@@ -1,0 +1,14 @@
+<div id="{{ container.variable_name }}_modal" class="modal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button class="close" data-behaviours="remove-modal" data-dismiss="modal">×</button>
+        <h3>Add content block to the: {{ container.variable_name }}</h3>
+    </div>
+
+    <form id="{{ container.variable_name }}_add_widget_form"
+          data-behaviours='submit-widget-form' data-container-name="{{ container.variable_name }}"
+          method="get" action="/dashboard/fancypages/container/{{ container.id }}/add/" class="add-content">
+        <div class="modal-body">
+            {% include "fancypages/partials/editor_form_fields.html" with form=add_widget_form %}
+        </div>
+    </form>
+</div>

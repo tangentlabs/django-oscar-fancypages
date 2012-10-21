@@ -170,6 +170,42 @@ class PageCustomiseView(PageUpdateView):
         )
 
 
+class WidgetSelectView(generic.ListView):
+    model = Widget
+    template_name = "fancypages/dashboard/widget_select.html"
+
+    def get(self, request, *args, **kwargs):
+        container_id = self.kwargs.get('container_id')
+        self.container = Container.objects.get(id=container_id)
+        return super(WidgetSelectView, self).get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        container_id = self.kwargs.get('container_id')
+        self.container = Container.objects.get(id=container_id)
+        return super(WidgetSelectView, self).post(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        ctx = super(WidgetSelectView, self).get_context_data(**kwargs)
+        ctx['container'] = self.container
+        ctx['add_widget_form'] = forms.WidgetCreateSelectForm()
+        return ctx
+
+
+class WidgetAddView(generic.CreateView):
+    model = Widget
+    template_name = "fancypages/dashboard/widget_create.html"
+
+    def get_initial(self):
+        return {
+            'display_order': self.container.widgets.count(),
+        }
+
+    def get(self, request, *args, **kwargs):
+        container_id = self.kwargs.get('container_id')
+        self.container = Container.objects.get(id=container_id)
+        return super(WidgetCreateView, self).get(request, *args, **kwargs)
+
+
 class WidgetCreateView(generic.CreateView):
     model = Widget
     template_name = "fancypages/dashboard/widget_create.html"
@@ -341,4 +377,44 @@ class WidgetMoveView(JSONResponseMixin, generic.edit.BaseDetailView):
 
         return {
             'success': True,
+        }
+
+
+class ContainerAddWidgetView(JSONResponseMixin, generic.edit.BaseDetailView):
+    model = Container
+
+    def get_context_data(self, **kwargs):
+        widget_code = self.kwargs.get('code', None)
+        if widget_code is None:
+            return {
+                'success': False,
+                'error': "could not find valid widget code"
+            }
+
+        model = None
+        for widget_class in Widget.itersubclasses():
+            if widget_class._meta.abstract:
+                continue
+
+            if widget_class.code == self.kwargs.get('code'):
+                model = widget_class
+                break
+
+        if model is None:
+            return {
+                'success': False,
+                'error': "could not find widget with code %s" % widget_code
+            }
+
+        widget = model.objects.create(
+            container=self.object,
+            display_order=self.object.widgets.count(),
+        )
+
+        return {
+            'success': True,
+            'update_url': reverse(
+                'fancypages-dashboard:widget-update',
+                args=(widget.id,)
+            )
         }

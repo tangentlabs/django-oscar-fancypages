@@ -1,3 +1,4 @@
+from django.forms.util import flatatt
 from django.utils.safestring import mark_safe
 from django.utils.encoding import force_unicode
 from django.utils.html import conditional_escape

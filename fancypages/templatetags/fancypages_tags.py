@@ -1,7 +1,7 @@
 from django import template
 from django.template import defaultfilters
 
-from fancypages.dashboard.forms import WidgetUpdateSelectForm
+from fancypages.dashboard import forms
 
 register = template.Library()
 
@@ -53,7 +53,14 @@ def update_widgets_form(page, container_name):
     container = page.get_container_from_name(container_name)
     if not container:
         return None
-    return WidgetUpdateSelectForm(container)
+    return forms.WidgetUpdateSelectForm(container)
+
+
+@register.assignment_tag
+def get_add_widget_form(container):
+    if not container:
+        return None
+    return forms.WidgetCreateSelectForm(container)
 
 
 @register.simple_tag(takes_context=True)

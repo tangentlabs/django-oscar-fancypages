@@ -78,6 +78,7 @@ class PageQuerySet(InheritanceQuerySet):
             models.Q(date_visible_end__gt=now)
         )
 
+
 # TODO the AbstractPage should use django-treebeard in the future
 # to make sure that the hierarchy is handled properly. This will
 # also simplify moving pages around in the hierarchy
@@ -222,7 +223,10 @@ class Widget(models.Model):
                     raise ImproperlyConfigured(
                         "widget subclasses have to provide 'name' attributes"
                     )
-                widget_choices.append((subclass.code, subclass.name))
+                widget_choices.append((
+                    subclass.code,
+                    subclass.name
+                ))
         return widget_choices
 
     @classmethod
@@ -281,7 +285,8 @@ class TextWidget(Widget):
     code = 'text'
     template_name = "fancypages/widgets/text_widget.html"
 
-    text = models.CharField(_("Text"), max_length=2000)
+    text = models.CharField(_("Text"), max_length=2000,
+                            default="Your text goes here.")
 
     def __unicode__(self):
         return self.text[:20]
@@ -292,8 +297,10 @@ class TitleTextWidget(Widget):
     code = 'title-text'
     template_name = "fancypages/widgets/title_text_widget.html"
 
-    title = models.CharField(_("Title"), max_length=100)
-    text = models.CharField(_("Text"), max_length=2000)
+    title = models.CharField(_("Title"), max_length=100,
+                             default="Your title goes here.")
+    text = models.CharField(_("Text"), max_length=2000,
+                            default="Your text goes here.")
 
     def __unicode__(self):
         return self.title

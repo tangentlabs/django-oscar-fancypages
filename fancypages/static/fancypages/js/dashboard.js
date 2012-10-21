@@ -21,6 +21,50 @@ fancypages.dashboard = {
                     });
                 }
             });
+
+            //load the form to select a new widget to add to the container
+            //and display it in a modal
+            $("a[data-behaviours~=load-add-widget]").click(function (ev) {
+                console.log('add widget button clicked');
+                var addButton = $(this);
+                $.ajax({
+                    type: "GET",
+                    url: addButton.data('action')
+                }).done(function (data) {
+                    addButton.after(data);
+
+                    $(data).load(function () {
+                        $(this).modal('show');
+                    });
+                });
+            });
+
+            // Listen on modal cancel buttons and hide and remove the modal
+            // when clicked.
+            $("button[data-behaviours~=remove-modal]").live('click', function (ev) {
+                console.log('removing modal');
+                ev.preventDefault();
+                fancypages.dashboard.pages.removeModal(this);
+                $(this).parents('div[id$=_modal]').remove();
+            });
+
+            // initialise modal for adding widget
+            $('form[id$=add_widget_form] input[type=radio]').live('click', function (ev) {
+                ev.preventDefault();
+
+                var form = $(this).parents('form');
+                var containerName = $(form).attr('id').replace('_add_widget_form', '');
+                var addUrl = $(form).attr('action') + $(this).val() + '/';
+
+                $.getJSON(addUrl, function (data) {
+                    if (data.success) {
+                        parent.fancypages.dashboard.pages.refreshPreview();
+                        parent.fancypages.dashboard.pages.loadWidgetForm(data.update_url, containerName);
+                    }
+                });
+
+                $(this).parents('div[id$=_modal]').remove();
+            });
         }
     },
     editor: {
@@ -128,21 +172,8 @@ fancypages.dashboard = {
         },
 
         addPreviewListeners: function () {
+            console.log("initialising listeners on preview");
             var previewDoc = fancypages.dashboard.pages.getPreviewDocument();
-
-            // initialise drop-down to create a new widget
-            $('form[id$=add_widget_form] input[type=radio]', previewDoc).click(function (ev) {
-                ev.preventDefault();
-
-                var form = $(this).parents('form');
-                var containerName = $(form).attr('id').replace('_add_widget_form', '');
-                var widgetUrl = $(form).attr('action') + $(this).val() + "/create/";
-                fancypages.dashboard.pages.loadWidgetForm(widgetUrl, containerName);
-
-                //FIXME: this is a dirty hack and needs to be fixed! Stat!
-                $(this).parents('div[class~="modal"]').removeClass('in');
-                $('div[class~="modal-backdrop"]', previewDoc).remove();
-            });
 
             // initialise all update widgets
             $('form[id$=update_widget_form]').each(function (idx, form) {
@@ -204,6 +235,7 @@ fancypages.dashboard = {
                 var widgetWrapper = $('div[id=widget_input_wrapper]');
                 widgetWrapper.html(data);
                 $('#page-settings').hide();
+                console.log($(document).parent('form'));
 
                 fancypages.dashboard.editor.init();
             });
