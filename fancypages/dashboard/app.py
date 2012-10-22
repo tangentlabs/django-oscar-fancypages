@@ -9,13 +9,28 @@ from fancypages.dashboard import views
 
 
 node = Node(_('Page Manager'))
-node.add_child(Node(_('Pages'), 'fancypages-dashboard:page-list'))
-node.add_child(Node(_('Page Types'), 'fancypages-dashboard:page-type-list'))
+node.add_child(Node(
+    _('Pages'),
+    'fancypages-dashboard:page-list')
+)
+node.add_child(Node(
+    _('Page Types'),
+    'fancypages-dashboard:page-type-list')
+)
+node.add_child(Node(
+    _('Page Templates'),
+    'fancypages-dashboard:page-template-list')
+)
 register(node, 100)
 
 
 class FancypagesDashboardApplication(Application):
     name = 'fancypages-dashboard'
+    page_template_list_view = views.PageTemplateListView
+    page_template_create_view = views.PageTemplateCreateView
+    page_template_update_view = views.PageTemplateUpdateView
+    page_template_delete_view = views.PageTemplateDeleteView
+
     page_type_list_view = views.PageTypeListView
     page_type_create_view = views.PageTypeCreateView
     page_type_update_view = views.PageTypeUpdateView
@@ -38,6 +53,19 @@ class FancypagesDashboardApplication(Application):
 
     def get_urls(self):
         urlpatterns = patterns('',
+            url(r'^templates/$',
+                self.page_template_list_view.as_view(),
+                name='page-template-list'),
+            url(r'^template/create/$',
+                self.page_template_create_view.as_view(),
+                name='page-template-create'),
+            url(r'^template/update/(?P<pk>\d+)/$',
+                self.page_template_update_view.as_view(),
+                name='page-template-update'),
+            url(r'^template/delete/(?P<pk>\d+)/$',
+                self.page_template_delete_view.as_view(),
+                name='page-template-delete'),
+
             url(r'^types/$', self.page_type_list_view.as_view(),
                 name='page-type-list'),
             url(r'^type/create/$', self.page_type_create_view.as_view(),

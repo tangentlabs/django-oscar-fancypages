@@ -1,11 +1,13 @@
 from django import forms
 from django.db.models import get_model
 from django.utils.translation import ugettext_lazy as _
+from django.template import loader, TemplateDoesNotExist
 
 from fancypages.widgets import SelectWidgetRadioFieldRenderer
 
 Page = get_model('fancypages', 'Page')
 PageType = get_model('fancypages', 'PageType')
+PageTemplate = get_model('fancypages', 'PageTemplate')
 
 
 class PageTypeSelectForm(forms.Form):
@@ -21,6 +23,24 @@ class PageTypeSelectForm(forms.Form):
             )
 
         self.fields['page_type'].choices = page_type_choices
+
+
+class PageTemplateForm(forms.ModelForm):
+
+    def clean_template_name(self):
+        template_name = self.cleaned_data['template_name']
+        try:
+            loader.get_template(template_name)
+        except TemplateDoesNotExist:
+            raise forms.ValidationError(
+                "template %s does not exist please enter the path of "
+                "an existing template" % template_name
+            )
+        return template_name
+
+
+    class Meta:
+        model = PageTemplate
 
 
 class PageTypeForm(forms.ModelForm):

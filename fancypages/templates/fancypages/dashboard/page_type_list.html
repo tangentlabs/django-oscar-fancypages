@@ -39,7 +39,7 @@
         <tr>
             {# <td><input type="checkbox" name="selected_order" class="selected_order" value="{{ order.id }}"/> #}
             <td>{{ page_type.name }}</td>
-            <td>{{ page_type.template_name }}</td>
+            <td>{{ page_type.template.template_name }}</td>
             <td>
                 <a class="btn btn-info" href="{% url fancypages-dashboard:page-type-update page_type.id %}">{% trans "Edit" %}</a>
                 <a class="btn btn-danger" href="{% url fancypages-dashboard:page-type-delete page_type.id %}">{% trans "Delete" %}</a>

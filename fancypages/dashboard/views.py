@@ -13,9 +13,55 @@ from fancypages.views import PageDetailView
 
 
 Page = get_model('fancypages', 'Page')
+PageTemplate = get_model('fancypages', 'PageTemplate')
 PageType = get_model('fancypages', 'PageType')
 Widget = get_model('fancypages', 'Widget')
 Container = get_model('fancypages', 'Container')
+
+
+class PageTemplateListView(generic.ListView):
+    model = PageTemplate
+    context_object_name = 'page_template_list'
+    template_name = "fancypages/dashboard/page_template_list.html"
+
+
+class PageTemplateCreateView(generic.CreateView):
+    model = PageTemplate
+    form_class = forms.PageTemplateForm
+    context_object_name = 'page_template'
+    template_name = "fancypages/dashboard/page_template_update.html"
+
+    def get_context_data(self, **kwargs):
+        ctx = super(PageTemplateCreateView, self).get_context_data(**kwargs)
+        ctx['page_title'] = _("Create new page template")
+        return ctx
+
+    def get_success_url(self):
+        return reverse('fancypages-dashboard:page-template-list')
+
+
+class PageTemplateUpdateView(generic.UpdateView):
+    model = PageTemplate
+    form_class = forms.PageTemplateForm
+    context_object_name = 'page_template'
+    template_name = "fancypages/dashboard/page_template_update.html"
+
+    def get_context_data(self, **kwargs):
+        ctx = super(PageTemplateUpdateView, self).get_context_data(**kwargs)
+        ctx['page_title'] = _("Update page template")
+        return ctx
+
+    def get_success_url(self):
+        return reverse('fancypages-dashboard:page-template-list')
+
+
+class PageTemplateDeleteView(generic.DeleteView):
+    model = PageTemplate
+    context_object_name = 'page_template'
+    template_name = "fancypages/dashboard/page_template_delete.html"
+
+    def get_success_url(self):
+        return reverse('fancypages-dashboard:page-template-list')
 
 
 class PageTypeListView(generic.ListView):

@@ -1,0 +1,50 @@
+{% extends 'fancypages/dashboard/layout.html' %}
+{% load i18n %}
+
+{% block breadcrumbs %}
+<ul class="breadcrumb">
+    <li>
+        <a href="{% url dashboard:index %}">{% trans "Dashboard" %}</a>
+        <span class="divider">/</span>
+    </li>
+    <li>
+        <a href="{% url fancypages-dashboard:page-template-list %}">{% trans "Page templates" %}</a>
+        <span class="divider">/</span>
+    </li>
+    <li class="active">
+        <a href=".">
+            {% blocktrans with title=page_template.title %}
+            Delete page template {{ title }}
+            {% endblocktrans %}
+        </a>
+    </li>
+</ul>
+{% endblock %}
+
+{% block header %}
+<div class="page-header">
+<h1>
+{% blocktrans with title=page_template.title %}
+Delete page template {{ title }}
+{% endblocktrans %}
+</h1>
+</div>
+{% endblock header %}
+
+{% block dashboard_content %}
+
+<form action="." method="post" class="order_table">
+    {% csrf_token %}
+    {% blocktrans with title=page_template.title %}
+    Do you really want to delete the page template "{{ title }}"?
+    {% endblocktrans %}
+    <hr />
+    <div class="control-group">
+        <div class="controls">
+            <button class="btn btn-info" type="submit">{% trans "Delete" %}</button>
+            <a class="btn" href="{% url fancypages-dashboard:page-template-list %}">{% trans "Cancel" %}</a>
+        </div>
+    </div>
+</form>
+
+{% endblock dashboard_content %}

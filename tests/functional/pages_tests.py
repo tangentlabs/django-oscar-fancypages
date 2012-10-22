@@ -7,6 +7,7 @@ from fancypages import test
 
 Page = get_model('fancypages', 'Page')
 PageType = get_model('fancypages', 'PageType')
+PageTemplate = get_model('fancypages', 'PageTemplate')
 TextWidget = get_model('fancypages', 'TextWidget')
 TitleTextWidget = get_model('fancypages', 'TitleTextWidget')
 
@@ -21,9 +22,9 @@ class TestAStaffMember(test.FancyPagesWebTest):
             code='article',
             template=self.template
         )
-        empty_template = get_model('fancypages', 'PageTemplate').objects.create(
+        empty_template = PageTemplate.objects.create(
             title="empty",
-            description="empty", 
+            description="empty",
             template_name=""
         )
         self.other_type = PageType.objects.create(name='Other', code='other',
@@ -159,6 +160,123 @@ class TestAWidget(test.FancyPagesWebTest):
         json_response = json.loads(response.body)
         self.assertEquals(json_response['success'], True)
         self.assertEquals(container.widgets.count(), num_widgets + 1)
+
+
+class TestAPageTemplate(test.FancyPagesWebTest):
+    is_staff = True
+
+    def test_are_listed_in_the_dashboard(self):
+        page = self.app.get(
+            reverse('fancypages-dashboard:page-template-list'),
+            user=self.user
+        )
+        self.assertContains(page, self.template.title)
+        self.assertContains(page, self.template.description)
+        self.assertContains(page, self.template.template_name)
+
+        self.assertContains(
+            page,
+            reverse(
+                'fancypages-dashboard:page-template-update',
+                args=(self.template.id,)
+            )
+        )
+        self.assertContains(
+            page,
+            reverse(
+                'fancypages-dashboard:page-template-delete',
+                args=(self.template.id,)
+            )
+        )
+
+    def test_cannot_be_created_with_template_does_not_exist(self):
+        page = self.app.get(
+            reverse('fancypages-dashboard:page-template-list'),
+            user=self.user
+        )
+        page = page.click('Create new page template')
+
+        self.assertEquals(PageTemplate.objects.count(), 1)
+
+        template_form = page.form
+        template_form['title'] = "Added template"
+        template_form['description'] = 'The added description'
+        template_form['template_name'] = 'a/sample/template/file.html'
+        page = template_form.submit()
+
+        self.assertContains(
+            page, 
+            "template %s does not exist" % 'a/sample/template/file.html'
+        )
+
+    def test_can_be_created_without_image_in_the_dashboard(self):
+        page = self.app.get(
+            reverse('fancypages-dashboard:page-template-list'),
+            user=self.user
+        )
+        page = page.click('Create new page template')
+
+        self.assertEquals(PageTemplate.objects.count(), 1)
+
+        template_form = page.form
+        template_form['title'] = "Added template"
+        template_form['description'] = 'The added description'
+        template_form['template_name'] = self.template_name
+        page = template_form.submit()
+
+        self.assertRedirects(
+            page,
+            reverse('fancypages-dashboard:page-template-list')
+        )
+
+        self.assertEquals(PageTemplate.objects.count(), 2)
+
+        template = PageTemplate.objects.get(title="Added template")
+        self.assertEquals(template.description, 'The added description')
+        self.assertEquals(template.template_name, self.template_name)
+
+    def test_can_be_updated_without_image_in_the_dashboard(self):
+        page = self.app.get(
+            reverse('fancypages-dashboard:page-template-list'),
+            user=self.user
+        )
+        page = page.click('Edit')
+
+        self.assertContains(page, 'Update page template')
+
+        template_form = page.form
+        template_form['title'] = "new title"
+        page = template_form.submit()
+
+        self.assertRedirects(
+            page,
+            reverse('fancypages-dashboard:page-template-list')
+        )
+
+        self.assertEquals(PageTemplate.objects.count(), 1)
+
+        template = PageTemplate.objects.get(id=self.template.id)
+        self.assertEquals(template.title, 'new title')
+
+    def test_can_be_deleted_in_the_dashboard(self):
+        page = self.app.get(
+            reverse('fancypages-dashboard:page-template-list'),
+            user=self.user
+        )
+        self.assertEquals(PageTemplate.objects.count(), 1)
+        page = page.click('Delete')
+
+        self.assertContains(page, 'Delete page template')
+
+        template_form = page.form
+        page = template_form.submit()
+
+        self.assertRedirects(
+            page,
+            reverse('fancypages-dashboard:page-template-list')
+        )
+
+        self.assertEquals(PageTemplate.objects.count(), 0)
 
 
 class TestAnAnonymousUser(test.FancyPagesWebTest):
