@@ -9,15 +9,20 @@ fancypages.dashboard = {
                 placeholder: "ui-state-highlight",
                 forcePlaceholderSize: true,
                 update: function (ev, ui) {
-                    var dropIndex = ui.item.index(),
-                        widgetId = ui.item.data('widget-id');
+                    var dropIndex = ui.item.index();
+                    var widgetId = ui.item.data('widget-id');
+                    var moveUrl = '/dashboard/fancypages/widget/move/' + widgetId + '/' + dropIndex + '/';
 
-                    $.getJSON('/dashboard/fancypages/widget/move/' + widgetId + '/' + dropIndex + '/', function (data) {
+                    $.getJSON(moveUrl, function (data) {
                         if (data.success) {
-                            parent.fancypages.dashboard.refreshPreview();
+                            parent.fancypages.dashboard.reloadPreview();
                         } else {
-                            alert('ERROR');
+                            parent.oscar.messages.error(data.error);
                         }
+                    }).error(function () {
+                        parent.oscar.messages.error(
+                            "An error occured trying to move the widget. Please try it again."
+                        );
                     });
                 }
             });
@@ -25,24 +30,28 @@ fancypages.dashboard = {
             //load the form to select a new widget to add to the container
             //and display it in a modal
             $("a[data-behaviours~=load-add-widget]").click(function (ev) {
-                console.log('add widget button clicked');
                 var addButton = $(this);
                 $.ajax({
                     type: "GET",
-                    url: addButton.data('action')
-                }).done(function (data) {
-                    addButton.after(data);
+                    url: addButton.data('action'),
+                    success: function (data) {
+                        addButton.after(data);
 
-                    $(data).load(function () {
-                        $(this).modal('show');
-                    });
+                        $(data).load(function () {
+                            $(this).modal('show');
+                        });
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        parent.oscar.messages.error(
+                            "Could not get availabe widget for this container. Please try it again."
+                        );
+                    }
                 });
             });
 
             // Listen on modal cancel buttons and hide and remove the modal
             // when clicked.
             $("button[data-behaviours~=remove-modal]").live('click', function (ev) {
-                console.log('removing modal');
                 ev.preventDefault();
                 fancypages.dashboard.removeModal(this);
                 $(this).parents('div[id$=_modal]').remove();
@@ -58,9 +67,15 @@ fancypages.dashboard = {
 
                 $.getJSON(addUrl, function (data) {
                     if (data.success) {
-                        parent.fancypages.dashboard.refreshPreview();
+                        parent.fancypages.dashboard.reloadPreview();
                         parent.fancypages.dashboard.loadWidgetForm(data.update_url, containerName);
+                    } else {
+                        parent.oscar.messages.error(data.error);
                     }
+                }).error(function () {
+                    parent.oscar.messages.error(
+                        "An error occured trying to add a new widget. Please try it again."
+                    );
                 });
 
                 $(this).parents('div[id$=_modal]').remove();
@@ -171,7 +186,6 @@ fancypages.dashboard = {
     },
 
     addPreviewListeners: function () {
-        console.log("initialising listeners on preview");
         var previewDoc = fancypages.dashboard.getPreviewDocument();
 
         // initialise all update widgets
@@ -201,28 +215,26 @@ fancypages.dashboard = {
 
             var deleteUrl = '/dashboard/fancypages/widget/delete/' + $(widget).data('widget-id') + "/";
 
-            $.ajax(deleteUrl).done(function (data) {
-                var widgetWrapper = $('div[id=widget_input_wrapper]');
-                widgetWrapper.after(data);
+            $.ajax(deleteUrl)
+                .done(function (data) {
+                    var widgetWrapper = $('div[id=widget_input_wrapper]');
+                    widgetWrapper.after(data);
 
-                $(data).load(function () {
-                    $(this).modal('show');
+                    $(data).load(function () {
+                        $(this).modal('show');
+                    });
+                })
+                .error(function () {
+                    parent.oscar.messages.error(
+                        "An error occured trying to delete a widget. Please try it again."
+                    );
                 });
-            });
         });
 
         // Add / removed page elements for page preview
-        $('#preview-check').on('change', function(){
-          $('body', previewDoc).toggleClass('preview');
-          $('.navbar.accounts', previewDoc).add('.header', previewDoc).fadeToggle('slow');
-        });
-
-        // Add active state to radio buttons -- modal add content
-        $('.add-content input[type=radio]',previewDoc).on('change', function(ev) {
-            var labelElem = $(this).parent('label'),
-                parentElem = $(this).parents('ul');
-            $("label", parentElem).removeClass('active');
-            labelElem.addClass('active');
+        $('#preview-check').on('change', function () {
+            $('body', previewDoc).toggleClass('preview');
+            $('.navbar.accounts', previewDoc).add('.header', previewDoc).fadeToggle('slow');
         });
     },
 
@@ -234,7 +246,6 @@ fancypages.dashboard = {
             var widgetWrapper = $('div[id=widget_input_wrapper]');
             widgetWrapper.html(data);
             $('#page-settings').hide();
-            console.log($(document).parent('form'));
 
             fancypages.dashboard.editor.init();
         });
@@ -250,11 +261,17 @@ fancypages.dashboard = {
         $.ajax({
             type: "POST",
             url: elem.attr('action'),
-            data: elem.serialize()
-        }).done(function (data) {
-            $('div[id=widget_input_wrapper]').html("");
-            $('#page-preview').attr('src', $('#page-preview').attr('src'));
-            $('#page-settings').show();
+            data: elem.serialize(),
+            success: function (data) {
+                $('div[id=widget_input_wrapper]').html("");
+                $('#page-preview').attr('src', $('#page-preview').attr('src'));
+                $('#page-settings').show();
+            },
+            error: function () {
+                parent.oscar.messages.error(
+                    "An error occured trying to delete a widget. Please try it again."
+                );
+            }
         });
     },
 
@@ -266,7 +283,13 @@ fancypages.dashboard = {
         return $('#page-preview').contents();
     },
 
-    refreshPreview: function () {
+    /**
+     * Reload the preview displayed in the iframe of the customise page.
+     * A preview reload is necessary (or advised) whenever the content of
+     * the page is changed in the database to prevent inconsistencies between
+     * the preview and the actual stored content.
+     */
+    reloadPreview: function () {
         $('#page-preview').attr('src', $('#page-preview').attr('src'));
     }
 };
