@@ -8,14 +8,5 @@
             "description": "A 2 column layout that represents an article",
             "title": "Article Template"
         }
-    },
-    {
-        "pk": 1,
-        "model": "fancypages.pagetype",
-        "fields": {
-            "code": "article-page",
-            "name": "Article Page",
-            "template": 1
-        }
     }
 ]
