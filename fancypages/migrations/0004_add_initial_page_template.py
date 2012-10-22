@@ -13,7 +13,7 @@ class Migration(DataMigration):
 
     def forwards(self, orm):
         "Write your forwards methods here."
-        loaddata(orm, 'page_templates.json')
+        loaddata(orm, 'page_templates_types.json')
 
 
     def backwards(self, orm):
