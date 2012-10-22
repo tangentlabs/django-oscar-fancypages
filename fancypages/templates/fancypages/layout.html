@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+
+{% if edit_mode %}
+    {% block extrahead %}
+        {{ block.super }}
+        {% include "fancypages/dashboard/partials/edit_mode_extrahead.html" %}
+    {% endblock %}
+
+    {% block extrascripts %}
+        {{ block.super }}
+        {% include "fancypages/dashboard/partials/edit_mode_extrascripts.html" %}
+    {% endblock %}
+
+    {% block onbodyload %}
+        {% include "fancypages/dashboard/partials/edit_mode_onbodyload.html" %}
+    {% endblock %}
+{% endif %}

@@ -170,6 +170,28 @@ class PageCustomiseView(PageUpdateView):
         )
 
 
+class FancypagesMixin(object):
+
+    def get_widget_class(self):
+        model = None
+        for widget_class in Widget.itersubclasses():
+            if widget_class._meta.abstract:
+                continue
+
+            if widget_class.code == self.kwargs.get('code'):
+                model = widget_class
+                break
+        return model
+
+    def get_widget_object(self):
+        try:
+            return self.model.objects.select_subclasses().get(
+                id=self.kwargs.get('pk')
+            )
+        except self.model.DoesNotExist:
+            raise http.Http404
+
+
 class WidgetSelectView(generic.ListView):
     model = Widget
     template_name = "fancypages/dashboard/widget_select.html"
@@ -206,7 +228,7 @@ class WidgetAddView(generic.CreateView):
         return super(WidgetCreateView, self).get(request, *args, **kwargs)
 
 
-class WidgetCreateView(generic.CreateView):
+class WidgetCreateView(generic.CreateView, FancypagesMixin):
     model = Widget
     template_name = "fancypages/dashboard/widget_create.html"
 
@@ -232,14 +254,7 @@ class WidgetCreateView(generic.CreateView):
         return ctx
 
     def get_form_class(self):
-        for widget_class in Widget.itersubclasses():
-            if widget_class._meta.abstract:
-                continue
-
-            if widget_class.code == self.kwargs.get('code'):
-                model = widget_class
-                break
-
+        model = self.get_widget_class()
         form_class = getattr(forms, "%sForm" % model.__name__, forms.WidgetForm)
         form_class = modelform_factory(model, form=form_class)
         return form_class
@@ -256,18 +271,13 @@ class WidgetCreateView(generic.CreateView):
                        args=(self.object.id,))
 
 
-class WidgetUpdateView(generic.UpdateView):
+class WidgetUpdateView(generic.UpdateView, FancypagesMixin):
     model = Widget
     context_object_name = 'widget'
     template_name = "fancypages/dashboard/widget_update.html"
 
     def get_object(self, queryset=None):
-        try:
-            return self.model.objects.select_subclasses().get(
-                id=self.kwargs.get('pk')
-            )
-        except self.model.DoesNotExist:
-            return self.model.objects.none()
+        return self.get_widget_object()
 
     def get_form_class(self):
         model = self.object.__class__
@@ -283,18 +293,13 @@ class WidgetUpdateView(generic.UpdateView):
                        args=(self.object.id,))
 
 
-class WidgetDeleteView(generic.DeleteView):
+class WidgetDeleteView(generic.DeleteView, FancypagesMixin):
     model = Widget
     context_object_name = 'widget'
     template_name = "fancypages/dashboard/widget_delete.html"
 
     def get_object(self, queryset=None):
-        try:
-            return self.model.objects.select_subclasses().get(
-                id=self.kwargs.get('pk')
-            )
-        except self.model.DoesNotExist:
-            return self.model.objects.none()
+        return self.get_widget_object()
 
     def delete(self, request, *args, **kwargs):
         response = super(WidgetDeleteView, self).delete(request, *args, **kwargs)
@@ -308,35 +313,30 @@ class WidgetDeleteView(generic.DeleteView):
 
 
 class JSONResponseMixin(object):
+
     def render_to_response(self, context):
         "Returns a JSON response containing 'context' as payload"
         return self.get_json_response(self.convert_context_to_json(context))
 
     def get_json_response(self, content, **httpresponse_kwargs):
         "Construct an `HttpResponse` object."
-        return http.HttpResponse(content,
-                                 content_type='application/json',
-                                 **httpresponse_kwargs)
+        return http.HttpResponse(
+            content,
+            content_type='application/json',
+            **httpresponse_kwargs
+        )
 
     def convert_context_to_json(self, context):
         "Convert the context dictionary into a JSON object"
-        # Note: This is *EXTREMELY* naive; in reality, you'll need
-        # to do much more complex handling to ensure that arbitrary
-        # objects -- such as Django model instances or querysets
-        # -- can be serialized as JSON.
         return json.dumps(context)
 
 
-class WidgetMoveView(JSONResponseMixin, generic.edit.BaseDetailView):
+class WidgetMoveView(JSONResponseMixin, generic.edit.BaseDetailView,
+                     FancypagesMixin):
     model = Widget
 
     def get_object(self, queryset=None):
-        try:
-            return self.model.objects.select_subclasses().get(
-                id=self.kwargs.get('pk')
-            )
-        except self.model.DoesNotExist:
-            return self.model.objects.none()
+        return self.get_widget_object()
 
     def get_context_data(self, **kwargs):
         moved_widget = self.get_object()
@@ -380,7 +380,8 @@ class WidgetMoveView(JSONResponseMixin, generic.edit.BaseDetailView):
         }
 
 
-class ContainerAddWidgetView(JSONResponseMixin, generic.edit.BaseDetailView):
+class ContainerAddWidgetView(JSONResponseMixin, generic.edit.BaseDetailView,
+                             FancypagesMixin):
     model = Container
 
     def get_context_data(self, **kwargs):
@@ -391,26 +392,18 @@ class ContainerAddWidgetView(JSONResponseMixin, generic.edit.BaseDetailView):
                 'error': "could not find valid widget code"
             }
 
-        model = None
-        for widget_class in Widget.itersubclasses():
-            if widget_class._meta.abstract:
-                continue
-
-            if widget_class.code == self.kwargs.get('code'):
-                model = widget_class
-                break
-
+        model = self.get_widget_class()
         if model is None:
             return {
                 'success': False,
                 'error': "could not find widget with code %s" % widget_code
             }
 
+        # create a new widget and add it to the given container
         widget = model.objects.create(
             container=self.object,
             display_order=self.object.widgets.count(),
         )
-
         return {
             'success': True,
             'update_url': reverse(
