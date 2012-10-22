@@ -5,7 +5,8 @@ from django.utils import timezone
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ImproperlyConfigured
-from django.template import loader, Context, RequestContext
+from django.template import (loader, Context, RequestContext,
+                             TemplateDoesNotExist)
 
 from model_utils.managers import (PassThroughManager,
                                   InheritanceQuerySet,
@@ -41,7 +42,12 @@ class PageType(models.Model):
         # properly
         from fancypages.templatetags import fancypages_tags
         container_names = []
-        for node in loader.get_template(self.template.template_name):
+        try:
+            template = loader.get_template(self.template.template_name)
+        except TemplateDoesNotExist:
+            return []
+
+        for node in template:
             container_nodes = node.get_nodes_by_type(fancypages_tags.FancyContainerNode)
 
             for cnode in container_nodes:

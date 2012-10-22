@@ -7,6 +7,8 @@ from django.contrib.auth.models import User
 
 from django_webtest import WebTest
 
+from fancypages import models
+
 
 class MockTemplateMixin(object):
 
@@ -16,6 +18,12 @@ class MockTemplateMixin(object):
         settings.TEMPLATE_DIRS = list(settings.TEMPLATE_DIRS) + [tempdir]
         self.template_name = 'test_article_page.html'
         self.template_file = os.path.join(tempdir, self.template_name)
+
+        self.template = models.PageTemplate.objects.create(
+            title="Test Template",
+            description="For testing",
+            template_name=self.template_name
+        )
 
     def tearDown(self):
         os.remvoe(self.template_file)

@@ -1,8 +1,6 @@
 {% extends 'dashboard/layout.html' %}
-{% load i18n %}
 {% load compress %}
 {% load staticfiles %}
-{% load fancypages_tags %}
 
 {% block body_class %}fancypages{% endblock %}
 
@@ -22,5 +20,5 @@
 {% endblock %}
 
 {% block onbodyload %}
-fancypages.dashboard.pages.init();
+fancypages.dashboard.init();
 {% endblock %}

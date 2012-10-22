@@ -12,6 +12,11 @@ class TestPageType(test.FancyPagesTestCase):
 
     def test_empty_container_name_list_is_returned_when_unknown_page_type(self):
         page_type = models.PageType()
+        page_type.template = models.PageTemplate.objects.create(
+            title="Test Template",
+            description="For testing",
+            template_name="somewhere_else.html"
+        )
         self.prepare_template_file("""{% load fancypages_tags %}
 {% block main-content %}
 {% fancypages-container first-container %}
@@ -22,8 +27,11 @@ class TestPageType(test.FancyPagesTestCase):
         self.assertSequenceEqual(page_type.get_container_names(), [])
 
     def test_can_extract_container_names_from_template(self):
-        page_type = models.PageType.objects.create(name='Article', code='article',
-                                                   template_name=self.template_name)
+        page_type = models.PageType.objects.create(
+            name='Article',
+            code='article',
+            template=self.template
+        )
         self.prepare_template_file("""{% load fancypages_tags %}
 {% block main-content %}
 {% fancypages-container first-container %}
@@ -37,9 +45,11 @@ class TestPageType(test.FancyPagesTestCase):
         )
 
     def test_cannot_be_used_with_duplicate_container_names(self):
-        page_type = models.PageType.objects.create(name='Article', code='article',
-                                                   template_name=self.template_name)
-
+        page_type = models.PageType.objects.create(
+            name='Article',
+            code='article',
+            template=self.template
+        )
         self.prepare_template_file("""{% load fancypages_tags %}
 {% block main-content %}
 {% fancypages-container first-container %}
@@ -55,9 +65,11 @@ class TestPageType(test.FancyPagesTestCase):
 class TestAPage(test.FancyPagesTestCase):
 
     def test_creates_containers_when_saved(self):
-        page_type = models.PageType.objects.create(name='Article', code='article',
-                                                   template_name=self.template_name)
-
+        page_type = models.PageType.objects.create(
+            name='Article',
+            code='article',
+            template=self.template
+        )
         self.prepare_template_file("""{% load fancypages_tags %}
 {% block main-content %}
 {% fancypages-container first-container %}
@@ -79,8 +91,9 @@ class TestContainer(test.FancyPagesTestCase):
 
     def test_can_be_assigned_to_a_page(self):
         page_type = models.PageType.objects.create(
-            name='Article', code='article',
-            template_name=self.template_name
+            name='Article',
+            code='article',
+            template=self.template
         )
 
         self.prepare_template_file("{% load fancypages_tags %}"
@@ -99,8 +112,9 @@ class TestContainer(test.FancyPagesTestCase):
 
     def test_cannot_assign_multiple_instance_to_page(self):
         page_type = models.PageType.objects.create(
-            name='Article', code='article',
-            template_name=self.template_name
+            name='Article',
+            code='article',
+            template=self.template
         )
 
         self.prepare_template_file("{% load fancypages_tags %}"

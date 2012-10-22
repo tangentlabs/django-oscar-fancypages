@@ -14,7 +14,7 @@ fancypages.dashboard = {
 
                     $.getJSON('/dashboard/fancypages/widget/move/' + widgetId + '/' + dropIndex + '/', function (data) {
                         if (data.success) {
-                            parent.fancypages.dashboard.pages.refreshPreview();
+                            parent.fancypages.dashboard.refreshPreview();
                         } else {
                             alert('ERROR');
                         }
@@ -44,7 +44,7 @@ fancypages.dashboard = {
             $("button[data-behaviours~=remove-modal]").live('click', function (ev) {
                 console.log('removing modal');
                 ev.preventDefault();
-                fancypages.dashboard.pages.removeModal(this);
+                fancypages.dashboard.removeModal(this);
                 $(this).parents('div[id$=_modal]').remove();
             });
 
@@ -58,8 +58,8 @@ fancypages.dashboard = {
 
                 $.getJSON(addUrl, function (data) {
                     if (data.success) {
-                        parent.fancypages.dashboard.pages.refreshPreview();
-                        parent.fancypages.dashboard.pages.loadWidgetForm(data.update_url, containerName);
+                        parent.fancypages.dashboard.refreshPreview();
+                        parent.fancypages.dashboard.loadWidgetForm(data.update_url, containerName);
                     }
                 });
 
@@ -114,7 +114,7 @@ fancypages.dashboard = {
          */
         updatePreview: function (editor) {
             var fieldElem = $(editor.textarea.element),
-                previewDoc = fancypages.dashboard.pages.getPreviewDocument();
+                previewDoc = fancypages.dashboard.getPreviewDocument();
 
             var widgetId = $(fieldElem).parents('form').data('widget-id');
             var fieldName = $(fieldElem).attr('id').replace('id_', '');
@@ -124,151 +124,149 @@ fancypages.dashboard = {
         }
     },
 
-    pages: {
-        init: function () {
-            $('#page-preview').load(function () {
-                fancypages.dashboard.pages.addPreviewListeners();
+    init: function () {
+        $('#page-preview').load(function () {
+            fancypages.dashboard.addPreviewListeners();
+        });
+
+        $('form[data-behaviours~=submit-widget-form]').live('submit', function (ev) {
+            ev.preventDefault();
+            $('button[type=submit]').attr("disabled", true).html("Processing...");
+            $('button').attr("disabled", true);
+            fancypages.dashboard.removeModal(this);
+            fancypages.dashboard.submitWidgetForm($(this));
+        });
+
+        // Listen on modal cancel buttons and hide and remove the modal
+        // when clicked.
+        $("button[data-behaviours~=remove-modal]").live('click', function (ev) {
+            ev.preventDefault();
+            fancypages.dashboard.removeModal(this);
+        });
+
+        // attach live update listener to all regular input field
+        $('div[data-behaviours~=field-live-update]').live('change keyup', function (ev) {
+            ev.preventDefault();
+
+            var fieldElem = $('input', this);
+            var widgetId = $(this).parents('form').data('widget-id');
+            var fieldName = $(fieldElem).attr('id').replace('id_', '');
+
+            var previewDoc = fancypages.dashboard.getPreviewDocument();
+            var previewField = $('#widget-' + widgetId + '-' + fieldName, previewDoc);
+            previewField.html($(fieldElem).val());
+        });
+
+        // Check the height of the page - apply it to the iFrame
+        var pageHeight = $(window).height(),
+            navBarTop = $('.navbar-fixed-top').outerHeight(),
+            subBarTop = $('.subnav-fixed').outerHeight(),
+            pageTitle = $('.page-title').outerHeight();
+        $('#page-preview').css('height', pageHeight - navBarTop - subBarTop - pageTitle);
+    },
+
+    removeModal: function (elem) {
+        var modalElem = $(elem).parents('#delete-modal');
+        modalElem.remove();
+    },
+
+    addPreviewListeners: function () {
+        console.log("initialising listeners on preview");
+        var previewDoc = fancypages.dashboard.getPreviewDocument();
+
+        // initialise all update widgets
+        $('form[id$=update_widget_form]').each(function (idx, form) {
+            var selection = $("select", form);
+            var containerName = $(form).attr('id').replace('_update_widget_form', '');
+
+            var widgetUrl = "/dashboard/fancypages/widget/update/" + selection.val() + "/";
+            fancypages.dashboard.loadWidgetForm(widgetUrl, containerName);
+
+            selection.change(function (ev) {
+                var widgetUrl = "/dashboard/fancypages/widget/update/" + $(this).val() + "/";
+                fancypages.dashboard.loadWidgetForm(widgetUrl, containerName);
             });
-
-            $('form[data-behaviours~=submit-widget-form]').live('submit', function (ev) {
-                ev.preventDefault();
-                $('button[type=submit]').attr("disabled", true).html("Processing...");
-                $('button').attr("disabled", true);
-                fancypages.dashboard.pages.removeModal(this);
-                fancypages.dashboard.pages.submitWidgetForm($(this));
-            });
-
-            // Listen on modal cancel buttons and hide and remove the modal
-            // when clicked.
-            $("button[data-behaviours~=remove-modal]").live('click', function (ev) {
-                ev.preventDefault();
-                fancypages.dashboard.pages.removeModal(this);
-            });
-
-            // attach live update listener to all regular input field
-            $('div[data-behaviours~=field-live-update]').live('change keyup', function (ev) {
-                ev.preventDefault();
-
-                var fieldElem = $('input', this);
-                var widgetId = $(this).parents('form').data('widget-id');
-                var fieldName = $(fieldElem).attr('id').replace('id_', '');
-
-                var previewDoc = fancypages.dashboard.pages.getPreviewDocument();
-                var previewField = $('#widget-' + widgetId + '-' + fieldName, previewDoc);
-                previewField.html($(fieldElem).val());
-            });
-
-            // Check the height of the page - apply it to the iFrame
-            var pageHeight = $(window).height(),
-                navBarTop = $('.navbar-fixed-top').outerHeight(),
-                subBarTop = $('.subnav-fixed').outerHeight(),
-                pageTitle = $('.page-title').outerHeight();
-            $('#page-preview').css('height', pageHeight - navBarTop - subBarTop - pageTitle);
-        },
-
-        removeModal: function (elem) {
-            var modalElem = $(elem).parents('#delete-modal');
-            modalElem.remove();
-        },
-
-        addPreviewListeners: function () {
-            console.log("initialising listeners on preview");
-            var previewDoc = fancypages.dashboard.pages.getPreviewDocument();
-
-            // initialise all update widgets
-            $('form[id$=update_widget_form]').each(function (idx, form) {
-                var selection = $("select", form);
-                var containerName = $(form).attr('id').replace('_update_widget_form', '');
-
-                var widgetUrl = "/dashboard/fancypages/widget/update/" + selection.val() + "/";
-                fancypages.dashboard.pages.loadWidgetForm(widgetUrl, containerName);
-
-                selection.change(function (ev) {
-                    var widgetUrl = "/dashboard/fancypages/widget/update/" + $(this).val() + "/";
-                    fancypages.dashboard.pages.loadWidgetForm(widgetUrl, containerName);
-                });
-            });
+        });
 
 
-            $('.edit-button', previewDoc).click(function (ev) {
-                var widget = $(this).parents('.widget');
-                var widgetUrl = "/dashboard/fancypages/widget/update/" + $(widget).data('widget-id') + "/";
+        $('.edit-button', previewDoc).click(function (ev) {
+            var widget = $(this).parents('.widget');
+            var widgetUrl = "/dashboard/fancypages/widget/update/" + $(widget).data('widget-id') + "/";
 
-                fancypages.dashboard.pages.loadWidgetForm(widgetUrl, $(widget).data('container-name'));
-            });
+            fancypages.dashboard.loadWidgetForm(widgetUrl, $(widget).data('container-name'));
+        });
 
-            $('div.delete', previewDoc).click(function (ev) {
-                var widget = $(this).parents('.widget');
+        $('div.delete', previewDoc).click(function (ev) {
+            var widget = $(this).parents('.widget');
 
-                var deleteUrl = '/dashboard/fancypages/widget/delete/' + $(widget).data('widget-id') + "/";
+            var deleteUrl = '/dashboard/fancypages/widget/delete/' + $(widget).data('widget-id') + "/";
 
-                $.ajax(deleteUrl).done(function (data) {
-                    var widgetWrapper = $('div[id=widget_input_wrapper]');
-                    widgetWrapper.after(data);
-
-                    $(data).load(function () {
-                        $(this).modal('show');
-                    });
-                });
-            });
-
-            // Add / removed page elements for page preview
-            $('#preview-check').on('change', function(){
-              $('body', previewDoc).toggleClass('preview');
-              $('.navbar.accounts', previewDoc).add('.header', previewDoc).fadeToggle('slow');
-            });
-
-            // Add active state to radio buttons -- modal add content
-            $('.add-content input[type=radio]',previewDoc).on('change', function(ev) {
-                var labelElem = $(this).parent('label'),
-                    parentElem = $(this).parents('ul');
-                $("label", parentElem).removeClass('active');
-                labelElem.addClass('active');
-            });
-        },
-
-        /**
-         * Load the the widget form for the specified url
-         */
-        loadWidgetForm: function (url, containerName) {
-            $.ajax(url).done(function (data) {
+            $.ajax(deleteUrl).done(function (data) {
                 var widgetWrapper = $('div[id=widget_input_wrapper]');
-                widgetWrapper.html(data);
-                $('#page-settings').hide();
-                console.log($(document).parent('form'));
+                widgetWrapper.after(data);
 
-                fancypages.dashboard.editor.init();
+                $(data).load(function () {
+                    $(this).modal('show');
+                });
             });
-        },
+        });
 
-        /**
-         * Submit the widget form using an AJAX call and create or update the
-         * corresponding widget. The form is submitted to the URL specified in
-         * the action attribute and is removed from the editor panel right after
-         * submission was successful.
-         */
-        submitWidgetForm: function (elem) {
-            $.ajax({
-                type: "POST",
-                url: elem.attr('action'),
-                data: elem.serialize()
-            }).done(function (data) {
-                $('div[id=widget_input_wrapper]').html("");
-                $('#page-preview').attr('src', $('#page-preview').attr('src'));
-                $('#page-settings').show();
-            });
-        },
+        // Add / removed page elements for page preview
+        $('#preview-check').on('change', function(){
+          $('body', previewDoc).toggleClass('preview');
+          $('.navbar.accounts', previewDoc).add('.header', previewDoc).fadeToggle('slow');
+        });
 
-        /**
-         * Convenience method to get the current preview document root for handling
-         * selectors within the preview page.
-         */
-        getPreviewDocument: function (elem) {
-            return $('#page-preview').contents();
-        },
+        // Add active state to radio buttons -- modal add content
+        $('.add-content input[type=radio]',previewDoc).on('change', function(ev) {
+            var labelElem = $(this).parent('label'),
+                parentElem = $(this).parents('ul');
+            $("label", parentElem).removeClass('active');
+            labelElem.addClass('active');
+        });
+    },
 
-        refreshPreview: function () {
+    /**
+     * Load the the widget form for the specified url
+     */
+    loadWidgetForm: function (url, containerName) {
+        $.ajax(url).done(function (data) {
+            var widgetWrapper = $('div[id=widget_input_wrapper]');
+            widgetWrapper.html(data);
+            $('#page-settings').hide();
+            console.log($(document).parent('form'));
+
+            fancypages.dashboard.editor.init();
+        });
+    },
+
+    /**
+     * Submit the widget form using an AJAX call and create or update the
+     * corresponding widget. The form is submitted to the URL specified in
+     * the action attribute and is removed from the editor panel right after
+     * submission was successful.
+     */
+    submitWidgetForm: function (elem) {
+        $.ajax({
+            type: "POST",
+            url: elem.attr('action'),
+            data: elem.serialize()
+        }).done(function (data) {
+            $('div[id=widget_input_wrapper]').html("");
             $('#page-preview').attr('src', $('#page-preview').attr('src'));
-        }
+            $('#page-settings').show();
+        });
+    },
+
+    /**
+     * Convenience method to get the current preview document root for handling
+     * selectors within the preview page.
+     */
+    getPreviewDocument: function (elem) {
+        return $('#page-preview').contents();
+    },
+
+    refreshPreview: function () {
+        $('#page-preview').attr('src', $('#page-preview').attr('src'));
     }
 };

@@ -1,7 +1,5 @@
 {% extends "layout_2_col.html" %}
 {% load fancypages_tags %}
-{% load staticfiles %}
-{% load compress %}
 
 {% block title %}
 {{ page.title }} | {{ block.super }}
@@ -19,26 +17,3 @@
 {% fancypages-container main-container %}
 {% endblock %}
 
-{% if edit_mode %}
-    {% block extrahead %}
-        {{ block.super }}
-        {% compress css %}
-        <link rel="stylesheet" type="text/less" href="{% static "fancypages/less/font-awesome.less" %}">
-        <link rel="stylesheet" type="text/less" href="{% static "fancypages/less/editor.less" %}">
-        {% endcompress %}
-    {% endblock %}
-{% endif %}
-
-{% if edit_mode %}
-{% block extrascripts %}
-    {{ block.super }}
-    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js"></script>
-    <script src="{% static "fancypages/js/dashboard.js" %}" type="text/javascript" charset="utf-8"></script>
-{% endblock %}
-{% endif %}
-
-{% block onbodyload %}
-    {% if edit_mode %}
-    fancypages.dashboard.preview.init();
-    {% endif %}
-{% endblock %}

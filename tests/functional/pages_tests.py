@@ -1,3 +1,5 @@
+import json
+
 from django.db.models import get_model
 from django.core.urlresolvers import reverse
 
@@ -14,10 +16,18 @@ class TestAStaffMember(test.FancyPagesWebTest):
 
     def setUp(self):
         super(TestAStaffMember, self).setUp()
-        self.article_type = PageType.objects.create(name='Article', code='article',
-                                template_name=self.template_name)
+        self.article_type = PageType.objects.create(
+            name='Article',
+            code='article',
+            template=self.template
+        )
+        empty_template = get_model('fancypages', 'PageTemplate').objects.create(
+            title="empty",
+            description="empty", 
+            template_name=""
+        )
         self.other_type = PageType.objects.create(name='Other', code='other',
-                                                  template_name="")
+                                                  template=empty_template)
 
         self.prepare_template_file(
             "{% load fancypages_tags%}"
@@ -70,7 +80,7 @@ class TestAWidget(test.FancyPagesWebTest):
     def setUp(self):
         super(TestAWidget, self).setUp()
         self.page_type = PageType.objects.create(name='Article', code='article',
-                                                 template_name=self.template_name)
+                                                 template=self.template)
         self.prepare_template_file(
             "{% load fancypages_tags%}"
             "{% fancypages-container main-container %}"
@@ -140,6 +150,16 @@ class TestAWidget(test.FancyPagesWebTest):
         widget = TextWidget.objects.get(id=self.third_text_widget.id)
         self.assertEquals(widget.display_order, 1)
 
+    def test_a_widget_can_be_added_to_a_container(self):
+        container = self.page.get_container_from_name('main-container')
+        num_widgets = container.widgets.count()
+        response = self.get(reverse('fancypages-dashboard:widget-add',
+                                    args=(container.id, self.text_widget.code)))
+
+        json_response = json.loads(response.body)
+        self.assertEquals(json_response['success'], True)
+        self.assertEquals(container.widgets.count(), num_widgets + 1)
+
 
 class TestAnAnonymousUser(test.FancyPagesWebTest):
     is_staff = True
@@ -147,7 +167,7 @@ class TestAnAnonymousUser(test.FancyPagesWebTest):
     def setUp(self):
         super(TestAnAnonymousUser, self).setUp()
         self.page_type = PageType.objects.create(name='Article', code='article',
-                                                 template_name=self.template_name)
+                                                 template=self.template)
         self.prepare_template_file(
             "{% load fancypages_tags%}"
             "{% fancypages-container main-container %}"
