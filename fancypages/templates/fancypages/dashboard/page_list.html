@@ -49,7 +49,7 @@
         <tr>
             {# <td><input type="checkbox" name="selected_order" class="selected_order" value="{{ order.id }}"/> #}
             <td>
-                <a href="{% url fancypages:page-detail page.code %}">
+                <a href="{% url fancypages:page-detail page.slug %}">
                     {{ page.title }}
                 </a>
             </td>

@@ -19,12 +19,6 @@ class PageDetailView(PageEditorMixin, DetailView):
     model = models.Page
     context_object_name = "page"
 
-    def get_object(self):
-        return get_object_or_404(
-            self.model,
-            code=self.kwargs.get('code', None)
-        )
-
     def get_context_data(self, **kwargs):
         ctx = super(PageDetailView, self).get_context_data(**kwargs)
         for container in self.object.containers.all():

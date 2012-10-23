@@ -2,12 +2,14 @@ import os
 
 from django.db import models
 from django.utils import timezone
+from django.forms import ValidationError
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ImproperlyConfigured
 from django.template import (loader, Context, RequestContext,
                              TemplateDoesNotExist)
 
+from treebeard.mp_tree import MP_Node
 from model_utils.managers import (PassThroughManager,
                                   InheritanceQuerySet,
                                   InheritanceManager)
@@ -88,7 +90,7 @@ class PageQuerySet(InheritanceQuerySet):
 # TODO the AbstractPage should use django-treebeard in the future
 # to make sure that the hierarchy is handled properly. This will
 # also simplify moving pages around in the hierarchy
-class Page(models.Model):
+class Page(MP_Node):
     title = models.CharField(_("Title"), max_length=100)
     slug = models.SlugField(_("Code"), max_length=100, unique=True)
 
@@ -121,6 +123,8 @@ class Page(models.Model):
     is_active = models.BooleanField(_("Is active"), default=True)
 
     objects = PassThroughManager.for_queryset_class(PageQuerySet)()
+
+    _slug_separator = '/'
 
     @property
     def is_visible(self):
@@ -156,9 +160,39 @@ class Page(models.Model):
         for name in self.get_container_names():
             self.containers.create(variable_name=name)
 
-    def save(self, *args, **kwargs):
-        if not self.code:
-            self.code = slugify(self.title)
+    @models.permalink
+    def get_absolute_url(self):
+        return ('fancypages:page-detail', (), {
+                'slug': self.slug})
+
+    def __unicode__(self):
+        return u"%s with title '%s'" % (self.page_type.name, self.title)
+
+    def save(self, update_slugs=True, *args, **kwargs):
+        if update_slugs:
+            parent = self.get_parent()
+            slug = slugify(self.title)
+            if parent:
+                self.slug = '%s%s%s' % (
+                    parent.slug,
+                    self._slug_separator,
+                    slug
+                )
+            else:
+                self.slug = slug
+
+        # Enforce slug uniqueness here as MySQL can't handle a unique index on
+        # the slug field
+        try:
+            match = self.__class__.objects.get(slug=self.slug)
+        except self.__class__.DoesNotExist:
+            pass
+        else:
+            if match.id != self.id:
+                raise ValidationError(
+                    _("A category with slug '%(slug)s' already exists") % {
+                        'slug': self.slug
+                    })
 
         super(Page, self).save(*args, **kwargs)
 
@@ -170,8 +204,52 @@ class Page(models.Model):
                     variable_name=cname,
                 )
 
-    def __unicode__(self):
-        return u"%s with title '%s'" % (self.page_type.name, self.title)
+    def move(self, target, pos=None):
+        super(Page, self).move(target, pos)
+
+        reloaded_self = self.__class__.objects.get(pk=self.pk)
+        subtree = self.__class__.get_tree(parent=reloaded_self)
+        if subtree:
+            slug_parts = []
+            curr_depth = 0
+            parent = reloaded_self.get_parent()
+            if parent:
+                slug_parts = [parent.slug]
+                curr_depth = parent.depth
+            self.__class__.update_subtree_properties(
+                list(subtree),
+                slug_parts,
+                curr_depth=curr_depth
+            )
+
+    @classmethod
+    def update_subtree_properties(cls, nodes, slug_parts, curr_depth):
+        """
+        Update slugs and full_names of children in a subtree.
+        Assumes nodes were originally in DFS order.
+        """
+        if nodes == []:
+            return
+
+        node = nodes[0]
+        if node.depth > curr_depth:
+            slug = slugify(node.title)
+            slug_parts.append(slug)
+
+            node.slug = cls._slug_separator.join(slug_parts)
+            node.save(update_slugs=False)
+            curr_depth += 1
+            nodes = nodes[1:]
+
+        else:
+            slug_parts = slug_parts[:-1]
+            curr_depth -= 1
+
+        cls.update_subtree_properties(
+            nodes,
+            slug_parts,
+            curr_depth
+        )
 
 
 class Container(models.Model):
