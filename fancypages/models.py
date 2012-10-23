@@ -90,7 +90,7 @@ class PageQuerySet(InheritanceQuerySet):
 # also simplify moving pages around in the hierarchy
 class Page(models.Model):
     title = models.CharField(_("Title"), max_length=100)
-    code = models.SlugField(_("Code"), max_length=100, unique=True)
+    slug = models.SlugField(_("Code"), max_length=100, unique=True)
 
     page_type = models.ForeignKey('fancypages.PageType',
                                   verbose_name=_("Page type"),
