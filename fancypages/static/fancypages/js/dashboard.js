@@ -3,7 +3,6 @@ var fancypages = fancypages || {};
 fancypages.dashboard = {
     preview: {
         init: function () {
-            console.log('init of preview called');
             $('.sortable').sortable({
                 cursor: 'move',
                 handle: '.move',
@@ -152,8 +151,6 @@ fancypages.dashboard = {
 
         $('form[data-behaviours~=submit-widget-form]').live('submit', function (ev) {
             ev.preventDefault();
-            $('button[type=submit]').attr("disabled", true).html("Processing...");
-            $('button').attr("disabled", true);
             fancypages.dashboard.removeModal(this);
             fancypages.dashboard.submitWidgetForm($(this));
         });
@@ -263,11 +260,20 @@ fancypages.dashboard = {
      * the action attribute and is removed from the editor panel right after
      * submission was successful.
      */
-    submitWidgetForm: function (elem) {
+    submitWidgetForm: function (form) {
+        var submitButton = $('button[type=submit]', form);
+        submitButton.attr('disabled', true);
+        submitButton.data('original-text', submitButton.text());
+        submitButton.text('Processing...');
+
+        if (form.data('locked')) {
+            return false;
+        }
+        form.data('locked', true);
         $.ajax({
             type: "POST",
-            url: elem.attr('action'),
-            data: elem.serialize(),
+            url: form.attr('action'),
+            data: form.serialize(),
             success: function (data) {
                 $('div[id=widget_input_wrapper]').html("");
                 $('#page-preview').attr('src', $('#page-preview').attr('src'));
@@ -278,6 +284,10 @@ fancypages.dashboard = {
                     "An error occured trying to delete a widget. Please try it again."
                 );
             }
+        }).complete(function () {
+            submitButton.attr('disabled', false);
+            submitButton.text(submitButton.data('original-text'));
+            form.data('locked', false);
         });
     },
 
