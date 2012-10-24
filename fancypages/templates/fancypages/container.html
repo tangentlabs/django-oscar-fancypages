@@ -1,6 +1,6 @@
 {% load fancypages_tags %}
 
-<div class="sortable">
+<div class="sortable connectedSortable" data-container-id="{{ container.id }}">
 
 {% for widget_id,rendered_widget in rendered_widgets %}
     <div id="widget-{{ widget_id }}" class="widget"

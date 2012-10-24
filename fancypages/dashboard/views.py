@@ -387,6 +387,14 @@ class WidgetMoveView(JSONResponseMixin, generic.edit.BaseDetailView,
     def get_object(self, queryset=None):
         return self.get_widget_object()
 
+    def get_container(self):
+        container_id = self.kwargs.get('container_pk', None)
+        try:
+            new_container = Container.objects.get(id=container_id)
+        except Container.DoesNotExist:
+            new_container = None
+        return new_container
+
     def get_context_data(self, **kwargs):
         moved_widget = self.get_object()
 
@@ -397,13 +405,33 @@ class WidgetMoveView(JSONResponseMixin, generic.edit.BaseDetailView,
             }
 
         new_pos = int(self.kwargs.get('index'))
+        new_container = self.get_container()
 
-        if new_pos == moved_widget.display_order:
+        if new_container is None:
+            return {
+                'success': False,
+                'reason': "container does not exist",
+            }
+
+        if new_pos == moved_widget.display_order \
+           and new_container == moved_widget.container:
             return {
                 'success': True
             }
 
-        if new_pos > moved_widget.display_order:
+        old_container = moved_widget.container
+        old_pos = moved_widget.display_order
+
+        moved_widget.display_order = new_pos
+        moved_widget.container = new_container
+        moved_widget.save()
+
+        if new_container != old_container:
+            for idx, widget in enumerate(old_container.widgets.all()):
+                widget.display_order = idx
+                widget.save()
+
+        if moved_widget.display_order > old_pos:
             widgets = moved_widget.container.widgets.filter(
                 ~Q(id=moved_widget.id) &
                 Q(display_order__lte=new_pos)
@@ -420,9 +448,6 @@ class WidgetMoveView(JSONResponseMixin, generic.edit.BaseDetailView,
             for idx, widget in enumerate(widgets):
                 widget.display_order = new_pos + idx + 1
                 widget.save()
-
-        moved_widget.display_order = new_pos
-        moved_widget.save()
 
         return {
             'success': True,

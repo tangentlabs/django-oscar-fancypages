@@ -3,15 +3,21 @@ var fancypages = fancypages || {};
 fancypages.dashboard = {
     preview: {
         init: function () {
+            console.log('init of preview called');
             $('.sortable').sortable({
                 cursor: 'move',
                 handle: '.move',
                 placeholder: "ui-state-highlight",
                 forcePlaceholderSize: true,
+                connectWith: ".connectedSortable",
                 update: function (ev, ui) {
                     var dropIndex = ui.item.index();
                     var widgetId = ui.item.data('widget-id');
-                    var moveUrl = '/dashboard/fancypages/widget/move/' + widgetId + '/' + dropIndex + '/';
+
+                    var containerId = ui.item.parents('.sortable').data('container-id');
+
+                    var moveUrl = '/dashboard/fancypages/widget/move/' + widgetId + '/to/';
+                    moveUrl += containerId + '/' + dropIndex + '/';
 
                     $.getJSON(moveUrl, function (data) {
                         if (data.success) {
