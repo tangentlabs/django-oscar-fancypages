@@ -27,12 +27,6 @@
     </form>
 </div>
 
-{% comment %}
-<div class="sub-header">
-    <h2>{{ queryset_description }}</h2>
-</div>
-{% endcomment %}
-
 {% if page_list|length %}
 <form action="." method="post" class="order_table">
     {% csrf_token %}
@@ -46,34 +40,7 @@
             <th style="width: 400px"></th>
         </tr>
         {% for page in page_list %}
-        <tr>
-            {# <td><input type="checkbox" name="selected_order" class="selected_order" value="{{ order.id }}"/> #}
-            <td>
-                <a href="{% url fancypages:page-detail page.slug %}">
-                    {{ page.title }}
-                </a>
-            </td>
-            <td>{{ page.page_type }}</td>
-            <td>
-                {% for container in page.containers.all %}
-                    {{ container.variable_name }}{% if not forloop.last %}<br />{% endif %}
-                {% endfor %}
-            </td>
-            <td>
-            {% if page.is_visible %}
-                <span class="label label-success">{% trans "visible" %}</span> 
-            {% else %}
-                <span class="label label-danger">{% trans "not visible" %}</span> 
-            {% endif %}
-
-            <span class="label">{{ page.status }}</span> 
-            </td>
-            <td>
-                <a class="btn btn-info" href="{% url fancypages-dashboard:page-update page.id %}#}">{% trans "Edit" %}</a>
-                <a class="btn btn-info" href="{% url fancypages-dashboard:page-customise page.id %}">{% trans "Customise" %}</a>
-                <a class="btn btn-danger" href=".">{% trans "Delete (TODO)" %}</a>
-            </td>
-        </tr>
+            {% include "fancypages/dashboard/partials/page_list_item.html" %}
         {% endfor %}
     </table>
 </form>

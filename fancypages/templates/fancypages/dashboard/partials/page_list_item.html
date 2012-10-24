@@ -1,0 +1,43 @@
+{% load i18n %}
+{% load fancypages_tags %}
+
+<tr>
+    <td>
+        {% for i in page.depth|depth_as_range %}
+            &nbsp;&nbsp;&nbsp;&nbsp;
+        {% endfor %}
+
+        {% if page.numchild %}
+        <i class="icon-chevron-right"></i>
+        {% endif %}
+
+        <a href="{% url fancypages:page-detail page.slug %}">
+            {{ page.title }}
+        </a>
+    </td>
+    <td>{{ page.page_type }}</td>
+    <td>
+        {% for container in page.containers.all %}
+            {{ container.variable_name }}{% if not forloop.last %}<br />{% endif %}
+        {% endfor %}
+    </td>
+    <td>
+    {% if page.is_visible %}
+        <span class="label label-success">{% trans "visible" %}</span> 
+    {% else %}
+        <span class="label label-danger">{% trans "not visible" %}</span> 
+    {% endif %}
+
+    <span class="label">{{ page.status }}</span> 
+    </td>
+    <td>
+        <a class="btn btn-info" href="{% url fancypages-dashboard:page-update page.id %}#}">{% trans "Edit" %}</a>
+        <a class="btn btn-info" href="{% url fancypages-dashboard:page-customise page.id %}">{% trans "Customise" %}</a>
+        <a class="btn btn-danger" href=".">{% trans "Delete (TODO)" %}</a>
+    </td>
+</tr>
+{% for child_page in page.get_children %} 
+    {% with partial_filename="fancypages/dashboard/partials/page_list_item.html" %}
+        {% include partial_filename with page=child_page %}
+    {% endwith %}
+{% endfor %}

@@ -81,3 +81,9 @@ def render_attribute(context, attr_name, *args):
 
     wrapped_attr = u'<div id="widget-%d-%s">%s</div>'
     return wrapped_attr % (widget.id, attr_name, unicode(value))
+
+
+@register.filter
+def depth_as_range(depth):
+    # reduce depth by 1 as treebeard root depth is 1
+    return range(depth-1)

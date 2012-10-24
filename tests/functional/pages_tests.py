@@ -61,7 +61,6 @@ class TestAStaffMember(test.FancyPagesWebTest):
         self.assertContains(page, "Create new 'Article' page")
 
         create_form = page.form
-        print create_form.fields
         create_form['title'] = "A new page"
         page = create_form.submit()
 

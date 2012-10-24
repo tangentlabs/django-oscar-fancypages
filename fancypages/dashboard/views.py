@@ -114,6 +114,9 @@ class PageListView(generic.ListView):
     context_object_name = 'page_list'
     template_name = "fancypages/dashboard/page_list.html"
 
+    def get_queryset(self, queryset=None):
+        return self.model.objects.filter(depth=1)
+
     def get_context_data(self, **kwargs):
         ctx = super(PageListView, self).get_context_data(**kwargs)
         ctx['page_type_form'] = forms.PageTypeSelectForm()
