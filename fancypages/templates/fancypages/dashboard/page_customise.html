@@ -2,6 +2,8 @@
 {% load i18n %}
 {% load fancypages_tags %}
 
+{% block body_class %}fancypages edit-page{% endblock %}
+
 {% block title %}
 {% blocktrans with title=page.title %}Customise page "{{ title }}" {% endblocktrans %} | {{ block.super }}
 {% endblock %}
@@ -15,6 +17,7 @@
 <div class="row-fluid page-wrapper">
     <div class="editor">
         <div id="page-settings">
+            <h3>Page Settings</h3>
             <form method="post" action="." class="form-stacked">
                 {% csrf_token %}
                 {% include "fancypages/partials/editor_form_fields.html" %}

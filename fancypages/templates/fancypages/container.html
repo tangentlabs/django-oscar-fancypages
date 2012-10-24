@@ -3,7 +3,7 @@
 <div class="sortable">
 
 {% for widget_id,rendered_widget in rendered_widgets %}
-    <div id="widget-{{ widget_id }}" class="widget"
+    <div id="widget-{{ widget_id }}" class="widget {{ widget.container.variable_name }}"
          data-container-name="{{ container_name }}" data-widget-id="{{ widget_id }}">
         {% if edit_mode %}<div class="edit-button btn"><i class="icon-edit icon-large"></i></div>{% endif %}
             {{ rendered_widget }}

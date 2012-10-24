@@ -61,7 +61,8 @@ body.preview {
   margin-bottom:@baseLineHeight;
 }
 
-.widget:hover {
+.widget:hover,
+.widget.editing {
   border:1px dashed #ccc;
   .widget-move-delete,
   .edit-button {
@@ -77,7 +78,7 @@ body.preview {
 }
 
 .ui-state-highlight { 
-  background-color:lighten(@grayLighter, 3%);
+  background-color:darken(@grayLighter, 1%);
   border:1px solid lighten(@grayLighter, 2%); 
 }
 

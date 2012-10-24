@@ -1,41 +1,68 @@
 @import "bootstrap/variables.less";
 @import "bootstrap/mixins.less";
 
+// Page
 html, body {
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
+  margin: 0;
+  padding: 0;
 }
-
+body.fancypages.edit-page {
+  overflow:hidden;
+}
 .page-wrapper {
   position:relative;
   margin-top:78px;
 }
 
+// Editor
 .editor {
-    margin: 0px;
-    height: 100%;
-    position:absolute;
-    border-right:1px solid #ccc;
-    top:0;
-    left:-20px;
-    bottom:0;
-    width:329px;
-    .box-shadow(inset -3px -7px 10px rgba(0,0,0,.1));
-/*    .buttons {
-        position: relative;
-        width: 98%;
-        background-color: #eee;
-        border-top: 1px #fff solid;
-        padding: 7px 10px;
-        border-top: 1px #fff solid;
-        border-bottom: 1px #ccc solid;
-        .box-shadow(0 0 5px rgba(0, 0, 0, 0.25));
-    }*/
+  margin: 0px;
+  height: 100%;
+  position:absolute;
+  border-right:1px solid #ccc;
+  top:0;
+  left:-20px;
+  bottom:0;
+  width:329px;
+  .box-shadow(inset -3px -7px 10px rgba(0,0,0,.1));
 }
 #page-settings,
 #widget_input_wrapper {
   padding:20px;
+}
+.editor,
+.page-title {
+  background:lighten(@grayLighter, 4%);
+  border-color:lighten(@grayLight, 20%);
+}
+.wysihtml5-wrapper {
+  overflow: auto;
+}
+.wysihtml5-wrapper textarea {
+  width:270px;
+  height:300px;
+}
+
+.wysihtml5-toolbar {
+  position: relative;
+  width: 98%;
+  height: 40px;
+  font-size: 24px;
+  overflow: auto;
+}
+
+#messages {
+  position: absolute;
+  top: 80px;
+  width: 97%;
+  z-index: 1000;
+}
+// Page Title
+.preview,
+.page-title {
+  margin: 0px;
+  margin-left:310px;
+  margin-right:-20px;
 }
 .page-title {
   border-bottom:1px solid #ccc;
@@ -45,17 +72,7 @@ html, body {
     margin:0;
   }
 }
-.editor,
-.page-title {
-  background:lighten(@grayLighter, 4%);
-  border-color:lighten(@grayLight, 20%);
-}
-.preview,
-.page-title {
-  margin: 0px;
-  margin-left:310px;
-  margin-right:-20px;
-}
+// IFrame
 .preview {
   #page-preview {
     position: relative;
@@ -73,120 +90,4 @@ html, body {
       padding:0;
     } 
   }
-}
-
-/*.controls {
-    height: 100%;
-    background-color: #eee;
-    position: relative;
-    clear: both;
-    .box-shadow(0 0 5px rgba(0, 0, 0, 0.125));
-    z-index: 2;
-}
-
-.controls .widget-settings {
-    background-color: #eee;
-    .box-shadow(0 0 5px rgba(0, 0, 0, 0.25));
-}
-
-.controls .widget-settings .widget-heading {
-    padding: 2px 10px;
-    text-transform: uppercase;
-    font-weight: bold;
-    background-color: #ccc;
-    border-top: 1px solid #fff;
-    border-bottom: 1px solid #aaa;
-}
-
-.controls .field {
-    border-top: 1px #fff solid;
-    border-bottom: 1px #ccc solid;
-    background-color: #eee;
-    padding: 5px 10px 10px;
-}
-
-.controls .field input {
-    width: 98%;
-    margin: 0;
-}
-
-.controls .field select, .controls .field textarea {
-    margin: 0;
-}
-
-.controls .field .input-wrapper {
-    position: relative;
-}
-
-.controls .field .image-container {
-    width: 355px;
-    border: 1px #ccc solid;
-    padding: 4px;
-}
-
-.controls .field img {
-    width: 355px;
-}
-
-.controls .field .btn-group {
-    top: 0;
-    position: absolute;
-}
-
-.controls .field textarea {
-    width: 97%;
-}
-
-.controls .field textarea {
-    height: 200px;
-}
-
-.controls .field .wysihtml5 {
-    border-top-width: 0;
-    -webkit-border-top-right-radius: 0;
-    -moz-border-radius-topright: 0;
-    border-top-right-radius: 0;
-    -webkit-border-top-left-radius: 0;
-    -moz-border-radius-topleft: 0;
-    border-top-left-radius: 0;
-}
-
-.controls .field iframe {
-    height: 308px;
-    width: 98%;
-    background-color: #fff;
-    border: 1px #ccc solid;
-    border-top-width: 0;
-    vertical-align: bottom;
-}
-
-.controls .field label {
-    font-weight: bold;
-    font-size: 12px;
-    text-transform: uppercase;
-    color: #777;
-}*/
-
-.wysihtml5-wrapper {
-/*    height: 339px;*/
-    overflow: auto;
-}
-.wysihtml5-wrapper textarea {
-  width:270px;
-  height:300px;
-}
-
-.wysihtml5-toolbar {
-    position: relative;
-    width: 98%;
-    height: 40px;
-    font-size: 24px;
-    overflow: auto;
-}
-
-#messages {
-    position: absolute;
-    top: 80px;
-    width: 97%;
-    z-index: 1000;
 }

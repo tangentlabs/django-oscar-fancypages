@@ -172,12 +172,18 @@ fancypages.dashboard = {
             previewField.html($(fieldElem).val());
         });
 
-        // Check the height of the page - apply it to the iFrame
-        var pageHeight = $(window).height(),
-            navBarTop = $('.navbar-fixed-top').outerHeight(),
-            subBarTop = $('.subnav-fixed').outerHeight(),
-            pageTitle = $('.page-title').outerHeight();
-        $('#page-preview').css('height', pageHeight - navBarTop - subBarTop - pageTitle);
+        // Function setting the height of the IFrame 
+        function UpdateSize(){
+            var pageHeight = $(window).height(),
+                navBarTop = $('.navbar-fixed-top').outerHeight(),
+                subBarTop = $('.subnav-fixed').outerHeight(),
+                pageTitle = $('.page-title').outerHeight();
+            $('#page-preview').css('height', pageHeight - navBarTop - subBarTop - pageTitle);
+        };
+        UpdateSize();
+        // Function setting the height if window resizes     
+        $(window).resize(UpdateSize);
+        
     },
 
     removeModal: function (elem) {
@@ -206,7 +212,14 @@ fancypages.dashboard = {
         $('.edit-button', previewDoc).click(function (ev) {
             var widget = $(this).parents('.widget');
             var widgetUrl = "/dashboard/fancypages/widget/update/" + $(widget).data('widget-id') + "/";
-
+            
+            // Add Class to widget editing
+            $('.widget', previewDoc).removeClass('editing');
+            widget.addClass('editing');
+            
+            var destination = widget.offset().top - 20;
+            $('html:not(:animated),body:not(:animated)', previewDoc).animate({ scrollTop: destination}, 500, 'swing' );
+            
             fancypages.dashboard.loadWidgetForm(widgetUrl, $(widget).data('container-name'));
         });
 
@@ -293,3 +306,5 @@ fancypages.dashboard = {
         $('#page-preview').attr('src', $('#page-preview').attr('src'));
     }
 };
+
+
