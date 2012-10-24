@@ -6,10 +6,6 @@ from fancypages import models
 
 class TestPageType(test.FancyPagesTestCase):
 
-    #def test_is_generating_a_slug_from_title(self):
-    #    article = models.Page()
-    #    article.title = "Some Title"
-
     def test_empty_container_name_list_is_returned_when_unknown_page_type(self):
         page_type = models.PageType()
         page_type.template = models.PageTemplate.objects.create(
@@ -77,7 +73,7 @@ class TestAPage(test.FancyPagesTestCase):
 {% templatetag opencomment %}
 {% endblock %}
 """)
-        article_page = models.Page.objects.create(
+        article_page = models.Page.add_root(
             title='This is an article',
             page_type=page_type,
         )
@@ -99,14 +95,13 @@ class TestContainer(test.FancyPagesTestCase):
         self.prepare_template_file("{% load fancypages_tags %}"
                                    "{% fancypages-container test-container %}")
 
-        basic_page = models.Page()
-        basic_page.page_type = page_type
+        basic_page = models.Page.add_root(
+            title = "Some Title",
+            page_type=page_type,
+        )
 
         container_names = page_type.get_container_names()
         self.assertEquals(container_names, [u'test-container'])
-
-        basic_page.title = "Some Title"
-        basic_page.save()
 
         self.assertEquals(basic_page.containers.count(), 1)
 
@@ -120,14 +115,13 @@ class TestContainer(test.FancyPagesTestCase):
         self.prepare_template_file("{% load fancypages_tags %}"
                                    "{% fancypages-container test-container %}")
 
-        basic_page = models.Page()
-        basic_page.page_type = page_type
+        basic_page = models.Page.add_root(
+            title="Some Title",
+            page_type=page_type,
+        )
 
         container_names = page_type.get_container_names()
         self.assertEquals(container_names, [u'test-container'])
-
-        basic_page.title = "Some Title"
-        basic_page.save()
 
         basic_page.create_container(container_names[0])
         self.assertEquals(basic_page.containers.count(), 1)

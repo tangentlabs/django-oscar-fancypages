@@ -3,6 +3,8 @@ from django.db.models import get_model
 from django.utils.translation import ugettext_lazy as _
 from django.template import loader, TemplateDoesNotExist
 
+from treebeard.forms import MoveNodeForm
+
 from fancypages.widgets import SelectWidgetRadioFieldRenderer
 
 Page = get_model('fancypages', 'Page')
@@ -51,15 +53,14 @@ class PageTypeForm(forms.ModelForm):
         }
 
 
-class PageForm(forms.ModelForm):
+class PageForm(MoveNodeForm):
 
     def __init__(self, page_type, *args, **kwargs):
         super(PageForm, self).__init__(*args, **kwargs)
-        self.page_type = page_type
+        self.fields['page_type'].initial = page_type
 
     def save(self, commit=True):
         instance = super(PageForm, self).save(commit=False)
-        instance.page_type = self.page_type
 
         if commit:
             instance.save()
@@ -68,7 +69,11 @@ class PageForm(forms.ModelForm):
 
     class Meta:
         model = Page
-        exclude = ('code', 'page_type', 'relative_url')
+        exclude = ('depth', 'numchild', 'path', 'slug',
+                   'relative_url')
+        widgets = {
+            'page_type': forms.HiddenInput()
+        }
 
 
 class WidgetCreateSelectForm(forms.Form):

@@ -98,10 +98,6 @@ class Page(MP_Node):
                                   verbose_name=_("Page type"),
                                   related_name="pages")
 
-    parent = models.ForeignKey('self', verbose_name=_(u"Parent page"),
-                               null=True, blank=True,
-                               related_name="children")
-
     # this is the *cached* relative URL for this page taking parent
     # slugs into account. This is updated on save
     relative_url = models.CharField(max_length=500, null=True, blank=True)

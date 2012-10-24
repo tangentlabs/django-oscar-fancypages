@@ -61,6 +61,7 @@ class TestAStaffMember(test.FancyPagesWebTest):
         self.assertContains(page, "Create new 'Article' page")
 
         create_form = page.form
+        print create_form.fields
         create_form['title'] = "A new page"
         page = create_form.submit()
 
@@ -87,9 +88,9 @@ class TestAWidget(test.FancyPagesWebTest):
             "{% fancypages-container main-container %}"
         )
 
-        self.page = Page.objects.create(
+        self.page = Page.add_root(
             title="A new page",
-            code='a-new-page',
+            slug='a-new-page',
             page_type=self.page_type,
         )
 
@@ -291,9 +292,9 @@ class TestAnAnonymousUser(test.FancyPagesWebTest):
             "{% fancypages-container main-container %}"
         )
 
-        self.page = Page.objects.create(
+        self.page = Page.add_root(
             title="A new page",
-            code='a-new-page',
+            slug='a-new-page',
             page_type=self.page_type,
         )
 
@@ -303,4 +304,4 @@ class TestAnAnonymousUser(test.FancyPagesWebTest):
         )
 
     def test_can_view_a_fancy_page(self):
-        self.app.get(reverse('fancypages:page-detail', args=(self.page.code,)))
+        self.app.get(reverse('fancypages:page-detail', args=(self.page.slug,)))
