@@ -162,6 +162,82 @@ class TestAWidget(test.FancyPagesWebTest):
         self.assertEquals(container.widgets.count(), num_widgets + 1)
 
 
+class TestAMovableWidget(test.FancyPagesWebTest):
+    fixtures = ['page_templates.json']
+    is_staff = True
+
+    def setUp(self):
+        super(TestAMovableWidget, self).setUp()
+
+        template = PageTemplate.objects.get(title="Article Template")
+        self.page_type = PageType.objects.create(name='Article', code='article',
+                                                 template=template)
+
+        self.page = Page.add_root(
+            title="A new page",
+            slug='a-new-page',
+            page_type=self.page_type,
+        )
+
+        self.left_container = self.page.get_container_from_name('left-column')
+        self.main_container = self.page.get_container_from_name('main-container')
+
+        self.left_widgets = []
+        self.main_widgets = []
+
+        for idx in range(0, 3):
+            main_widget = TextWidget.objects.create(
+                container=self.main_container,
+                text="Main Column / Widget #%d" % idx,
+            )
+            self.main_widgets.append(main_widget)
+            self.assertEquals(main_widget.display_order, idx)
+
+            left_widget = TextWidget.objects.create(
+                container=self.left_container,
+                text="Left Column / Widget #%d" % idx,
+            )
+            self.left_widgets.append(left_widget)
+            self.assertEquals(left_widget.display_order, idx)
+
+    def test_can_be_moved_up_within_a_container(self):
+        for idx, pos in [(0, 0), (1, 1), (2, 2)]:
+            self.assertEquals(
+                TextWidget.objects.get(id=self.left_widgets[idx].id).display_order,
+                pos
+            )
+
+        page = self.get(
+            reverse(
+                'fancypages-dashboard:widget-move',
+                kwargs={
+                    'pk': self.main_widgets[1].id,
+                    'container_pk': self.left_container.id,
+                    'index': 1,
+                }
+            )
+        )
+
+        moved_widget = TextWidget.objects.get(id=self.main_widgets[1].id)
+        self.assertEquals(
+            moved_widget.container,
+            self.page.get_container_from_name('left-column')
+        )
+        self.assertEquals(moved_widget.display_order, 1)
+
+        for idx, pos in [(0, 0), (1, 2), (2, 3)]:
+            self.assertEquals(
+                TextWidget.objects.get(id=self.left_widgets[idx].id).display_order,
+                pos
+            )
+
+        for idx, pos in [(0, 0), (2, 1)]:
+            self.assertEquals(
+                TextWidget.objects.get(id=self.main_widgets[idx].id).display_order,
+                pos
+            )
+
+
 class TestAPageTemplate(test.FancyPagesWebTest):
     is_staff = True
 

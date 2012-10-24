@@ -104,14 +104,14 @@ class FancypagesDashboardApplication(Application):
             url(r'^widget/delete/(?P<pk>\d+)/$',
                 self.widget_delete_view.as_view(),
                 name='widget-delete'),
-            url(r'^widget/move/(?P<pk>\d+)/(?P<index>\d+)/$',
+            url(r'^widget/move/(?P<pk>\d+)/to/(?P<container_pk>\d+)/(?P<index>\d+)/$',
                 self.widget_move_view.as_view(),
                 name='widget-move'),
         )
         return self.post_process_urls(urlpatterns)
 
     def get_url_decorator(self, url_name):
-                return staff_member_required
+        return staff_member_required
 
 
 application = FancypagesDashboardApplication()
