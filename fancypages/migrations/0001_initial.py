@@ -8,22 +8,34 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         
+        # Adding model 'PageTemplate'
+        db.create_table('fancypages_pagetemplate', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('title', self.gf('django.db.models.fields.CharField')(max_length=100)),
+            ('description', self.gf('django.db.models.fields.CharField')(max_length=500)),
+            ('icon', self.gf('django.db.models.fields.files.ImageField')(max_length=100, null=True, blank=True)),
+            ('template_name', self.gf('django.db.models.fields.CharField')(max_length=255)),
+        ))
+        db.send_create_signal('fancypages', ['PageTemplate'])
+
         # Adding model 'PageType'
         db.create_table('fancypages_pagetype', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=100)),
             ('code', self.gf('django.db.models.fields.SlugField')(unique=True, max_length=100, db_index=True)),
-            ('template_name', self.gf('django.db.models.fields.CharField')(max_length=500)),
+            ('template', self.gf('django.db.models.fields.related.ForeignKey')(related_name='page_types', to=orm['fancypages.PageTemplate'])),
         ))
         db.send_create_signal('fancypages', ['PageType'])
 
         # Adding model 'Page'
         db.create_table('fancypages_page', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('path', self.gf('django.db.models.fields.CharField')(unique=True, max_length=255)),
+            ('depth', self.gf('django.db.models.fields.PositiveIntegerField')()),
+            ('numchild', self.gf('django.db.models.fields.PositiveIntegerField')(default=0)),
             ('title', self.gf('django.db.models.fields.CharField')(max_length=100)),
-            ('code', self.gf('django.db.models.fields.SlugField')(unique=True, max_length=100, db_index=True)),
+            ('slug', self.gf('django.db.models.fields.SlugField')(unique=True, max_length=100, db_index=True)),
             ('page_type', self.gf('django.db.models.fields.related.ForeignKey')(related_name='pages', to=orm['fancypages.PageType'])),
-            ('parent', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='children', null=True, to=orm['fancypages.Page'])),
             ('relative_url', self.gf('django.db.models.fields.CharField')(max_length=500, null=True, blank=True)),
             ('status', self.gf('django.db.models.fields.CharField')(default=u'draft', max_length=15)),
             ('date_visible_start', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
@@ -51,15 +63,15 @@ class Migration(SchemaMigration):
         # Adding model 'TextWidget'
         db.create_table('fancypages_textwidget', (
             ('widget_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Widget'], unique=True, primary_key=True)),
-            ('text', self.gf('django.db.models.fields.CharField')(max_length=2000)),
+            ('text', self.gf('django.db.models.fields.CharField')(default='Your text goes here.', max_length=2000)),
         ))
         db.send_create_signal('fancypages', ['TextWidget'])
 
         # Adding model 'TitleTextWidget'
         db.create_table('fancypages_titletextwidget', (
             ('widget_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Widget'], unique=True, primary_key=True)),
-            ('title', self.gf('django.db.models.fields.CharField')(max_length=100)),
-            ('text', self.gf('django.db.models.fields.CharField')(max_length=2000)),
+            ('title', self.gf('django.db.models.fields.CharField')(default='Your title goes here.', max_length=100)),
+            ('text', self.gf('django.db.models.fields.CharField')(default='Your text goes here.', max_length=2000)),
         ))
         db.send_create_signal('fancypages', ['TitleTextWidget'])
 
@@ -74,6 +86,9 @@ class Migration(SchemaMigration):
 
     def backwards(self, orm):
         
+        # Deleting model 'PageTemplate'
+        db.delete_table('fancypages_pagetemplate')
+
         # Deleting model 'PageType'
         db.delete_table('fancypages_pagetype')
 
@@ -111,15 +126,25 @@ class Migration(SchemaMigration):
         },
         'fancypages.page': {
             'Meta': {'object_name': 'Page'},
-            'code': ('django.db.models.fields.SlugField', [], {'unique': 'True', 'max_length': '100', 'db_index': 'True'}),
             'date_visible_end': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'date_visible_start': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
+            'depth': ('django.db.models.fields.PositiveIntegerField', [], {}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
+            'numchild': ('django.db.models.fields.PositiveIntegerField', [], {'default': '0'}),
             'page_type': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'pages'", 'to': "orm['fancypages.PageType']"}),
-            'parent': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'children'", 'null': 'True', 'to': "orm['fancypages.Page']"}),
+            'path': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '255'}),
             'relative_url': ('django.db.models.fields.CharField', [], {'max_length': '500', 'null': 'True', 'blank': 'True'}),
+            'slug': ('django.db.models.fields.SlugField', [], {'unique': 'True', 'max_length': '100', 'db_index': 'True'}),
             'status': ('django.db.models.fields.CharField', [], {'default': "u'draft'", 'max_length': '15'}),
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '100'})
+        },
+        'fancypages.pagetemplate': {
+            'Meta': {'object_name': 'PageTemplate'},
+            'description': ('django.db.models.fields.CharField', [], {'max_length': '500'}),
+            'icon': ('django.db.models.fields.files.ImageField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'template_name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
         'fancypages.pagetype': {
@@ -127,17 +152,17 @@ class Migration(SchemaMigration):
             'code': ('django.db.models.fields.SlugField', [], {'unique': 'True', 'max_length': '100', 'db_index': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'template_name': ('django.db.models.fields.CharField', [], {'max_length': '500'})
+            'template': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'page_types'", 'to': "orm['fancypages.PageTemplate']"})
         },
         'fancypages.textwidget': {
             'Meta': {'ordering': "['display_order']", 'object_name': 'TextWidget', '_ormbases': ['fancypages.Widget']},
-            'text': ('django.db.models.fields.CharField', [], {'max_length': '2000'}),
+            'text': ('django.db.models.fields.CharField', [], {'default': "'Your text goes here.'", 'max_length': '2000'}),
             'widget_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['fancypages.Widget']", 'unique': 'True', 'primary_key': 'True'})
         },
         'fancypages.titletextwidget': {
             'Meta': {'ordering': "['display_order']", 'object_name': 'TitleTextWidget', '_ormbases': ['fancypages.Widget']},
-            'text': ('django.db.models.fields.CharField', [], {'max_length': '2000'}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
+            'text': ('django.db.models.fields.CharField', [], {'default': "'Your text goes here.'", 'max_length': '2000'}),
+            'title': ('django.db.models.fields.CharField', [], {'default': "'Your title goes here.'", 'max_length': '100'}),
             'widget_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['fancypages.Widget']", 'unique': 'True', 'primary_key': 'True'})
         },
         'fancypages.widget': {
