@@ -85,7 +85,7 @@ class FancypagesDashboardApplication(Application):
 
             url(r'^customise/(?P<pk>\d+)/$',
                 self.page_customise_view.as_view(), name='page-customise'),
-            url(r'^preview/(?P<code>[\w-]+)/$',
+            url(r'^preview/(?P<slug>[\w-]+(/[\w-]+)*)/$',
                 self.page_preview_view.as_view(), name='page-preview'),
 
             url(r'^container/(?P<pk>\d+)/add/(?P<code>[\w-]+)/$',

@@ -26,7 +26,7 @@
         </div>
         <div id="widget_input_wrapper"></div>
     </div>
-    
+
     <div class="page-title">
         <div class="pull-right form-inline">
             <label for="preview-check" class="ckeckbox">
@@ -39,7 +39,7 @@
     </div>
 
     <div class="preview">
-        <iframe id="page-preview" frameborder='0' src="{% url fancypages-dashboard:page-preview page.code %}"></iframe>
+        <iframe id="page-preview" frameborder='0' src="{% url fancypages-dashboard:page-preview page.slug %}"></iframe>
     </div>
 </div>
 {% endblock dashboard_content %}
