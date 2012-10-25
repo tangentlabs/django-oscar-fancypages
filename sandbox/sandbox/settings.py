@@ -145,6 +145,7 @@ INSTALLED_APPS = [
     'south',
 
     'fancypages',
+    'fancypages.assets',
 ]
 
 from oscar import get_core_apps

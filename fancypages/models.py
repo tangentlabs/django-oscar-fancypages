@@ -391,9 +391,10 @@ class ImageWidget(Widget):
     code = 'image'
     template_name = "fancypages/widgets/image_widget.html"
 
-    image = models.ImageField(_("Image"), upload_to="fancypages/%y/%m/")
-    caption = models.CharField(_("Caption"), max_length=200,
-                               null=True, blank=True)
+    image_asset = models.ForeignKey('assets.ImageAsset', verbose_name=_("Image asset"),
+                                    related_name="image_widgets", blank=True, null=True)
 
     def __unicode__(self):
-        return u"Image '%s'" % os.path.basename(self.image.path)
+        if self.image_asset:
+            return u"Image '%s'" % os.path.basename(self.image_asset.image.path)
+        return u"Image #%s" % self.id

@@ -175,17 +175,25 @@ fancypages.dashboard = {
             previewField.html($(fieldElem).val());
         });
 
-        // Function setting the height of the IFrame 
-        function UpdateSize(){
+        // Function setting the height of the IFrame
+        function UpdateSize() {
             var pageHeight = $(window).height(),
                 navBarTop = $('.navbar-fixed-top').outerHeight(),
                 subBarTop = $('.subnav-fixed').outerHeight();
             $('#page-preview').css('height', pageHeight - navBarTop - subBarTop);
-        };
+        }
         UpdateSize();
-        // Function setting the height if window resizes     
+        // Function setting the height if window resizes
         $(window).resize(UpdateSize);
-        
+
+        // Initialise all the asset related stuff
+        $("#asset-modal").live('shown', function () {
+            var assetManager = $("#asset-manager");
+            assetManager.attr('src', assetManager.data("src"));
+
+            //$(this).css('width', $(window).width() - 100);
+            //$(this).css('height', $(window).height() - 100);
+        });
     },
 
     removeModal: function (elem) {
@@ -214,18 +222,18 @@ fancypages.dashboard = {
         $('.edit-button', previewDoc).click(function (ev) {
             var widget = $(this).parents('.widget');
             var widgetUrl = "/dashboard/fancypages/widget/update/" + $(widget).data('widget-id') + "/";
-            
+
             // Add Class to widget editing
             $('.widget', previewDoc).removeClass('editing');
             widget.addClass('editing');
-            
+
             // Scrolls IFrame to the top of editing areas
             var destination = widget.offset().top - 20;
             $('html:not(:animated),body:not(:animated)', previewDoc).animate({ scrollTop: destination}, 500, 'swing' );
-            
+
             fancypages.dashboard.loadWidgetForm(widgetUrl, $(widget).data('container-name'));
         });
-        
+
 
         $('div.delete', previewDoc).click(function (ev) {
             var widget = $(this).parents('.widget');
@@ -254,7 +262,7 @@ fancypages.dashboard = {
             $('.navbar.accounts', previewDoc).add('.header', previewDoc).fadeToggle('slow');
             $(this).find('i').toggleClass('icon-eye-close');
         });
-        
+
         // Show Page previews
         $('button[data-behaviours~=page-settings]').on('click', function () {
           $('div[id=widget_input_wrapper]').html("");
@@ -262,7 +270,7 @@ fancypages.dashboard = {
           $( '.editor' ).animate({ backgroundColor: "#333" }, 500 );
         });
 
-        
+
     },
 
     /**

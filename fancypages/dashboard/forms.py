@@ -6,6 +6,7 @@ from django.template import loader, TemplateDoesNotExist
 from treebeard.forms import MoveNodeForm
 
 from fancypages.widgets import SelectWidgetRadioFieldRenderer
+from fancypages.assets.widgets import ImageAssetInput
 
 Page = get_model('fancypages', 'Page')
 PageType = get_model('fancypages', 'PageType')
@@ -127,4 +128,21 @@ class TitleTextWidgetForm(forms.ModelForm):
         widgets = {
             'display_order': forms.HiddenInput(),
             'text': forms.Textarea(attrs={'cols': 80, 'rows': 10}),
+        }
+
+
+class ImageWidgetForm(forms.ModelForm):
+    asset_id = forms.IntegerField(widget=ImageAssetInput(), 
+                                 label=_("Image"))
+
+    def __init__(self, *args, **kwargs):
+        super(ImageWidgetForm, self).__init__(*args, **kwargs)
+        instance = kwargs['instance']
+        if instance and instance.image_asset:
+            self.fields['asset_id'].initial = instance.image_asset.id
+
+    class Meta:
+        exclude = ('container', 'image_asset')
+        widgets = {
+            'display_order': forms.HiddenInput(),
         }

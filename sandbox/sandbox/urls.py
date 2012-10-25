@@ -11,8 +11,8 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'', include(shop.urls)),
-    url(r'^', include(fancypages_app.urls)),
 
+    url(r'^', include(fancypages_app.urls)),
     url(r'^dashboard/fancypages/', include(dashboard_app.urls)),
 
     url(r'^admin/', include(admin.site.urls)),

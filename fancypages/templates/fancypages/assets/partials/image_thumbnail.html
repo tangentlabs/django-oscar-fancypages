@@ -1,0 +1,15 @@
+{% load thumbnail %}
+
+<li class="span2" data-behaviours="selectable-asset" data-asset-type="{{ image_asset.asset_type }}" data-image-asset-id="{{ image_asset.id }}">
+    {% thumbnail image_asset.image "200x200" as im %}
+    <div class="thumbnail">
+        <div style="margin: auto; width: 200px; height: 200px;">
+            <img src="{{ im.url }}" alt="{{ image_asset.name|truncatechars:20 }}" />
+        </div>
+        <div class="caption">
+            <h3>{{ image_asset.name|truncatechars:20 }}</h3>
+            <p>{{ image_asset.description }}</p>
+        </div>
+    </div>
+    {% endthumbnail %}
+</li>

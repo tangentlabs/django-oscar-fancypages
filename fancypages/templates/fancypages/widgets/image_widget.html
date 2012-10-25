@@ -5,8 +5,10 @@
 <div class="thumbnail">
     {# FIXME an image currently doesnt work with the render tag #}
     <img src="{{ object.image.url }}" alt="{{ object.caption }}" />
+    {% comment %}
     <div class="caption">
         <h3>{% render_attribute "caption" %}</h3>
     </div>
+    {% endcomment %}
 </div>
 {% endblock %}

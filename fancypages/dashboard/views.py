@@ -328,6 +328,11 @@ class WidgetUpdateView(generic.UpdateView, FancypagesMixin):
     def get_object(self, queryset=None):
         return self.get_widget_object()
 
+    def get_form_kwargs(self):
+        kwargs = super(WidgetUpdateView, self).get_form_kwargs()
+        kwargs['instance'] = self.get_object()
+        return kwargs
+
     def get_form_class(self):
         model = self.object.__class__
         form_class = getattr(
