@@ -325,6 +325,16 @@ fancypages.dashboard = {
         });
     },
 
+    setSelectedAsset: function (assetType, assetId, assetUrl) {
+        console.log('setting new asset', assetType, assetId, assetUrl);
+        $('#asset-modal').modal('hide');
+
+        var assetInput = $("#asset-input");
+        $("#id_asset_id", assetInput).attr('value', assetId);
+        $("#id_asset_type", assetInput).attr('value', assetType);
+        $("img", assetInput).attr('src', assetUrl);
+    },
+
     /**
      * Convenience method to get the current preview document root for handling
      * selectors within the preview page.

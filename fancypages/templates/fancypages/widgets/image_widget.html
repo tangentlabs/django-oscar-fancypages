@@ -4,11 +4,10 @@
 {% block widget %}
 <div class="thumbnail">
     {# FIXME an image currently doesnt work with the render tag #}
-    <img src="{{ object.image.url }}" alt="{{ object.caption }}" />
-    {% comment %}
+    <img src="{{ object.image_asset.image.url }}" alt="{{ object.image_asset.name }}" />
     <div class="caption">
-        <h3>{% render_attribute "caption" %}</h3>
+        <h3>{{ object.image_asset.name }}</h3>
+        <p>{{ object.image_asset.description }}</p>
     </div>
-    {% endcomment %}
 </div>
 {% endblock %}

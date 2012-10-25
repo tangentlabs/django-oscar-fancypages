@@ -1,6 +1,6 @@
 {% load thumbnail %}
 
-<li class="span2" data-behaviours="selectable-asset" data-asset-type="{{ image_asset.asset_type }}" data-image-asset-id="{{ image_asset.id }}">
+<li class="span2" data-behaviours="selectable-asset" data-asset-type="{{ image_asset.asset_type }}" data-asset-id="{{ image_asset.id }}">
     {% thumbnail image_asset.image "200x200" as im %}
     <div class="thumbnail">
         <div style="margin: auto; width: 200px; height: 200px;">

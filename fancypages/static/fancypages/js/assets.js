@@ -19,6 +19,17 @@ fancypages.assets = {
                 $('.bar', uploadProgress).css('width', progress + '%');
             }
         });
-    }
 
+        $("[data-behaviours~=selectable-asset]").live('click', function (ev) {
+            ev.preventDefault();
+            console.log('clicked an asset', $(this));
+
+            parent.fancypages.dashboard.setSelectedAsset(
+                $(this).data('asset-type'),
+                $(this).data('asset-id'),
+                //FIXME: this should probably be the actual image url
+                $('img', this).attr('src')
+            );
+        });
+    }
 };

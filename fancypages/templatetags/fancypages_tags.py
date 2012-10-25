@@ -1,5 +1,6 @@
 from django import template
-from django.template import defaultfilters
+from django.conf import settings
+from django.template import defaultfilters, loader
 
 from fancypages.dashboard import forms
 
@@ -81,6 +82,21 @@ def render_attribute(context, attr_name, *args):
 
     wrapped_attr = u'<div id="widget-%d-%s">%s</div>'
     return wrapped_attr % (widget.id, attr_name, unicode(value))
+
+
+@register.simple_tag(takes_context=True)
+def render_widget_form(context, form):
+    model_name = form._meta.model.__name__.lower()
+    tmpl = loader.select_template([
+        "fancypages/widgets/%s_form.html" % model_name,
+        "fancypages/partials/editor_form_fields.html",
+    ])
+    context['image_asset'] = form.asset
+    context['missing_image_url'] = "%s/%s" % (
+        settings.MEDIA_URL,
+        getattr(settings, "OSCAR_MISSING_IMAGE_URL", '')
+    )
+    return tmpl.render(context)
 
 
 @register.filter

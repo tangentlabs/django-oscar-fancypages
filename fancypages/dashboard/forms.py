@@ -6,7 +6,7 @@ from django.template import loader, TemplateDoesNotExist
 from treebeard.forms import MoveNodeForm
 
 from fancypages.widgets import SelectWidgetRadioFieldRenderer
-from fancypages.assets.widgets import ImageAssetInput
+
 
 Page = get_model('fancypages', 'Page')
 PageType = get_model('fancypages', 'PageType')
@@ -132,14 +132,42 @@ class TitleTextWidgetForm(forms.ModelForm):
 
 
 class ImageWidgetForm(forms.ModelForm):
-    asset_id = forms.IntegerField(widget=ImageAssetInput(), 
-                                 label=_("Image"))
+    asset_id = forms.IntegerField(widget=forms.HiddenInput())
+    asset_type = forms.CharField(widget=forms.HiddenInput())
 
     def __init__(self, *args, **kwargs):
         super(ImageWidgetForm, self).__init__(*args, **kwargs)
         instance = kwargs['instance']
+        self.asset = instance.image_asset
         if instance and instance.image_asset:
             self.fields['asset_id'].initial = instance.image_asset.id
+            self.fields['asset_type'].initial = instance.image_asset.asset_type
+
+    def clean(self):
+        asset_type = self.cleaned_data.get('asset_type', '')
+        model = get_model('assets', asset_type)
+        if model is None:
+            raise forms.ValidationError("asset type %s is invalid" % asset_type)
+
+        asset_id = self.cleaned_data.get('asset_id', None)
+        try:
+            self.asset = model.objects.get(id=asset_id)
+        except model.DoesNotExist:
+            raise forms.ValidationError("asset with ID %s does not exist" % asset_id)
+
+        return self.cleaned_data
+
+    def save(self, commit=True):
+        instance = super(ImageWidgetForm, self).save(commit=False)
+
+        asset_id = self.cleaned_data['asset_id']
+        asset_type = self.cleaned_data['asset_type']
+
+        instance.image_asset = get_model('assets', asset_type).objects.get(id=asset_id)
+
+        if commit:
+            instance.save()
+        return instance
 
     class Meta:
         exclude = ('container', 'image_asset')
