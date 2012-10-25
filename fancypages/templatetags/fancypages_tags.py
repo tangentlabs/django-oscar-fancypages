@@ -91,7 +91,10 @@ def render_widget_form(context, form):
         "fancypages/widgets/%s_form.html" % model_name,
         "fancypages/partials/editor_form_fields.html",
     ])
-    context['image_asset'] = form.asset
+    try:
+        context['image_asset'] = form.asset
+    except AttributeError:
+        context['image_asset'] =  None
     context['missing_image_url'] = "%s/%s" % (
         settings.MEDIA_URL,
         getattr(settings, "OSCAR_MISSING_IMAGE_URL", '')
