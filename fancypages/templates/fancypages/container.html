@@ -5,12 +5,12 @@
 {% for widget_id,rendered_widget in rendered_widgets %}
     <div id="widget-{{ widget_id }}" class="widget {{ widget.container.variable_name }}"
          data-container-name="{{ container_name }}" data-widget-id="{{ widget_id }}">
-        {% if edit_mode %}<div class="edit-button btn"><i class="icon-edit icon-large"></i></div>{% endif %}
+        {% if edit_mode %}<div class="edit-button btn"><i class="icon-edit"></i></div>{% endif %}
             {{ rendered_widget }}
         {% if edit_mode %}
         <div class="widget-move-delete btn-group">
-            <div class="btn move"><i class="icon-move icon-large"></i></div>
-            <div class="btn delete"><i class="icon-trash icon-large"></i></div>
+            <div class="btn move"><i class="icon-move"></i></div>
+            <div class="btn delete"><i class="icon-trash"></i></div>
         </div>
         {% endif %}
     </div>
@@ -22,6 +22,6 @@
 <div class="widget-add-control">
     <a data-toggle="modal" href="#{{ container.variable_name }}_modal"
        data-action="{% url fancypages-dashboard:widget-select container.id %}"
-       data-behaviours="load-add-widget" class="btn btn-large"><i class="icon-plus"></i> Add content block</a>
+       data-behaviours="load-add-widget" class="btn btn-large"><i class="icon-plus"></i> Add content</a>
 </div>
 {% endif %}

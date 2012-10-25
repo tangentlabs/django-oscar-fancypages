@@ -179,9 +179,8 @@ fancypages.dashboard = {
         function UpdateSize(){
             var pageHeight = $(window).height(),
                 navBarTop = $('.navbar-fixed-top').outerHeight(),
-                subBarTop = $('.subnav-fixed').outerHeight(),
-                pageTitle = $('.page-title').outerHeight();
-            $('#page-preview').css('height', pageHeight - navBarTop - subBarTop - pageTitle);
+                subBarTop = $('.subnav-fixed').outerHeight();
+            $('#page-preview').css('height', pageHeight - navBarTop - subBarTop);
         };
         UpdateSize();
         // Function setting the height if window resizes     
@@ -220,11 +219,13 @@ fancypages.dashboard = {
             $('.widget', previewDoc).removeClass('editing');
             widget.addClass('editing');
             
+            // Scrolls IFrame to the top of editing areas
             var destination = widget.offset().top - 20;
             $('html:not(:animated),body:not(:animated)', previewDoc).animate({ scrollTop: destination}, 500, 'swing' );
             
             fancypages.dashboard.loadWidgetForm(widgetUrl, $(widget).data('container-name'));
         });
+        
 
         $('div.delete', previewDoc).click(function (ev) {
             var widget = $(this).parents('.widget');
@@ -248,10 +249,20 @@ fancypages.dashboard = {
         });
 
         // Add / removed page elements for page preview
-        $('#preview-check').on('change', function () {
+        $('button[data-behaviours~=preview-check]').on('click', function () {
             $('body', previewDoc).toggleClass('preview');
             $('.navbar.accounts', previewDoc).add('.header', previewDoc).fadeToggle('slow');
+            $(this).find('i').toggleClass('icon-eye-close');
         });
+        
+        // Show Page previews
+        $('button[data-behaviours~=page-settings]').on('click', function () {
+          $('div[id=widget_input_wrapper]').html("");
+          $('#page-settings').show();
+          $( '.editor' ).animate({ backgroundColor: "#333" }, 500 );
+        });
+
+        
     },
 
     /**
@@ -264,6 +275,7 @@ fancypages.dashboard = {
             $('#page-settings').hide();
 
             fancypages.dashboard.editor.init();
+            $( '.editor' ).animate({ backgroundColor: "#444" }, 500 );
         });
     },
 
@@ -291,6 +303,7 @@ fancypages.dashboard = {
                 $('div[id=widget_input_wrapper]').html("");
                 $('#page-preview').attr('src', $('#page-preview').attr('src'));
                 $('#page-settings').show();
+                $( '.editor' ).animate({ backgroundColor: "#333" }, 500 );
             },
             error: function () {
                 parent.oscar.messages.error(

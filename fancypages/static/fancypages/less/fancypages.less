@@ -1,6 +1,10 @@
 @import "bootstrap/variables.less";
 @import "bootstrap/mixins.less";
 
+@editorWidth: 325px;
+@editorGutter: 20px;
+@btnBorder:   #454545;
+
 // Page
 html, body {
   margin: 0;
@@ -21,34 +25,98 @@ body.fancypages.edit-page {
   position:absolute;
   border-right:1px solid #ccc;
   top:0;
-  left:-20px;
+  left:-@editorGutter;
   bottom:0;
-  width:329px;
+  width:@editorWidth - 1;
   .box-shadow(inset -3px -7px 10px rgba(0,0,0,.1));
 }
 #page-settings,
 #widget_input_wrapper {
-  padding:20px;
+  padding:@editorGutter / 2 @editorGutter;
+  color:#fff;
+  > h3 {
+    border-bottom:1px solid @grayLight;
+    margin-bottom:@baseLineHeight * 2;
+  }
+  .form-actions {
+    background-color:transparent;
+    padding: 19px 0 20px;
+    border-top-color:@gray; 
+  }
 }
-.editor,
-.page-title {
-  background:lighten(@grayLighter, 4%);
-  border-color:lighten(@grayLight, 20%);
+.editor {
+  background:#333;
+  border-color:#000;
+  input[type=text],
+  textarea {
+    width:@editorWidth - (@editorGutter * 3);
+  }
+}
+.button-nav {
+  border-bottom:2px solid @grayDarker;
+  .clearfix();
+  margin-bottom:@baseLineHeight;
+  span {
+    border: 1px solid @btnBorder;
+    border-left-width: 0;
+    display:block;
+    padding:10px 0;
+  }
+  button {
+    color:#fff;
+    font-size:12px;
+    padding:0;
+    border:0;
+    width:50%;
+    float:left;
+    display:block;
+    .border-radius(3px);
+    .box-shadow(inset 0 1px 0 rgba(255,255,255,.2), 0 1px 2px rgba(0,0,0,.05));
+    .gradientBar(#333, #222);
+    text-shadow: 2px 2px 3px rgba(0,0,0,0.7);
+    &:hover {
+      .gradientBar(#444, #333);
+    }
+    &:active {
+      .gradientBar(#222, #333);
+    }
+  }
+  i{
+    display:block;
+    font-size: 35px;
+    padding: 10px 0 5px;
+  }
+}
+textarea:focus, 
+input[type="text"]:focus, 
+input[type="password"]:focus, 
+input[type="datetime"]:focus, 
+input[type="datetime-local"]:focus, 
+input[type="date"]:focus, 
+input[type="month"]:focus, 
+input[type="time"]:focus, 
+input[type="week"]:focus, 
+input[type="number"]:focus, 
+input[type="email"]:focus, 
+input[type="url"]:focus, 
+input[type="search"]:focus, 
+input[type="tel"]:focus, 
+input[type="color"]:focus, 
+.uneditable-input:focus {
+  border-color: rgba(82, 168, 236, 1);
 }
 .wysihtml5-wrapper {
   overflow: auto;
 }
 .wysihtml5-wrapper textarea {
-  width:270px;
+  width:@editorWidth - (@editorGutter * 3);
   height:300px;
 }
 
 .wysihtml5-toolbar {
-  position: relative;
-  width: 98%;
-  height: 40px;
-  font-size: 24px;
-  overflow: auto;
+  .btn-group {
+    margin-bottom:10px;
+  }
 }
 
 #messages {
@@ -61,14 +129,15 @@ body.fancypages.edit-page {
 .preview,
 .page-title {
   margin: 0px;
-  margin-left:310px;
-  margin-right:-20px;
+  margin-left:@editorWidth - @editorGutter;
+  margin-right:-@editorGutter;
 }
 .page-title {
   border-bottom:1px solid #ccc;
-  padding:20px;
+  padding:10px @editorGutter;
+  text-align:center;
   .clearfix();
-  h1 {
+  h3 {
     margin:0;
   }
 }

@@ -16,29 +16,22 @@
 {% block dashboard_content %}
 <div class="row-fluid page-wrapper">
     <div class="editor">
+        <div class="button-nav">
+            <button data-behaviours="page-settings"><span><i class="icon-file"></i> {% trans "Page Settings" %}</span></button>
+            <button data-behaviours="preview-check"><span><i class="icon-eye-open"></i> {% trans "Page preview" %}</span></button>
+        </div>
         <div id="page-settings">
-            <h3>Page Settings</h3>
+            <h3><i class="icon-file"></i> Page Settings</h3>
             <form method="post" action="." class="form-stacked">
                 {% csrf_token %}
-                {% include "fancypages/partials/editor_form_fields.html" %}
-                <div class="buttons">
+                {% include "oscar/partials/form_fields.html" %}
+                <div class="form-actions">
                     <a href="" class="btn">{% trans "Cancel" %}</a>
-                    <button type="submit" class="btn btn-primary">{% trans "Save" %}</button>
+                    <button type="submit" class="btn btn-primary pull-right">{% trans "Save" %}</button>
                 </div>
             </form>
         </div>
-        <div id="widget_input_wrapper"></div>
-    </div>
-
-    <div class="page-title">
-        <div class="pull-right form-inline">
-            <label for="preview-check" class="ckeckbox">
-                <input type="checkbox" checked="checked" id="preview-check"  />
-                Page preview
-            </label>
-            <a href="" class="btn">{% trans "Page Properties" %}</a>
-        </div>
-        <h1>{% blocktrans with title=page.title %}Customise page "{{ title }}" {% endblocktrans %}</h1>
+        <div id="widget_input_wrapper" class="editing-area"></div>
     </div>
 
     <div class="preview">

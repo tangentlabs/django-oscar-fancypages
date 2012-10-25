@@ -18,12 +18,9 @@ setup(
         'versiontools>=1.9.1',
         'Django>=1.4.2',
         'dingus>=0.3.4',
-        'django-oscar>=0.3',
+        'django-oscar>=0.4',
         'django-model-utils>=1.1.0',
         'django-compressor>=1.2',
-    ],
-    dependency_links=[
-        'http://github.com/tangentlabs/django-oscar/tarball/master#egg=django-oscar-0.4'
     ],
     # See http://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
