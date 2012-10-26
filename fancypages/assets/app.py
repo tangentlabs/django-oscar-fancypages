@@ -7,7 +7,8 @@ from fancypages.assets import views
 
 
 class AssetApplication(Application):
-    name = 'fp-assets'
+    name = None
+
     image_list_view = views.ImageListView
     image_create_view = views.ImageCreateView
 

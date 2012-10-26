@@ -20,7 +20,7 @@
 {% block dashboard_content %}
 
 <div class="well well-info">
-    <a href="{% url fancypages-dashboard:page-type-create %}" class="btn btn-primary btn-large">
+    <a href="{% url fp-dashboard:page-type-create %}" class="btn btn-primary btn-large">
         {% trans "Create new page type" %}
     </a>
 </div>
@@ -41,8 +41,8 @@
             <td>{{ page_type.name }}</td>
             <td>{{ page_type.template.template_name }}</td>
             <td>
-                <a class="btn btn-info" href="{% url fancypages-dashboard:page-type-update page_type.id %}">{% trans "Edit" %}</a>
-                <a class="btn btn-danger" href="{% url fancypages-dashboard:page-type-delete page_type.id %}">{% trans "Delete" %}</a>
+                <a class="btn btn-info" href="{% url fp-dashboard:page-type-update page_type.id %}">{% trans "Edit" %}</a>
+                <a class="btn btn-danger" href="{% url fp-dashboard:page-type-delete page_type.id %}">{% trans "Delete" %}</a>
             </td>
         </tr>
         {% endfor %}

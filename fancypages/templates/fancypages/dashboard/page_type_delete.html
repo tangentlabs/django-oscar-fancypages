@@ -8,7 +8,7 @@
         <span class="divider">/</span>
     </li>
     <li>
-        <a href="{% url fancypages-dashboard:page-type-list %}">{% trans "Page types" %}</a>
+        <a href="{% url fp-dashboard:page-type-list %}">{% trans "Page types" %}</a>
         <span class="divider">/</span>
     </li>
     <li class="active">
@@ -42,7 +42,7 @@ Delete page types {{ name }}
     <div class="control-group">
         <div class="controls">
             <button class="btn btn-info" type="submit">{% trans "Delete" %}</button>
-            <a class="btn" href="{% url fancypages-dashboard:page-type-list %}">{% trans "Cancel" %}</a>
+            <a class="btn" href="{% url fp-dashboard:page-type-list %}">{% trans "Cancel" %}</a>
         </div>
     </div>
 </form>

@@ -8,7 +8,7 @@
         <span class="divider">/</span>
     </li>
     <li>
-        <a href="{% url fancypages-dashboard:page-template-list %}">{% trans "Page templates" %}</a>
+        <a href="{% url fp-dashboard:page-template-list %}">{% trans "Page templates" %}</a>
         <span class="divider">/</span>
     </li>
     <li class="active">
@@ -42,7 +42,7 @@ Delete page template {{ title }}
     <div class="control-group">
         <div class="controls">
             <button class="btn btn-info" type="submit">{% trans "Delete" %}</button>
-            <a class="btn" href="{% url fancypages-dashboard:page-template-list %}">{% trans "Cancel" %}</a>
+            <a class="btn" href="{% url fp-dashboard:page-template-list %}">{% trans "Cancel" %}</a>
         </div>
     </div>
 </form>

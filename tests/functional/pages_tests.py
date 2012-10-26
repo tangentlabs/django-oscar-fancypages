@@ -37,13 +37,13 @@ class TestAStaffMember(test.FancyPagesWebTest):
         )
 
     def test_can_see_a_list_of_page_types(self):
-        page = self.get(reverse('fancypages-dashboard:page-list'))
+        page = self.get(reverse('fp-dashboard:page-list'))
 
         self.assertContains(page, 'Article')
         self.assertContains(page, 'Other')
 
     def test_can_create_a_new_toplevel_article_page(self):
-        page = self.get(reverse('fancypages-dashboard:page-list'))
+        page = self.get(reverse('fp-dashboard:page-list'))
 
         type_form = page.form
         type_form['page_type'] = self.article_type.code
@@ -52,7 +52,7 @@ class TestAStaffMember(test.FancyPagesWebTest):
         self.assertRedirects(
             page,
             reverse(
-                'fancypages-dashboard:page-create',
+                'fp-dashboard:page-create',
                 args=(self.article_type.code,)
             ),
             status_code=301
@@ -64,7 +64,7 @@ class TestAStaffMember(test.FancyPagesWebTest):
         create_form['title'] = "A new page"
         page = create_form.submit()
 
-        self.assertRedirects(page, reverse('fancypages-dashboard:page-list'))
+        self.assertRedirects(page, reverse('fp-dashboard:page-list'))
         page = page.follow()
 
         article_page = Page.objects.get(title="A new page")
@@ -113,7 +113,7 @@ class TestAWidget(test.FancyPagesWebTest):
 
     def test_can_be_deleted(self):
         page = self.get(reverse(
-            'fancypages-dashboard:widget-delete',
+            'fp-dashboard:widget-delete',
             args=(self.third_text_widget.id,)
         ))
         # we need to fake a body as the template does not
@@ -130,7 +130,7 @@ class TestAWidget(test.FancyPagesWebTest):
 
     def test_can_be_deleted_and_remaining_widgets_are_reordered(self):
         page = self.get(reverse(
-            'fancypages-dashboard:widget-delete',
+            'fp-dashboard:widget-delete',
             args=(self.other_text_widget.id,)
         ))
         # we need to fake a body as the template does not
@@ -154,7 +154,7 @@ class TestAWidget(test.FancyPagesWebTest):
     def test_a_widget_can_be_added_to_a_container(self):
         container = self.page.get_container_from_name('main-container')
         num_widgets = container.widgets.count()
-        response = self.get(reverse('fancypages-dashboard:widget-add',
+        response = self.get(reverse('fp-dashboard:widget-add',
                                     args=(container.id, self.text_widget.code)))
 
         json_response = json.loads(response.body)
@@ -209,7 +209,7 @@ class TestAMovableWidget(test.FancyPagesWebTest):
 
         page = self.get(
             reverse(
-                'fancypages-dashboard:widget-move',
+                'fp-dashboard:widget-move',
                 kwargs={
                     'pk': self.main_widgets[1].id,
                     'container_pk': self.left_container.id,
@@ -243,7 +243,7 @@ class TestAPageTemplate(test.FancyPagesWebTest):
 
     def test_are_listed_in_the_dashboard(self):
         page = self.app.get(
-            reverse('fancypages-dashboard:page-template-list'),
+            reverse('fp-dashboard:page-template-list'),
             user=self.user
         )
         self.assertContains(page, self.template.title)
@@ -253,21 +253,21 @@ class TestAPageTemplate(test.FancyPagesWebTest):
         self.assertContains(
             page,
             reverse(
-                'fancypages-dashboard:page-template-update',
+                'fp-dashboard:page-template-update',
                 args=(self.template.id,)
             )
         )
         self.assertContains(
             page,
             reverse(
-                'fancypages-dashboard:page-template-delete',
+                'fp-dashboard:page-template-delete',
                 args=(self.template.id,)
             )
         )
 
     def test_cannot_be_created_with_template_does_not_exist(self):
         page = self.app.get(
-            reverse('fancypages-dashboard:page-template-list'),
+            reverse('fp-dashboard:page-template-list'),
             user=self.user
         )
         page = page.click('Create new page template')
@@ -287,7 +287,7 @@ class TestAPageTemplate(test.FancyPagesWebTest):
 
     def test_can_be_created_without_image_in_the_dashboard(self):
         page = self.app.get(
-            reverse('fancypages-dashboard:page-template-list'),
+            reverse('fp-dashboard:page-template-list'),
             user=self.user
         )
         page = page.click('Create new page template')
@@ -302,7 +302,7 @@ class TestAPageTemplate(test.FancyPagesWebTest):
 
         self.assertRedirects(
             page,
-            reverse('fancypages-dashboard:page-template-list')
+            reverse('fp-dashboard:page-template-list')
         )
 
         self.assertEquals(PageTemplate.objects.count(), 2)
@@ -313,7 +313,7 @@ class TestAPageTemplate(test.FancyPagesWebTest):
 
     def test_can_be_updated_without_image_in_the_dashboard(self):
         page = self.app.get(
-            reverse('fancypages-dashboard:page-template-list'),
+            reverse('fp-dashboard:page-template-list'),
             user=self.user
         )
         page = page.click('Edit')
@@ -326,7 +326,7 @@ class TestAPageTemplate(test.FancyPagesWebTest):
 
         self.assertRedirects(
             page,
-            reverse('fancypages-dashboard:page-template-list')
+            reverse('fp-dashboard:page-template-list')
         )
 
         self.assertEquals(PageTemplate.objects.count(), 1)
@@ -336,7 +336,7 @@ class TestAPageTemplate(test.FancyPagesWebTest):
 
     def test_can_be_deleted_in_the_dashboard(self):
         page = self.app.get(
-            reverse('fancypages-dashboard:page-template-list'),
+            reverse('fp-dashboard:page-template-list'),
             user=self.user
         )
         self.assertEquals(PageTemplate.objects.count(), 1)
@@ -349,7 +349,7 @@ class TestAPageTemplate(test.FancyPagesWebTest):
 
         self.assertRedirects(
             page,
-            reverse('fancypages-dashboard:page-template-list')
+            reverse('fp-dashboard:page-template-list')
         )
 
         self.assertEquals(PageTemplate.objects.count(), 0)

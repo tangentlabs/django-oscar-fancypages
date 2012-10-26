@@ -37,7 +37,7 @@ class PageTemplateCreateView(generic.CreateView):
         return ctx
 
     def get_success_url(self):
-        return reverse('fancypages-dashboard:page-template-list')
+        return reverse('fp-dashboard:page-template-list')
 
 
 class PageTemplateUpdateView(generic.UpdateView):
@@ -52,7 +52,7 @@ class PageTemplateUpdateView(generic.UpdateView):
         return ctx
 
     def get_success_url(self):
-        return reverse('fancypages-dashboard:page-template-list')
+        return reverse('fp-dashboard:page-template-list')
 
 
 class PageTemplateDeleteView(generic.DeleteView):
@@ -61,7 +61,7 @@ class PageTemplateDeleteView(generic.DeleteView):
     template_name = "fancypages/dashboard/page_template_delete.html"
 
     def get_success_url(self):
-        return reverse('fancypages-dashboard:page-template-list')
+        return reverse('fp-dashboard:page-template-list')
 
 
 class PageTypeListView(generic.ListView):
@@ -82,7 +82,7 @@ class PageTypeCreateView(generic.CreateView):
         return ctx
 
     def get_success_url(self):
-        return reverse('fancypages-dashboard:page-type-list')
+        return reverse('fp-dashboard:page-type-list')
 
 
 class PageTypeUpdateView(generic.UpdateView):
@@ -97,7 +97,7 @@ class PageTypeUpdateView(generic.UpdateView):
         return ctx
 
     def get_success_url(self):
-        return reverse('fancypages-dashboard:page-type-list')
+        return reverse('fp-dashboard:page-type-list')
 
 
 class PageTypeDeleteView(generic.DeleteView):
@@ -106,7 +106,7 @@ class PageTypeDeleteView(generic.DeleteView):
     template_name = "fancypages/dashboard/page_type_delete.html"
 
     def get_success_url(self):
-        return reverse('fancypages-dashboard:page-type-list')
+        return reverse('fp-dashboard:page-type-list')
 
 
 class PageListView(generic.ListView):
@@ -139,15 +139,15 @@ class PageCreateRedirectView(generic.RedirectView):
 
         if not page_type_code:
             messages.error(self.request, _("Please select a page type"))
-            return reverse('fancypages-dashboard:page-list')
+            return reverse('fp-dashboard:page-list')
 
         try:
             page_type = PageType.objects.get(code=page_type_code)
         except PageType.DoesNotExist:
             messages.error(self.request, _("Please select a page type"))
-            return reverse('fancypages-dashboard:page-list')
+            return reverse('fp-dashboard:page-list')
 
-        return reverse('fancypages-dashboard:page-create',
+        return reverse('fp-dashboard:page-create',
                        kwargs={'page_type_code': page_type.code})
 
 
@@ -181,7 +181,7 @@ class PageCreateView(generic.CreateView):
         return super(PageCreateView, self).post(request, **kwargs)
 
     def get_success_url(self):
-        return reverse('fancypages-dashboard:page-list')
+        return reverse('fp-dashboard:page-list')
 
 
 class PageUpdateView(generic.UpdateView):
@@ -201,7 +201,7 @@ class PageUpdateView(generic.UpdateView):
         )
 
     def get_success_url(self):
-        return reverse('fancypages-dashboard:page-list')
+        return reverse('fp-dashboard:page-list')
 
 
 class PageCustomiseView(PageUpdateView):
@@ -214,7 +214,7 @@ class PageCustomiseView(PageUpdateView):
 
     def get_success_url(self):
         return reverse(
-            'fancypages-dashboard:page-customise',
+            'fp-dashboard:page-customise',
             args=(self.object.id,)
         )
 
@@ -262,62 +262,47 @@ class WidgetSelectView(generic.ListView):
         return ctx
 
 
-class WidgetAddView(generic.CreateView):
-    model = Widget
-    template_name = "fancypages/dashboard/widget_create.html"
-
-    def get_initial(self):
-        return {
-            'display_order': self.container.widgets.count(),
-        }
-
-    def get(self, request, *args, **kwargs):
-        container_id = self.kwargs.get('container_id')
-        self.container = Container.objects.get(id=container_id)
-        return super(WidgetCreateView, self).get(request, *args, **kwargs)
-
-
-class WidgetCreateView(generic.CreateView, FancypagesMixin):
-    model = Widget
-    template_name = "fancypages/dashboard/widget_create.html"
-
-    def get_initial(self):
-        return {
-            'display_order': self.container.widgets.count(),
-        }
-
-    def get(self, request, *args, **kwargs):
-        container_id = self.kwargs.get('container_id')
-        self.container = Container.objects.get(id=container_id)
-        return super(WidgetCreateView, self).get(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        container_id = self.kwargs.get('container_id')
-        self.container = Container.objects.get(id=container_id)
-        return super(WidgetCreateView, self).post(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        ctx = super(WidgetCreateView, self).get_context_data(**kwargs)
-        ctx['container'] = self.container
-        ctx['widget_code'] = self.kwargs.get('code')
-        return ctx
-
-    def get_form_class(self):
-        model = self.get_widget_class()
-        form_class = getattr(forms, "%sForm" % model.__name__, forms.WidgetForm)
-        form_class = modelform_factory(model, form=form_class)
-        return form_class
-
-    def form_valid(self, form):
-        self.object = form.save(commit=False)
-        self.object.container = self.container
-        self.object.save()
-
-        return HttpResponseRedirect(self.get_success_url())
-
-    def get_success_url(self):
-        return reverse('fancypages-dashboard:widget-update',
-                       args=(self.object.id,))
+#class WidgetCreateView(generic.CreateView, FancypagesMixin):
+#    model = Widget
+#    template_name = "fancypages/dashboard/widget_create.html"
+#
+#    def get_initial(self):
+#        return {
+#            'display_order': self.container.widgets.count(),
+#        }
+#
+#    def get(self, request, *args, **kwargs):
+#        container_id = self.kwargs.get('container_id')
+#        self.container = Container.objects.get(id=container_id)
+#        return super(WidgetCreateView, self).get(request, *args, **kwargs)
+#
+#    def post(self, request, *args, **kwargs):
+#        container_id = self.kwargs.get('container_id')
+#        self.container = Container.objects.get(id=container_id)
+#        return super(WidgetCreateView, self).post(request, *args, **kwargs)
+#
+#    def get_context_data(self, **kwargs):
+#        ctx = super(WidgetCreateView, self).get_context_data(**kwargs)
+#        ctx['container'] = self.container
+#        ctx['widget_code'] = self.kwargs.get('code')
+#        return ctx
+#
+#    def get_form_class(self):
+#        model = self.get_widget_class()
+#        form_class = getattr(forms, "%sForm" % model.__name__, forms.WidgetForm)
+#        form_class = modelform_factory(model, form=form_class)
+#        return form_class
+#
+#    def form_valid(self, form):
+#        self.object = form.save(commit=False)
+#        self.object.container = self.container
+#        self.object.save()
+#
+#        return HttpResponseRedirect(self.get_success_url())
+#
+#    def get_success_url(self):
+#        return reverse('fp-dashboard:widget-update',
+#                       args=(self.object.id,))
 
 
 class WidgetUpdateView(generic.UpdateView, FancypagesMixin):
@@ -343,7 +328,7 @@ class WidgetUpdateView(generic.UpdateView, FancypagesMixin):
         return modelform_factory(model, form=form_class)
 
     def get_success_url(self):
-        return reverse('fancypages-dashboard:widget-update',
+        return reverse('fp-dashboard:widget-update',
                        args=(self.object.id,))
 
 
@@ -363,7 +348,7 @@ class WidgetDeleteView(generic.DeleteView, FancypagesMixin):
         return response
 
     def get_success_url(self):
-        return reverse('fancypages-dashboard:page-list')
+        return reverse('fp-dashboard:page-list')
 
 
 class JSONResponseMixin(object):
@@ -486,7 +471,7 @@ class ContainerAddWidgetView(JSONResponseMixin, generic.edit.BaseDetailView,
         return {
             'success': True,
             'update_url': reverse(
-                'fancypages-dashboard:widget-update',
+                'fp-dashboard:widget-update',
                 args=(widget.id,)
             )
         }
