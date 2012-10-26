@@ -2,14 +2,13 @@ from django import http
 from django.views import generic
 from django.contrib import messages
 from django.db.models import get_model, Q
-from django.utils import simplejson as json
-from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.forms.models import modelform_factory
 from django.utils.translation import ugettext_lazy as _
 
 from fancypages.dashboard import forms
 from fancypages.views import PageDetailView
+from fancypages.mixins import JSONResponseMixin
 
 
 Page = get_model('fancypages', 'Page')
@@ -262,49 +261,6 @@ class WidgetSelectView(generic.ListView):
         return ctx
 
 
-#class WidgetCreateView(generic.CreateView, FancypagesMixin):
-#    model = Widget
-#    template_name = "fancypages/dashboard/widget_create.html"
-#
-#    def get_initial(self):
-#        return {
-#            'display_order': self.container.widgets.count(),
-#        }
-#
-#    def get(self, request, *args, **kwargs):
-#        container_id = self.kwargs.get('container_id')
-#        self.container = Container.objects.get(id=container_id)
-#        return super(WidgetCreateView, self).get(request, *args, **kwargs)
-#
-#    def post(self, request, *args, **kwargs):
-#        container_id = self.kwargs.get('container_id')
-#        self.container = Container.objects.get(id=container_id)
-#        return super(WidgetCreateView, self).post(request, *args, **kwargs)
-#
-#    def get_context_data(self, **kwargs):
-#        ctx = super(WidgetCreateView, self).get_context_data(**kwargs)
-#        ctx['container'] = self.container
-#        ctx['widget_code'] = self.kwargs.get('code')
-#        return ctx
-#
-#    def get_form_class(self):
-#        model = self.get_widget_class()
-#        form_class = getattr(forms, "%sForm" % model.__name__, forms.WidgetForm)
-#        form_class = modelform_factory(model, form=form_class)
-#        return form_class
-#
-#    def form_valid(self, form):
-#        self.object = form.save(commit=False)
-#        self.object.container = self.container
-#        self.object.save()
-#
-#        return HttpResponseRedirect(self.get_success_url())
-#
-#    def get_success_url(self):
-#        return reverse('fp-dashboard:widget-update',
-#                       args=(self.object.id,))
-
-
 class WidgetUpdateView(generic.UpdateView, FancypagesMixin):
     model = Widget
     context_object_name = 'widget'
@@ -349,25 +305,6 @@ class WidgetDeleteView(generic.DeleteView, FancypagesMixin):
 
     def get_success_url(self):
         return reverse('fp-dashboard:page-list')
-
-
-class JSONResponseMixin(object):
-
-    def render_to_response(self, context):
-        "Returns a JSON response containing 'context' as payload"
-        return self.get_json_response(self.convert_context_to_json(context))
-
-    def get_json_response(self, content, **httpresponse_kwargs):
-        "Construct an `HttpResponse` object."
-        return http.HttpResponse(
-            content,
-            content_type='application/json',
-            **httpresponse_kwargs
-        )
-
-    def convert_context_to_json(self, context):
-        "Convert the context dictionary into a JSON object"
-        return json.dumps(context)
 
 
 class WidgetMoveView(JSONResponseMixin, generic.edit.BaseDetailView,
