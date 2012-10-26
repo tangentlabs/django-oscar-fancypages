@@ -65,6 +65,7 @@ if not settings.configured:
             'model_utils',
 
             'fancypages',
+            'fancypages.assets',
         ],
         AUTHENTICATION_BACKENDS=(
             'oscar.apps.customer.auth_backends.Emailbackend',
@@ -78,7 +79,13 @@ if not settings.configured:
                 'PATH': tempfile.mkdtemp()+'/whoosh_index/',
             },
         },
-        NOSE_ARGS=['-s', '--with-spec'],  #'--with-progressive'],
+        NOSE_ARGS=[
+            '-s',
+            '--with-spec',
+            '--with-coverage',
+            '--cover-package=fancypages',
+            '--cover-html',
+        ],  #'--with-progressive'],
         **OSCAR_SETTINGS
     )
 

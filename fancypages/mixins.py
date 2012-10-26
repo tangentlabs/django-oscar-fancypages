@@ -6,7 +6,8 @@ class JSONResponseMixin(object):
     json_filename = 'response.json'
 
     def get_content_type(self):
-        if "application/json" in self.request.META['HTTP_ACCEPT']:
+        http_accept = self.request.META.get('HTTP_ACCEPT', [])
+        if "application/json" in http_accept:
             return "application/json"
         else:
             return "text/plain"

@@ -16,7 +16,7 @@ class ImageListView(generic.ListView):
     context_object_name = 'image_list'
 
 
-class ImageCreateView(JSONResponseMixin, generic.CreateView):
+class ImageAssetCreateView(JSONResponseMixin, generic.CreateView):
     model = ImageAsset
     template_name = 'fancypages/assets/image_update.html'
     form_class = forms.ImageAssetCreateForm
@@ -43,9 +43,8 @@ class ImageCreateView(JSONResponseMixin, generic.CreateView):
         ctx = [{
             'name': f.name,
             'url': self.object.get_absolute_url(),
-            'thumbnail_url': '',
-            'image_markup': thumbnail_markup,
-            'delete_url': '', #reverse('upload-delete', args=[self.object.id]),
-            'delete_type': 'DELETE',
+            'thumbnailMarkup': thumbnail_markup,
+            'deleteUrl': '', #reverse('upload-delete', args=[self.object.id]),
+            'deleteType': 'DELETE',
         }]
         return self.render_to_response(ctx)

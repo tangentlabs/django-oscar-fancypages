@@ -5,7 +5,11 @@ fancypages.assets = {
         $('#fileupload').fileupload({
             dataType: 'json',
             done: function (e, data) {
-                $("#asset-gallery").append(data.result[0].image_markup);
+                if (data.success) {
+                    $("#asset-gallery").append(data.result[0].imageMarkup);
+                } else {
+                    parent.oscar.messages.error(data.reason);
+                }
             },
             progressall: function (e, data) {
                 var progress = parseInt(data.loaded / data.total * 100, 10);

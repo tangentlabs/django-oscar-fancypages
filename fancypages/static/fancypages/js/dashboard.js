@@ -22,7 +22,7 @@ fancypages.dashboard = {
                         if (data.success) {
                             parent.fancypages.dashboard.reloadPreview();
                         } else {
-                            parent.oscar.messages.error(data.error);
+                            parent.oscar.messages.error(data.reason);
                         }
                     }).error(function () {
                         parent.oscar.messages.error(
@@ -75,7 +75,7 @@ fancypages.dashboard = {
                         parent.fancypages.dashboard.reloadPreview();
                         parent.fancypages.dashboard.loadWidgetForm(data.update_url, containerName);
                     } else {
-                        parent.oscar.messages.error(data.error);
+                        parent.oscar.messages.error(data.reason);
                     }
                 }).error(function () {
                     parent.oscar.messages.error(

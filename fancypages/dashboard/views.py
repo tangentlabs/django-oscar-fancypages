@@ -390,14 +390,14 @@ class ContainerAddWidgetView(JSONResponseMixin, generic.edit.BaseDetailView,
         if widget_code is None:
             return {
                 'success': False,
-                'error': "could not find valid widget code"
+                'reason': "could not find valid widget code"
             }
 
         model = self.get_widget_class()
         if model is None:
             return {
                 'success': False,
-                'error': "could not find widget with code %s" % widget_code
+                'reason': "could not find widget with code %s" % widget_code
             }
 
         # create a new widget and add it to the given container
