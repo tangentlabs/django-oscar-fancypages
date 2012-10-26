@@ -249,7 +249,7 @@ class Page(MP_Node):
 
 
 class Container(models.Model):
-    template_name = 'fancypages/container.html'
+    template_name = 'fancypages/base/container.html'
     # this is the name of the variable used in the template tag
     # e.g. {% fancypages-container var-name %}
     variable_name = models.SlugField(_("Variable name"), max_length=50)
@@ -363,7 +363,7 @@ class Widget(models.Model):
 class TextWidget(Widget):
     name = _("Text widget")
     code = 'text'
-    template_name = "fancypages/widgets/text_widget.html"
+    template_name = "fancypages/widgets/textwidget.html"
 
     text = models.CharField(_("Text"), max_length=2000,
                             default="Your text goes here.")
@@ -375,7 +375,7 @@ class TextWidget(Widget):
 class TitleTextWidget(Widget):
     name = _("Title and text widget")
     code = 'title-text'
-    template_name = "fancypages/widgets/title_text_widget.html"
+    template_name = "fancypages/widgets/titletextwidget.html"
 
     title = models.CharField(_("Title"), max_length=100,
                              default="Your title goes here.")
@@ -389,7 +389,7 @@ class TitleTextWidget(Widget):
 class ImageWidget(Widget):
     name = _("Image widget")
     code = 'image'
-    template_name = "fancypages/widgets/image_widget.html"
+    template_name = "fancypages/widgets/imagewidget.html"
 
     image_asset = models.ForeignKey('assets.ImageAsset', verbose_name=_("Image asset"),
                                     related_name="image_widgets", blank=True, null=True)
