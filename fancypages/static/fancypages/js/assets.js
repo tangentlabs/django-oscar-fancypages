@@ -6,8 +6,12 @@ fancypages.assets = {
         $('#fileupload').fileupload({
             dataType: 'json',
             done: function (e, data) {
-                $("#asset-gallery").append(data.result[0].image_markup);
-                uploadProgress.addClass("hide");
+                if (data.success) {
+                    $("#asset-gallery").append(data.result[0].imageMarkup);
+                    uploadProgress.addClass("hide");
+                } else {
+                    parent.oscar.messages.error(data.reason);
+                }
             },
             progressall: function (e, data) {
                 var progress = parseInt(data.loaded / data.total * 100, 10);

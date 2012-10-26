@@ -21,7 +21,7 @@
 
 <div class="well well-info">
     <form class="form form-inline" method="get"
-          action="{% url fancypages-dashboard:page-create %}">
+          action="{% url fp-dashboard:page-create %}">
         {% include "partials/form_fields_inline.html" with form=page_type_form %}
         <button class="btn btn-primary">{% trans "Create new page" %}</button>
     </form>

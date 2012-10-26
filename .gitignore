@@ -4,6 +4,12 @@
 *.sqlite3
 *.db
 
-docs/build
-public
-.tox
+.coverage
+.vagrant
+
+.tox/
+
+dist/
+cover/
+public/
+docs/build/

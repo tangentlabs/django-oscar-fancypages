@@ -1,31 +1,34 @@
-from django.conf.urls.defaults import patterns, url
 from django.utils.translation import ugettext_lazy as _
+from django.conf.urls.defaults import patterns, url, include
 
 from oscar.core.application import Application
 from oscar.apps.dashboard.nav import register, Node
 from oscar.views.decorators import staff_member_required
 
 from fancypages.dashboard import views
+from fancypages.assets.app import application as assets_app
 
 
 node = Node(_('Page Manager'))
 node.add_child(Node(
     _('Pages'),
-    'fancypages-dashboard:page-list')
+    'fp-dashboard:page-list')
 )
 node.add_child(Node(
     _('Page Types'),
-    'fancypages-dashboard:page-type-list')
+    'fp-dashboard:page-type-list')
 )
 node.add_child(Node(
     _('Page Templates'),
-    'fancypages-dashboard:page-template-list')
+    'fp-dashboard:page-template-list')
 )
 register(node, 100)
 
 
 class FancypagesDashboardApplication(Application):
-    name = 'fancypages-dashboard'
+    name = 'fp-dashboard'
+    assets_app = assets_app
+
     page_template_list_view = views.PageTemplateListView
     page_template_create_view = views.PageTemplateCreateView
     page_template_update_view = views.PageTemplateUpdateView
@@ -46,13 +49,14 @@ class FancypagesDashboardApplication(Application):
     container_add_widget_view = views.ContainerAddWidgetView
 
     widget_select_view = views.WidgetSelectView
-    widget_create_view = views.WidgetCreateView
     widget_update_view = views.WidgetUpdateView
     widget_delete_view = views.WidgetDeleteView
     widget_move_view = views.WidgetMoveView
 
     def get_urls(self):
         urlpatterns = patterns('',
+            url(r'^assets/', include(self.assets_app.urls)),
+
             url(r'^templates/$',
                 self.page_template_list_view.as_view(),
                 name='page-template-list'),
@@ -88,6 +92,8 @@ class FancypagesDashboardApplication(Application):
             url(r'^preview/(?P<slug>[\w-]+(/[\w-]+)*)/$',
                 self.page_preview_view.as_view(), name='page-preview'),
 
+            # FIXME: This need to be renamed to a widget-related URL
+            # should be something like: widget/add/<code>/<container_pk>
             url(r'^container/(?P<pk>\d+)/add/(?P<code>[\w-]+)/$',
                 self.container_add_widget_view.as_view(),
                 name='widget-add'),
@@ -95,9 +101,6 @@ class FancypagesDashboardApplication(Application):
             url(r'^widget/(?P<container_id>\d+)/select/$',
                 self.widget_select_view.as_view(),
                 name='widget-select'),
-            url(r'^widget/(?P<container_id>\d+)/(?P<code>[\w-]+)/create/$',
-                self.widget_create_view.as_view(),
-                name='widget-create'),
             url(r'^widget/update/(?P<pk>\d+)/$',
                 self.widget_update_view.as_view(),
                 name='widget-update'),

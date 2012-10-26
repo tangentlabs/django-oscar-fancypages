@@ -6,7 +6,7 @@
 <form id="{{ widget.container.variable_name }}_widget_form"
       data-widget-id='{{ widget.id }}' data-container-name="{{ widget.container.variable_name }}"
       data-behaviours="submit-widget-form" class="form" method="post"
-      action="{% url fancypages-dashboard:widget-update widget.id %}">
+      action="{% url fp-dashboard:widget-update widget.id %}">
     {% csrf_token %}
     {% render_widget_form form %}
     <div class="form-actions">
@@ -24,13 +24,7 @@
     </div>
     <div class="modal-body" style="max-height: none;">
         <iframe id="asset-manager" frameborder='0' width="100%" height="100%"
-                data-src="{% url fancypages:fp-assets:image-list %}">
+                data-src="{% url fp-dashboard:image-list %}">
         </iframe>
     </div>
-    {% comment %}
-    <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">{% trans "Close" %}</button>
-        <button class="btn btn-primary">{% trans "Save changes" %}</button>
-    </div>
-    {% endcomment %}
 </div>
