@@ -20,22 +20,26 @@
             <button data-behaviours="page-settings"><span><i class="icon-file"></i> {% trans "Page Settings" %}</span></button>
             <button data-behaviours="preview-check"><span><i class="icon-eye-open"></i> {% trans "Page preview" %}</span></button>
         </div>
-        <div id="page-settings">
-            <h3><i class="icon-file"></i> Page Settings</h3>
-            <form method="post" action="." class="form-stacked">
-                {% csrf_token %}
-                {% include "oscar/partials/form_fields.html" %}
-                <div class="form-actions">
-                    <a href="" class="btn">{% trans "Cancel" %}</a>
-                    <button type="submit" class="btn btn-primary pull-right">{% trans "Save" %}</button>
-                </div>
-            </form>
+        <div class="sidebar-content">
+            <div id="page-settings">
+                <h3><i class="icon-file"></i> Page Settings</h3>
+                <form method="post" action="." class="form-stacked">
+                    {% csrf_token %}
+                    {% include "oscar/partials/form_fields.html" %}
+                    <div class="form-actions">
+                        <a href="" class="btn">{% trans "Cancel" %}</a>
+                        <button type="submit" class="btn btn-primary pull-right">{% trans "Save" %}</button>
+                    </div>
+                </form>
+            </div>
+            <div id="widget_input_wrapper"></div>
         </div>
-        <div id="widget_input_wrapper" class="editing-area"></div>
     </div>
-
+    
     <div class="preview">
         <iframe id="page-preview" frameborder='0' src="{% url fancypages-dashboard:page-preview page.slug %}"></iframe>
+        <div class="loading" data-behaviours="loading"></div>
     </div>
+    
 </div>
 {% endblock dashboard_content %}

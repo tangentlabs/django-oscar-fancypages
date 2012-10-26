@@ -141,6 +141,10 @@ fancypages.dashboard = {
 
             var previewField = $('#widget-' + widgetId + '-' + fieldName, previewDoc);
             previewField.html($(editor.composer.element).html());
+            
+            // Add Class to widget editing
+            $('.widget', previewDoc).removeClass('editing');
+            previewField.parents('.widget').addClass('editing');
         }
     },
 
@@ -172,15 +176,21 @@ fancypages.dashboard = {
 
             var previewDoc = fancypages.dashboard.getPreviewDocument();
             var previewField = $('#widget-' + widgetId + '-' + fieldName, previewDoc);
-            previewField.html($(fieldElem).val());
+            previewField.html($(fieldElem).val())
+            
         });
 
-        // Function setting the height of the IFrame
+        // Function setting the height of the IFrame and the Sidebar
         function UpdateSize() {
             var pageHeight = $(window).height(),
                 navBarTop = $('.navbar-fixed-top').outerHeight(),
-                subBarTop = $('.subnav-fixed').outerHeight();
-            $('#page-preview').css('height', pageHeight - navBarTop - subBarTop);
+                subBarTop = $('.subnav-fixed').outerHeight(),
+                buttonsTop = $('.button-nav').outerHeight(),
+                sumHeight = pageHeight - navBarTop - subBarTop;
+                
+            $('#page-preview').css('height', sumHeight);
+            $('.sidebar-content').css('height', sumHeight - buttonsTop);
+            $('.sidebar-content').jScrollPane();
         }
         UpdateSize();
         // Function setting the height if window resizes
@@ -223,10 +233,6 @@ fancypages.dashboard = {
             var widget = $(this).parents('.widget');
             var widgetUrl = "/dashboard/fancypages/widget/update/" + $(widget).data('widget-id') + "/";
 
-            // Add Class to widget editing
-            $('.widget', previewDoc).removeClass('editing');
-            widget.addClass('editing');
-
             // Scrolls IFrame to the top of editing areas
             var destination = widget.offset().top - 20;
             $('html:not(:animated),body:not(:animated)', previewDoc).animate({ scrollTop: destination}, 500, 'swing' );
@@ -258,9 +264,13 @@ fancypages.dashboard = {
 
         // Add / removed page elements for page preview
         $('button[data-behaviours~=preview-check]').on('click', function () {
-            $('body', previewDoc).toggleClass('preview');
-            $('.navbar.accounts', previewDoc).add('.header', previewDoc).fadeToggle('slow');
-            $(this).find('i').toggleClass('icon-eye-close');
+            $('div[data-behaviours~=loading]').fadeIn(300);
+            setTimeout(function () { 
+              $('body', previewDoc).toggleClass('preview');
+              $('.navbar.accounts', previewDoc).add('.header', previewDoc).fadeToggle('slow');
+              $(this).find('i').toggleClass('icon-eye-close');
+              $('div[data-behaviours~=loading]').delay(700).fadeOut();
+            }, 300);
         });
 
         // Show Page previews
@@ -269,6 +279,8 @@ fancypages.dashboard = {
           $('#page-settings').show();
           $( '.editor' ).animate({ backgroundColor: "#333" }, 500 );
         });
+        
+        $('body', previewDoc).css('margin-bottom', '600px');
 
 
     },
@@ -309,7 +321,7 @@ fancypages.dashboard = {
             data: form.serialize(),
             success: function (data) {
                 $('div[id=widget_input_wrapper]').html("");
-                $('#page-preview').attr('src', $('#page-preview').attr('src'));
+                parent.fancypages.dashboard.reloadPreview();
                 $('#page-settings').show();
                 $( '.editor' ).animate({ backgroundColor: "#333" }, 500 );
             },
@@ -350,7 +362,12 @@ fancypages.dashboard = {
      * the preview and the actual stored content.
      */
     reloadPreview: function () {
-        $('#page-preview').attr('src', $('#page-preview').attr('src'));
+        $('div[data-behaviours~=loading]').fadeIn(300);
+        setTimeout(function () { 
+          $('#page-preview').attr('src', $('#page-preview').attr('src')).load(function(){
+            $('div[data-behaviours~=loading]').fadeOut(300);
+          }); 
+        }, 300);
     }
 };
 

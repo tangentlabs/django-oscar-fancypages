@@ -1,8 +1,8 @@
 {% load i18n %}
 <div id="asset-input">
-    <div class="thumbnail" style="width: 200px; height: 200px;">
+    <div class="thumbnail">
         <img src="{% if image_asset %}{{ image_asset.image.url }}{% else %}{{ missing_image_url }}{% endif %}"/>
     </div>
     {{ form }}
-    <a href="#asset-modal" role="button" class="btn btn-large btn-danger" data-toggle="modal">{% trans "Libary" %}</a>
+    <a href="#asset-modal" role="button" class="btn btn-large btn-danger btn-block" data-toggle="modal">{% trans "Libary" %}</a>
 </div>

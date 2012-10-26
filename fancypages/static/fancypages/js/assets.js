@@ -2,21 +2,22 @@ var fancypages = fancypages || {};
 
 fancypages.assets = {
     init: function () {
+        var uploadProgress = $('#upload-progress');
         $('#fileupload').fileupload({
             dataType: 'json',
             done: function (e, data) {
                 $("#asset-gallery").append(data.result[0].image_markup);
+                uploadProgress.addClass("hide");
             },
             progressall: function (e, data) {
                 var progress = parseInt(data.loaded / data.total * 100, 10);
-                var uploadProgress = $('#upload-progress');
-
-                if (progress < 100) {
-                    uploadProgress.removeClass("hide");
-                } else {
-                    uploadProgress.addClass("hide");
-                }
+    
+                uploadProgress.removeClass("hide");
+               
                 $('.bar', uploadProgress).css('width', progress + '%');
+            },
+            start: function(){
+                $('.bar', uploadProgress).css('width', 0 + '%');
             }
         });
 
