@@ -61,7 +61,7 @@ class TestAnAnonymousUser(FancyPagesWebTest):
 
 class TestAStaffUser(FancyPagesWebTest):
     fixtures = ['page_templates.json']
-    is_anonymous = True
+    is_staff = True
 
     def setUp(self):
         super(TestAStaffUser, self).setUp()
@@ -95,8 +95,11 @@ class TestAStaffUser(FancyPagesWebTest):
         self.assertContains(page, self.left_widget.title)
         self.assertContains(page, self.main_widget.title)
 
-        self.assertContains("You can only see this because you are logged in as "
-                            "a user with access rights to the dashboard")
+        self.assertContains(
+            page,
+            ("You can only see this because you are logged in as "
+             "a user with access rights to the dashboard")
+        )
 
     def test_can_view_a_published_page(self):
         self.page.status = Page.PUBLISHED

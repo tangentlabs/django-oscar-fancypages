@@ -70,6 +70,31 @@ class TestAStaffMember(test.FancyPagesWebTest):
         self.assertEquals(article_page.is_visible, False)
         self.assertContains(page, u"not visible")
 
+    def test_can_delete_an_article(self):
+        Page.add_root(
+            title="A new page",
+            page_type=self.article_type,
+        )
+        self.assertEquals(Page.objects.count(), 1)
+        page = self.get(reverse("fp-dashboard:page-list"))
+        page = page.click("Delete")
+
+        page.forms['page-delete-form'].submit()
+        self.assertEquals(Page.objects.count(), 0)
+
+    def test_can_cancel_the_delete_of_a_page(self):
+        Page.add_root(
+            title="A new page",
+            page_type=self.article_type,
+        )
+        self.assertEquals(Page.objects.count(), 1)
+        page = self.get(reverse("fp-dashboard:page-list"))
+        page = page.click("Delete")
+        page = page.click('cancel')
+        self.assertEquals(Page.objects.count(), 1)
+        self.assertContains(page, "Create new page")
+        self.assertContains(page, "Page Management")
+
 
 class TestAPageTemplate(test.FancyPagesWebTest):
     is_staff = True

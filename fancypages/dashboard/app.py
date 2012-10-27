@@ -43,6 +43,7 @@ class FancypagesDashboardApplication(Application):
     page_create_redirect_view = views.PageCreateRedirectView
     page_create_view = views.PageCreateView
     page_update_view = views.PageUpdateView
+    page_delete_view = views.PageDeleteView
     page_customise_view = views.PageCustomiseView
     page_preview_view = views.PagePreviewView
 
@@ -86,6 +87,8 @@ class FancypagesDashboardApplication(Application):
                 self.page_create_view.as_view(), name='page-create'),
             url(r'^update/(?P<pk>\d+)/$',
                 self.page_update_view.as_view(), name='page-update'),
+            url(r'^delete/(?P<pk>\d+)/$',
+                self.page_delete_view.as_view(), name='page-delete'),
 
             url(r'^customise/(?P<pk>\d+)/$',
                 self.page_customise_view.as_view(), name='page-customise'),

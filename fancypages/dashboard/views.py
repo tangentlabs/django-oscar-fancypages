@@ -203,6 +203,14 @@ class PageUpdateView(generic.UpdateView):
         return reverse('fp-dashboard:page-list')
 
 
+class PageDeleteView(generic.DeleteView):
+    model = Page
+    template_name = "fancypages/dashboard/page_delete.html"
+
+    def get_success_url(self):
+        return reverse('fp-dashboard:page-list')
+
+
 class PageCustomiseView(PageUpdateView):
     template_name = "fancypages/dashboard/page_customise.html"
 
