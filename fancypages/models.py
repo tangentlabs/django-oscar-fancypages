@@ -447,6 +447,7 @@ class AutomaticProductsPromotionWidget(Widget):
             return u"Promotion '%s'" % self.promotion.pk
         return u"Promotion '%s'" % self.id
 
+
 class OfferWidget(Widget):
     name = _("Offer Products")
     code = 'products-range'
@@ -467,3 +468,20 @@ class OfferWidget(Widget):
         if self.offer:
             return u"Offer '%s'" % self.offer.pk
         return u"Offer '%s'" % self.id
+
+
+class ImageAndTextWidget(Widget):
+    name = _("Image and text")
+    code = 'image-text'
+    template_name = "fancypages/widgets/imageandtextwidget.html"
+
+    image_asset = models.ForeignKey('assets.ImageAsset', verbose_name=_("Image asset"),
+                                    related_name="image_text_widgets", blank=True, null=True)
+
+    text = models.CharField(_("Text"), max_length=2000,
+                                   default="Your text goes here.")
+
+    def __unicode__(self):
+        if self.image_asset:
+            return u"Image with text '%s'" % os.path.basename(self.image_asset.image.path)
+        return u"Image with text #%s" % self.id

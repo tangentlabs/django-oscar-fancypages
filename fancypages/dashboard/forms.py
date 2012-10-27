@@ -183,3 +183,15 @@ class ImageWidgetForm(AssetWidgetForm):
         widgets = {
             'display_order': forms.HiddenInput(),
         }
+
+
+class ImageAndTextWidgetForm(AssetWidgetForm):
+    asset_id = forms.IntegerField(widget=forms.HiddenInput())
+    asset_type = forms.CharField(widget=forms.HiddenInput())
+
+    class Meta:
+        exclude = ('container', 'image_asset')
+        widgets = {
+            'display_order': forms.HiddenInput(),
+            'text': forms.Textarea(attrs={'cols': 80, 'rows': 10}),
+        }
