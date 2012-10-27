@@ -28,12 +28,17 @@
         <span class="label label-danger">{% trans "not visible" %}</span> 
     {% endif %}
 
-    <span class="label">{{ page.status }}</span> 
+    <span class="label">{{ page.status }}</span>
     </td>
     <td>
-        <a class="btn btn-info" href="{% url fp-dashboard:page-update page.id %}#}">{% trans "Edit" %}</a>
-        <a class="btn btn-info" href="{% url fp-dashboard:page-customise page.id %}">{% trans "Customise" %}</a>
-        <a class="btn btn-danger" href=".">{% trans "Delete (TODO)" %}</a>
+        <a class="btn btn-info"
+           href="{% url fp-dashboard:page-customise page.id %}">
+            {% trans "Customise" %}
+        </a>
+        <a class="btn btn-danger"
+           href="{% url fp-dashboard:page-delete page.id %}">
+            {% trans "Delete" %}
+        </a>
     </td>
 </tr>
 {% for child_page in page.get_children %} 

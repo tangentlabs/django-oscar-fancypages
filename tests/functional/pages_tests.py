@@ -1,190 +1,110 @@
-from django.utils import simplejson as json
+from webtest import AppError
 
 from django.db.models import get_model
 from django.core.urlresolvers import reverse
 
-from fancypages import test
+from fancypages.test import FancyPagesWebTest
+
 
 Page = get_model('fancypages', 'Page')
 PageType = get_model('fancypages', 'PageType')
 PageTemplate = get_model('fancypages', 'PageTemplate')
+TitleTextWidget = get_model('fancypages', 'TitleTextWidget')
 
 
-class TestAStaffMember(test.FancyPagesWebTest):
+class TestAnAnonymousUser(FancyPagesWebTest):
+    fixtures = ['page_templates.json']
+    is_anonymous = True
+
+    def setUp(self):
+        super(TestAnAnonymousUser, self).setUp()
+        template = PageTemplate.objects.get(title="Article Template")
+        self.page_type = PageType.objects.create(name='Article', code='article',
+                                                 template=template)
+
+        self.page = Page.add_root(
+            title="A new page",
+            slug='a-new-page',
+            page_type=self.page_type,
+        )
+
+        self.left_container = self.page.get_container_from_name('left-column')
+        self.main_container = self.page.get_container_from_name('main-container')
+
+        self.main_widget = TitleTextWidget.objects.create(
+            container=self.main_container,
+            title="This is the main title",
+            text="The text of the main widget",
+        )
+
+        self.left_widget = TitleTextWidget.objects.create(
+            container=self.left_container,
+            title="This is the left title",
+            text="The text of the left widget",
+        )
+
+    def test_cannot_view_a_draft_page(self):
+        self.assertRaises(
+            AppError,
+            self.get,
+            reverse('fancypages:page-detail', args=(self.page.slug,))
+        )
+
+    def test_can_view_a_published_page(self):
+        self.page.status = Page.PUBLISHED
+        self.page.save()
+
+        page = self.get(reverse('fancypages:page-detail', args=(self.page.slug,)))
+        self.assertContains(page, self.left_widget.title)
+        self.assertContains(page, self.main_widget.title)
+
+
+class TestAStaffUser(FancyPagesWebTest):
+    fixtures = ['page_templates.json']
     is_staff = True
 
     def setUp(self):
-        super(TestAStaffMember, self).setUp()
-        self.article_type = PageType.objects.create(
-            name='Article',
-            code='article',
-            template=self.template
-        )
-        empty_template = PageTemplate.objects.create(
-            title="empty",
-            description="empty",
-            template_name=""
-        )
-        self.other_type = PageType.objects.create(name='Other', code='other',
-                                                  template=empty_template)
+        super(TestAStaffUser, self).setUp()
+        template = PageTemplate.objects.get(title="Article Template")
+        self.page_type = PageType.objects.create(name='Article', code='article',
+                                                 template=template)
 
-        self.prepare_template_file(
-            "{% load fancypages_tags%}"
-            "{% fancypages-container first-container %}"
-            "{% fancypages-container second-container %}"
+        self.page = Page.add_root(
+            title="A new page",
+            slug='a-new-page',
+            page_type=self.page_type,
         )
 
-    def test_can_see_a_list_of_page_types(self):
-        page = self.get(reverse('fp-dashboard:page-list'))
+        self.left_container = self.page.get_container_from_name('left-column')
+        self.main_container = self.page.get_container_from_name('main-container')
 
-        self.assertContains(page, 'Article')
-        self.assertContains(page, 'Other')
-
-    def test_can_create_a_new_toplevel_article_page(self):
-        page = self.get(reverse('fp-dashboard:page-list'))
-
-        type_form = page.form
-        type_form['page_type'] = self.article_type.code
-        page = type_form.submit()
-
-        self.assertRedirects(
-            page,
-            reverse(
-                'fp-dashboard:page-create',
-                args=(self.article_type.code,)
-            ),
-            status_code=301
+        self.main_widget = TitleTextWidget.objects.create(
+            container=self.main_container,
+            title="This is the main title",
+            text="The text of the main widget",
         )
-        page = page.follow()
-        self.assertContains(page, "Create new 'Article' page")
 
-        create_form = page.form
-        create_form['title'] = "A new page"
-        page = create_form.submit()
-
-        self.assertRedirects(page, reverse('fp-dashboard:page-list'))
-        page = page.follow()
-
-        article_page = Page.objects.get(title="A new page")
-        self.assertEquals(article_page.containers.count(), 2)
-
-        self.assertEquals(article_page.status, Page.DRAFT)
-        self.assertEquals(article_page.is_visible, False)
-        self.assertContains(page, u"not visible")
-
-
-class TestAPageTemplate(test.FancyPagesWebTest):
-    is_staff = True
-
-    def test_are_listed_in_the_dashboard(self):
-        page = self.app.get(
-            reverse('fp-dashboard:page-template-list'),
-            user=self.user
+        self.left_widget = TitleTextWidget.objects.create(
+            container=self.left_container,
+            title="This is the left title",
+            text="The text of the left widget",
         )
-        self.assertContains(page, self.template.title)
-        self.assertContains(page, self.template.description)
-        self.assertContains(page, self.template.template_name)
+
+    def test_can_view_a_draft_page(self):
+        page = self.get(reverse('fancypages:page-detail', args=(self.page.slug,)))
+        self.assertContains(page, self.left_widget.title)
+        self.assertContains(page, self.main_widget.title)
 
         self.assertContains(
             page,
-            reverse(
-                'fp-dashboard:page-template-update',
-                args=(self.template.id,)
-            )
-        )
-        self.assertContains(
-            page,
-            reverse(
-                'fp-dashboard:page-template-delete',
-                args=(self.template.id,)
-            )
+            ("You can only see this because you are logged in as "
+             "a user with access rights to the dashboard")
         )
 
-    def test_cannot_be_created_with_template_does_not_exist(self):
-        page = self.app.get(
-            reverse('fp-dashboard:page-template-list'),
-            user=self.user
-        )
-        page = page.click('Create new page template')
+    def test_can_view_a_published_page(self):
+        self.page.status = Page.PUBLISHED
+        self.page.save()
 
-        self.assertEquals(PageTemplate.objects.count(), 1)
-
-        template_form = page.form
-        template_form['title'] = "Added template"
-        template_form['description'] = 'The added description'
-        template_form['template_name'] = 'a/sample/template/file.html'
-        page = template_form.submit()
-
-        self.assertContains(
-            page,
-            "template %s does not exist" % 'a/sample/template/file.html'
-        )
-
-    def test_can_be_created_without_image_in_the_dashboard(self):
-        page = self.app.get(
-            reverse('fp-dashboard:page-template-list'),
-            user=self.user
-        )
-        page = page.click('Create new page template')
-
-        self.assertEquals(PageTemplate.objects.count(), 1)
-
-        template_form = page.form
-        template_form['title'] = "Added template"
-        template_form['description'] = 'The added description'
-        template_form['template_name'] = self.template_name
-        page = template_form.submit()
-
-        self.assertRedirects(
-            page,
-            reverse('fp-dashboard:page-template-list')
-        )
-
-        self.assertEquals(PageTemplate.objects.count(), 2)
-
-        template = PageTemplate.objects.get(title="Added template")
-        self.assertEquals(template.description, 'The added description')
-        self.assertEquals(template.template_name, self.template_name)
-
-    def test_can_be_updated_without_image_in_the_dashboard(self):
-        page = self.app.get(
-            reverse('fp-dashboard:page-template-list'),
-            user=self.user
-        )
-        page = page.click('Edit')
-
-        self.assertContains(page, 'Update page template')
-
-        template_form = page.form
-        template_form['title'] = "new title"
-        page = template_form.submit()
-
-        self.assertRedirects(
-            page,
-            reverse('fp-dashboard:page-template-list')
-        )
-
-        self.assertEquals(PageTemplate.objects.count(), 1)
-
-        template = PageTemplate.objects.get(id=self.template.id)
-        self.assertEquals(template.title, 'new title')
-
-    def test_can_be_deleted_in_the_dashboard(self):
-        page = self.app.get(
-            reverse('fp-dashboard:page-template-list'),
-            user=self.user
-        )
-        self.assertEquals(PageTemplate.objects.count(), 1)
-        page = page.click('Delete')
-
-        self.assertContains(page, 'Delete page template')
-
-        template_form = page.form
-        page = template_form.submit()
-
-        self.assertRedirects(
-            page,
-            reverse('fp-dashboard:page-template-list')
-        )
-
-        self.assertEquals(PageTemplate.objects.count(), 0)
+        page = self.get(reverse('fancypages:page-detail', args=(self.page.slug,)))
+        self.assertContains(page, self.left_widget.title)
+        self.assertContains(page, self.main_widget.title)

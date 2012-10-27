@@ -1,5 +1,6 @@
 from django import http
 from django.utils import simplejson as json
+from django.utils.encoding import force_unicode
 
 
 class JSONResponseMixin(object):
@@ -22,7 +23,7 @@ class JSONResponseMixin(object):
         if context is None:
             context = {}
         context['success'] = False
-        context['reason'] = reason
+        context['reason'] = force_unicode(reason)
         return self.render_to_response(context)
 
     def get_json_response(self, content, **httpresponse_kwargs):

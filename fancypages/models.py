@@ -15,6 +15,9 @@ from model_utils.managers import (PassThroughManager,
                                   InheritanceManager)
 
 
+Product = models.get_model('catalogue', 'Product')
+
+
 class PageTemplate(models.Model):
     title = models.CharField(_("Title"), max_length=100)
     description = models.CharField(_("Description"), max_length=500)
@@ -361,7 +364,7 @@ class Widget(models.Model):
 
 
 class TextWidget(Widget):
-    name = _("Text widget")
+    name = _("Text")
     code = 'text'
     template_name = "fancypages/widgets/textwidget.html"
 
@@ -373,7 +376,7 @@ class TextWidget(Widget):
 
 
 class TitleTextWidget(Widget):
-    name = _("Title and text widget")
+    name = _("Title and text")
     code = 'title-text'
     template_name = "fancypages/widgets/titletextwidget.html"
 
@@ -387,7 +390,7 @@ class TitleTextWidget(Widget):
 
 
 class ImageWidget(Widget):
-    name = _("Image widget")
+    name = _("Image")
     code = 'image'
     template_name = "fancypages/widgets/imagewidget.html"
 
@@ -398,3 +401,87 @@ class ImageWidget(Widget):
         if self.image_asset:
             return u"Image '%s'" % os.path.basename(self.image_asset.image.path)
         return u"Image #%s" % self.id
+
+
+class SingleProductWidget(Widget):
+    name = _("Single Product")
+    code = 'single-product'
+    template_name = "fancypages/widgets/productwidget.html"
+
+    product = models.ForeignKey(
+        'catalogue.Product',
+        verbose_name=_("Single Product"), null=True, blank=False)
+
+    def __unicode__(self):
+        if self.product:
+            return u"Product '%s'" % self.product.upc
+        return u"Product '%s'" % self.id
+
+
+class HandPickedProductsPromotionWidget(Widget):
+    name = _("Hand Picked Products Promotion")
+    code = 'promotion-hand-picked-products'
+    template_name = "fancypages/widgets/promotionwidget.html"
+
+    promotion = models.ForeignKey(
+        'promotions.HandPickedProductList',
+        verbose_name=_("Hand Picked Products Promotion"), null=True, blank=False)
+
+    def __unicode__(self):
+        if self.promotion:
+            return u"Promotion '%s'" % self.promotion.pk
+        return u"Promotion '%s'" % self.id
+
+
+class AutomaticProductsPromotionWidget(Widget):
+    name = _("Automatic Products Promotion")
+    code = 'promotion-ordered-products'
+    template_name = "fancypages/widgets/promotionwidget.html"
+
+    promotion = models.ForeignKey(
+        'promotions.AutomaticProductList',
+        verbose_name=_("Automatic Products Promotion"), null=True, blank=False)
+
+    def __unicode__(self):
+        if self.promotion:
+            return u"Promotion '%s'" % self.promotion.pk
+        return u"Promotion '%s'" % self.id
+
+
+class OfferWidget(Widget):
+    name = _("Offer Products")
+    code = 'products-range'
+    template_name = "fancypages/widgets/offerwidget.html"
+
+    offer = models.ForeignKey(
+        'offer.ConditionalOffer',
+        verbose_name=_("Offer"), null=True, blank=False)
+
+    @property
+    def products(self):
+        range = self.offer.condition.range
+        if range.includes_all_products:
+            return Product.browsable.filter(is_discountable=True)
+        return range.included_products.filter(is_discountable=True)
+
+    def __unicode__(self):
+        if self.offer:
+            return u"Offer '%s'" % self.offer.pk
+        return u"Offer '%s'" % self.id
+
+
+class ImageAndTextWidget(Widget):
+    name = _("Image and text")
+    code = 'image-text'
+    template_name = "fancypages/widgets/imageandtextwidget.html"
+
+    image_asset = models.ForeignKey('assets.ImageAsset', verbose_name=_("Image asset"),
+                                    related_name="image_text_widgets", blank=True, null=True)
+
+    text = models.CharField(_("Text"), max_length=2000,
+                                   default="Your text goes here.")
+
+    def __unicode__(self):
+        if self.image_asset:
+            return u"Image with text '%s'" % os.path.basename(self.image_asset.image.path)
+        return u"Image with text #%s" % self.id

@@ -1,3 +1,4 @@
+from django.http import Http404
 from django.views.generic import DetailView
 
 from fancypages import models
@@ -17,6 +18,17 @@ class PageEditorMixin(object):
 class PageDetailView(PageEditorMixin, DetailView):
     model = models.Page
     context_object_name = "page"
+
+    def get(self, request, *args, **kwargs):
+        response = super(PageDetailView, self).get(request, *args, **kwargs)
+
+        if request.user.is_staff:
+            return response
+
+        if not self.object.is_visible:
+            raise Http404
+
+        return response
 
     def get_context_data(self, **kwargs):
         ctx = super(PageDetailView, self).get_context_data(**kwargs)

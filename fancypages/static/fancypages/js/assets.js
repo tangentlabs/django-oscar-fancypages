@@ -6,8 +6,9 @@ fancypages.assets = {
         $('#fileupload').fileupload({
             dataType: 'json',
             done: function (e, data) {
-                if (data.success) {
-                    $("#asset-gallery").append(data.result[0].imageMarkup);
+                if (data.result.success) {
+                    console.log('markup', data.result.images);
+                    $("#asset-gallery").append(data.result.images[0].thumbnailMarkup);
                     uploadProgress.addClass("hide");
                 } else {
                     parent.oscar.messages.error(data.reason);
@@ -15,13 +16,13 @@ fancypages.assets = {
             },
             progressall: function (e, data) {
                 var progress = parseInt(data.loaded / data.total * 100, 10);
-    
+
                 uploadProgress.removeClass("hide");
-               
+
                 $('.bar', uploadProgress).css('width', progress + '%');
             },
-            start: function(){
-                $('.bar', uploadProgress).css('width', 0 + '%');
+            start: function () {
+                $('.bar', uploadProgress).css('width', '0%');
             }
         });
 
