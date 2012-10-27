@@ -40,11 +40,13 @@ class ImageAssetCreateView(JSONResponseMixin, generic.CreateView):
             'image_asset': self.object,
         }))
 
-        ctx = [{
-            'name': f.name,
-            'url': self.object.get_absolute_url(),
-            'thumbnailMarkup': thumbnail_markup,
-            'deleteUrl': '', #reverse('upload-delete', args=[self.object.id]),
-            'deleteType': 'DELETE',
-        }]
+        ctx = {
+            'images': [{
+                'name': f.name,
+                'url': self.object.get_absolute_url(),
+                'thumbnailMarkup': thumbnail_markup,
+                'deleteUrl': '', #reverse('upload-delete', args=[self.object.id]),
+                'deleteType': 'DELETE',
+            }]
+        }
         return self.render_to_response(ctx)
