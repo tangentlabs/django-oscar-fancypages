@@ -82,10 +82,10 @@ if not settings.configured:
         NOSE_ARGS=[
             '-s',
             '--with-spec',
-            '--with-coverage',
-            '--cover-package=fancypages',
-            '--cover-html',
-        ],  #'--with-progressive'],
+            #'--with-coverage',
+            #'--cover-package=fancypages',
+            #'--cover-html',
+        ],
         **OSCAR_SETTINGS
     )
 

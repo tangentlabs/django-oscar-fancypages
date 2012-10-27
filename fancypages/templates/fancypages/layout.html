@@ -1,5 +1,10 @@
 {% extends "layout.html" %}
 
+{% block navigation %}
+    {{ block.super }}
+    {% include "fancypages/partials/draft_note_block.html" %}
+{% endblock %}
+
 {% if edit_mode %}
     {% block extrahead %}
         {{ block.super }}

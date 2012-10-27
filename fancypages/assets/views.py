@@ -24,7 +24,7 @@ class ImageAssetCreateView(JSONResponseMixin, generic.CreateView):
 
     def get(self, request, *args, **kwargs):
         return self.render_to_error_response(
-            reason="It is not possible to upload images using a get request."
+            _("It is not possible to upload images using a get request.")
         )
 
     def form_valid(self, form):
