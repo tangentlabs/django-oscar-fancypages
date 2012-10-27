@@ -1,0 +1,30 @@
+{% load i18n %}
+{% load fancypages_tags %}
+
+<div class="tabbable">
+    <ul class="nav nav-tabs">
+        {% for tab in widget.tabs.all %}
+        <li {% if forloop.first %}class="active"{% endif %}>
+            <a href="#tab-{{ widget.id }}-{{ forloop.counter }}" data-toggle="tab">{{ tab.title }}</a>
+        </li>
+        {% endfor %}
+
+        {% if edit_mode %}
+        <li>
+            <a data-action="{% url fp-dashboard:widget-add-tab widget.id %}"
+               data-behaviours="add-tab" class="btn btn-large">
+                <i class="icon-plus"></i>{% trans "Add tab" %}
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+
+    <div class="tab-content">
+    {% for tab in widget.tabs.all %}
+        <div class="tab-pane {% if forloop.first %}active{% endif %}"
+             id="tab-{{ widget.id }}-{{ forloop.counter }}">
+            {% fancypages-container tab %}
+        </div>
+    {% endfor %}
+    </div>
+</div>

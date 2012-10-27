@@ -16,6 +16,8 @@ PageTemplate = get_model('fancypages', 'PageTemplate')
 PageType = get_model('fancypages', 'PageType')
 Widget = get_model('fancypages', 'Widget')
 Container = get_model('fancypages', 'Container')
+TabbedBlockWidget = get_model('fancypages', 'TabbedBlockWidget')
+TabContainer = get_model('fancypages', 'TabContainer')
 
 
 class PageTemplateListView(generic.ListView):
@@ -419,4 +421,19 @@ class ContainerAddWidgetView(JSONResponseMixin, generic.edit.BaseDetailView,
                 'fp-dashboard:widget-update',
                 args=(widget.id,)
             )
+        }
+
+
+class WidgetAddTabView(JSONResponseMixin, generic.edit.BaseDetailView,
+                 FancypagesMixin):
+    model = TabbedBlockWidget
+
+    def get_context_data(self, **kwargs):
+        super(WidgetAddTabView, self).get_context_data(**kwargs)
+        TabContainer.objects.create(
+            tab_block=self.object,
+            display_order=self.object.tabs.count(),
+        )
+        return {
+            'success': True,
         }

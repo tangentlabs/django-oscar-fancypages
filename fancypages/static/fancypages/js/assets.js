@@ -7,7 +7,6 @@ fancypages.assets = {
             dataType: 'json',
             done: function (e, data) {
                 if (data.result.success) {
-                    console.log('markup', data.result.images);
                     $("#asset-gallery").append(data.result.images[0].thumbnailMarkup);
                     uploadProgress.addClass("hide");
                 } else {
@@ -28,8 +27,6 @@ fancypages.assets = {
 
         $("[data-behaviours~=selectable-asset]").live('click', function (ev) {
             ev.preventDefault();
-            console.log('clicked an asset', $(this));
-
             parent.fancypages.dashboard.setSelectedAsset(
                 $(this).data('asset-type'),
                 $(this).data('asset-id'),
