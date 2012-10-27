@@ -3,6 +3,8 @@
 {% load thumbnail %}
 {% load staticfiles %}
 
+{% block body_class %}assets{% endblock %}
+
 {% block extrahead %}
     {{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static "fancypages/css/jquery-file-upload/jquery.fileupload-ui.css" %}" />
@@ -24,15 +26,18 @@
 {% endblock %}
 
 {% block content %}
-<ul id='asset-gallery' class="thumbnails">
-{% for image_asset in image_list %}
-    {% include "fancypages/assets/partials/image_thumbnail.html" %}
-{% endfor %}
-</ul>
+<div class="slide-pane">
+    <ul id='asset-gallery' class="thumbnails">
+    {% for image_asset in image_list %}
+        {% include "fancypages/assets/partials/image_thumbnail.html" %}
+    {% endfor %}
+    </ul>
+</div>
 {% endblock %}
 
 {% block extrascripts %}
     {{ block.super }}
+    <script src="{{ STATIC_URL }}oscar/js/plugins/plugins.js" type="text/javascript" charset="utf-8"></script>
     <script type="text/javascript" src="{% static "fancypages/js/jquery-file-upload/jquery.ui.widget.js" %}"></script>
     <script type="text/javascript" src="{% static "fancypages/js/jquery-file-upload/jquery.iframe-transport.js" %}"></script>
     <script type="text/javascript" src="{% static "fancypages/js/jquery-file-upload/jquery.fileupload.js" %}"></script>
