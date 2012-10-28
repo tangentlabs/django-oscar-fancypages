@@ -8,6 +8,26 @@
         <a class="btn btn-small" data-wysihtml5-command="italic" title="CTRL+I" href="javascript:;" unselectable="on">
             <i class="icon-italic"></i>
         </a>
+        <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
+            {% trans "H" %}<i class="icon-caret-down"></i>
+        </a>
+        <ul class="dropdown-menu">
+            <li>
+                <a data-wysihtml5-command-value="h1" data-wysihtml5-command="formatBlock" href="javascript:;" unselectable="on">
+                    H1
+                </a>
+            </li>
+            <li>
+                <a data-wysihtml5-command-value="h2" data-wysihtml5-command="formatBlock" href="javascript:;" unselectable="on">
+                    H2
+                </a>
+            </li>
+            <li>
+                <a data-wysihtml5-command-value="h3" data-wysihtml5-command="formatBlock" href="javascript:;" unselectable="on">
+                    H3
+                </a>
+            </li>
+        </ul>
         <div data-wysihtml5-dialog="createLink" style="display: none;" class="modal fade in"
              id="createLinkModal" tab-index="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-header">
