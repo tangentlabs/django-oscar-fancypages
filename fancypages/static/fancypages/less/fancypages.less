@@ -23,12 +23,14 @@ body.fancypages.edit-page {
   margin: 0px;
   height: 100%;
   position:absolute;
-  border-right:1px solid #ccc;
   top:0;
   left:-@editorGutter;
   bottom:0;
-  width:@editorWidth - 1;
+  width:@editorWidth;
   .box-shadow(inset -3px -7px 10px rgba(0,0,0,.1));
+}
+.sidebar-content {
+  width:@editorWidth - 2;
 }
 .sidebar-content,
 .slide-pane {
@@ -42,9 +44,12 @@ body.fancypages.edit-page {
     background: #999;
     .border-radius(5px)
   }
+  .jspVerticalBar {
+    width:6px;
+  }
   .jspTrack,
   .jspHorizontalBar {
-    padding:0 2px;
+/*    padding:0 2px;*/
     background: #333;
   }
 }
@@ -183,9 +188,11 @@ input[type="color"]:focus,
 }
 .wysihtml5-wrapper {
   overflow: auto;
+  overflow-x:hidden;
 }
 .wysihtml5-wrapper textarea {
   height:250px;
+  overflow-x:hidden;
 }
 
 .wysihtml5-toolbar {
