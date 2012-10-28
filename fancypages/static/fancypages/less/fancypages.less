@@ -30,7 +30,8 @@ body.fancypages.edit-page {
   width:@editorWidth - 1;
   .box-shadow(inset -3px -7px 10px rgba(0,0,0,.1));
 }
-.sidebar-content {
+.sidebar-content,
+.slide-pane {
   overflow: auto;
   overflow-x: hidden;
   overflow-y: auto;
@@ -41,7 +42,8 @@ body.fancypages.edit-page {
     background: #999;
     .border-radius(5px)
   }
-  .jspTrack {
+  .jspTrack,
+  .jspHorizontalBar {
     padding:0 2px;
     background: #333;
   }
@@ -243,26 +245,32 @@ input[type="color"]:focus,
 }
 //Assest Manager
 #asset-modal {
-  background:#333;
+  background:#222;
   overflow:hidden;
+  .close {
+    .opacity(100);
+    color:#fff;
+    margin-right:10px;
+    margin-top:5px;
+  }
   .modal-body {
     overflow:hidden;
   }
-  .modal-header {
-    background:#fff;
-  }
 }
-.slide-pane {
-  overflow: auto;
-  overflow-x: hidden;
-  overflow-y: auto;
-  margin: 0;
+#asset-modal-label {
+  color:#fff;
+  border-bottom:1px solid @grayLight;
+  margin-bottom:@baseLineHeight;
+  span {
+    font-size:18px;
+  }
 }
 .assets {
   background:transparent;
 }
 .asset-fluid {
   margin: 0;
+  padding:0;
   max-width: none;
   .page_inner {
     padding:0;
