@@ -9,10 +9,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.template import (loader, Context, RequestContext,
                              TemplateDoesNotExist)
 
-from treebeard.mp_tree import MP_Node
-from model_utils.managers import (PassThroughManager,
-                                  InheritanceQuerySet,
-                                  InheritanceManager)
+from treebeard.mp_tree import MP_Node, MP_NodeQuerySet
 
 
 Product = models.get_model('catalogue', 'Product')
@@ -75,7 +72,7 @@ class PageType(models.Model):
         return self.name
 
 
-class PageQuerySet(InheritanceQuerySet):
+class PageQuerySet(MP_NodeQuerySet):
 
     def visible(self):
         now = timezone.now()
@@ -90,9 +87,15 @@ class PageQuerySet(InheritanceQuerySet):
         )
 
 
-# TODO the AbstractPage should use django-treebeard in the future
-# to make sure that the hierarchy is handled properly. This will
-# also simplify moving pages around in the hierarchy
+class PageManager(models.Manager):
+    """
+    This manager is required to provide access to ``treebeard``'s custom
+    manager and queryset. Otherwise it breaks the category handling.
+    """
+    def get_query_set(self):
+        return PageQuerySet(self.model).order_by('path')
+
+
 class Page(MP_Node):
     title = models.CharField(_("Title"), max_length=100)
     slug = models.SlugField(_("Code"), max_length=100, unique=True)
@@ -121,7 +124,7 @@ class Page(MP_Node):
     # page invisible
     is_active = models.BooleanField(_("Is active"), default=True)
 
-    objects = PassThroughManager.for_queryset_class(PageQuerySet)()
+    objects = PageManager()
 
     _slug_separator = '/'
 
