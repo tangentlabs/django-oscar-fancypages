@@ -53,6 +53,7 @@ class FancypagesDashboardApplication(Application):
     widget_update_view = views.WidgetUpdateView
     widget_delete_view = views.WidgetDeleteView
     widget_move_view = views.WidgetMoveView
+    widget_add_tab_view = views.WidgetAddTabView
 
     def get_urls(self):
         urlpatterns = patterns('',
@@ -113,6 +114,9 @@ class FancypagesDashboardApplication(Application):
             url(r'^widget/move/(?P<pk>\d+)/to/(?P<container_pk>\d+)/(?P<index>\d+)/$',
                 self.widget_move_view.as_view(),
                 name='widget-move'),
+            url(r'^widget/(?P<pk>\d+)/add-tab/$',
+                self.widget_add_tab_view.as_view(),
+                name='widget-add-tab'),
         )
         return self.post_process_urls(urlpatterns)
 

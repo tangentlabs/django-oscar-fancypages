@@ -85,6 +85,23 @@ fancypages.dashboard = {
 
                 $(this).parents('div[id$=_modal]').remove();
             });
+
+            // Add a new tab to the selected tabbed block widget
+            $('[data-behaviours~=add-tab]').live('click', function (ev) {
+                ev.preventDefault();
+
+                $.getJSON($(this).data('action'), function (data) {
+                    if (data.success) {
+                        parent.fancypages.dashboard.reloadPreview();
+                    } else {
+                        parent.oscar.messages.error(data.reason);
+                    }
+                }).error(function () {
+                    parent.oscar.messages.error(
+                        "An error occured trying to add a new tab. Please try it again."
+                    );
+                });
+            });
         }
     },
     editor: {
@@ -141,7 +158,7 @@ fancypages.dashboard = {
 
             var previewField = $('#widget-' + widgetId + '-' + fieldName, previewDoc);
             previewField.html($(editor.composer.element).html());
-            
+
         }
     },
 
@@ -173,11 +190,12 @@ fancypages.dashboard = {
 
             var previewDoc = fancypages.dashboard.getPreviewDocument();
             var previewField = $('#widget-' + widgetId + '-' + fieldName, previewDoc);
-            previewField.html($(fieldElem).val())
-            
+            previewField.html($(fieldElem).val());
+
         });
 
         fancypages.dashboard.UpdateSize();
+
         // Function setting the height if window resizes
         $(window).resize(fancypages.dashboard.UpdateSize);
 
@@ -266,7 +284,7 @@ fancypages.dashboard = {
         // Add / removed page elements for page preview
         $('button[data-behaviours~=preview-check]').on('click', function () {
             $('div[data-behaviours~=loading]').fadeIn(300);
-            setTimeout(function () { 
+            setTimeout(function () {
               $('body', previewDoc).toggleClass('preview');
               $('.navbar.accounts', previewDoc).add('.header', previewDoc).fadeToggle('slow');
               $(this).find('i').toggleClass('icon-eye-close');
@@ -280,7 +298,7 @@ fancypages.dashboard = {
           $('#page-settings').show();
           $( '.editor' ).animate({ backgroundColor: "#444" }, 500 );
         });
-        
+
         $('body', previewDoc).css('margin-bottom', '600px');
 
 
@@ -341,7 +359,6 @@ fancypages.dashboard = {
     },
 
     setSelectedAsset: function (assetType, assetId, assetUrl) {
-        console.log('setting new asset', assetType, assetId, assetUrl);
         $('#asset-modal').modal('hide');
 
         var assetInput = $("#asset-input");
@@ -383,7 +400,7 @@ fancypages.dashboard = {
      */
     reloadPreview: function () {
         $('div[data-behaviours~=loading]').fadeIn(300);
-        setTimeout(function () { 
+        setTimeout(function () {
           $('#page-preview').attr('src', $('#page-preview').attr('src')).load(function(){
             $('div[data-behaviours~=loading]').fadeOut(300);
             fancypages.dashboard.editingWidget();

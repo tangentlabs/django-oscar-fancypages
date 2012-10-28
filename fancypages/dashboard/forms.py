@@ -195,3 +195,26 @@ class ImageAndTextWidgetForm(AssetWidgetForm):
             'display_order': forms.HiddenInput(),
             'text': forms.Textarea(attrs={'cols': 80, 'rows': 10}),
         }
+
+
+class TabbedBlockWidgetForm(WidgetForm):
+
+    def __init__(self, *args, **kwargs):
+        super(TabbedBlockWidgetForm, self).__init__(*args, **kwargs)
+        instance = kwargs['instance']
+        if instance:
+            for tab in instance.tabs.all():
+                field_name = "tab_title_%d" % tab.id
+                self.fields[field_name] = forms.CharField()
+                self.fields[field_name].initial = tab.title
+                self.fields[field_name].label = _("Tab title")
+
+    def save(self):
+        instance = super(TabbedBlockWidgetForm, self).save()
+
+        for tab in instance.tabs.all():
+            field_name = "tab_title_%d" % tab.id
+            tab.title = self.cleaned_data[field_name]
+            tab.save()
+
+        return instance

@@ -258,7 +258,7 @@ class Container(models.Model):
     variable_name = models.SlugField(_("Variable name"), max_length=50)
 
     page = models.ForeignKey('fancypages.Page', verbose_name=_("Page"),
-                             related_name='containers')
+                             related_name='containers', null=True)
 
     def render(self, request=None, **kwargs):
         ordered_widgets = self.widgets.select_subclasses()
@@ -281,7 +281,9 @@ class Container(models.Model):
         return tmpl.render(ctx)
 
     def __unicode__(self):
-        return u"Container '%s' in '%s'" % (self.variable_name, self.page.title)
+        if self.page:
+            return u"Container '%s' in '%s'" % (self.variable_name, self.page.title)
+        return u"Container '%s'" % (self.variable_name)
 
 
 class Widget(models.Model):
@@ -356,8 +358,9 @@ class Widget(models.Model):
             self.display_order = self.container.widgets.count()
         super(Widget, self).save(**kwargs)
 
+
     def __unicode__(self):
-        return self.name
+        return "Widget #%s" % self.id
 
     class Meta:
         ordering = ['display_order']
@@ -485,3 +488,35 @@ class ImageAndTextWidget(Widget):
         if self.image_asset:
             return u"Image with text '%s'" % os.path.basename(self.image_asset.image.path)
         return u"Image with text #%s" % self.id
+
+
+class TabbedBlockWidget(Widget):
+    name = _("Tabbed block")
+    code = 'tabbed-block'
+    context_object_name = "widget"
+    template_name = "fancypages/widgets/tabbedblockwidget.html"
+
+    def save(self, *args, **kwargs):
+        super(TabbedBlockWidget, self).save(*args, **kwargs)
+        if not self.tabs.count():
+            TabContainer.objects.create(
+                tab_block=self,
+                display_order=0
+            )
+
+
+class TabContainer(Container):
+    title = models.CharField(max_length=100, default=_('New tab'))
+
+    tab_block = models.ForeignKey(TabbedBlockWidget,
+                                  verbose_name=_("Tab block"),
+                                  related_name="tabs")
+
+    display_order = models.PositiveIntegerField()
+
+    def __unicode__(self):
+        return self.title
+
+    def save(self, *args, **kwargs):
+        self.variable_name = slugify(self.title)
+        return super(TabContainer, self).save(*args, **kwargs)
