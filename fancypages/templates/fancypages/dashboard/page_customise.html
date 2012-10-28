@@ -17,18 +17,20 @@
 <div class="row-fluid page-wrapper">
     <div class="editor">
         <div class="button-nav">
-            <button data-behaviours="page-settings"><span><i class="icon-file"></i> {% trans "Page Settings" %}</span></button>
-            <button data-behaviours="preview-check"><span><i class="icon-eye-open"></i> {% trans "Page preview" %}</span></button>
+            <button data-behaviours="page-settings"><span><i class="icon-file"></i> <span>{% trans "Settings" %}</span></span></button>
+            <button data-behaviours="preview-check"><span><i class="icon-eye-open"></i> <span>{% trans "Preview" %}</span></span></button>
         </div>
         <div class="sidebar-content">
             <div id="page-settings">
-                <h3><i class="icon-file"></i> Page Settings</h3>
+                <h3><i class="icon-file"></i> <span>Page Settings</span></h3>
                 <form method="post" action="." class="form-stacked">
                     {% csrf_token %}
                     {% include "oscar/partials/form_fields.html" %}
-                    <div class="form-actions">
-                        <a href="" class="btn">{% trans "Cancel" %}</a>
-                        <button type="submit" class="btn btn-primary pull-right">{% trans "Save" %}</button>
+                    <div class="form-actions fixed">
+                        <div>
+                            <a href="">{% trans "Cancel" %}</a>
+                            <button type="submit" class="btn btn-primary pull-right">{% trans "Save" %}</button>
+                        </div>
                     </div>
                 </form>
             </div>
