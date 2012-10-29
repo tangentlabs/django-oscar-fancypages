@@ -159,9 +159,6 @@ fancypages.dashboard = {
             var previewField = $('#widget-' + widgetId + '-' + fieldName, previewDoc);
             previewField.html($(editor.composer.element).html());
 
-            // Add Class to widget editing
-            $('.widget', previewDoc).removeClass('editing');
-            previewField.parents('.widget').addClass('editing');
         }
     },
 
@@ -197,29 +194,30 @@ fancypages.dashboard = {
 
         });
 
-        // Function setting the height of the IFrame and the Sidebar
-        function UpdateSize() {
-            var pageHeight = $(window).height(),
-                navBarTop = $('.navbar-fixed-top').outerHeight(),
-                subBarTop = $('.subnav-fixed').outerHeight(),
-                buttonsTop = $('.button-nav').outerHeight(),
-                sumHeight = pageHeight - navBarTop - subBarTop;
+        fancypages.dashboard.UpdateSize();
 
-            $('#page-preview').css('height', sumHeight);
-            $('.sidebar-content').css('height', sumHeight - buttonsTop);
-            $('.sidebar-content').jScrollPane();
-        }
-        UpdateSize();
         // Function setting the height if window resizes
-        $(window).resize(UpdateSize);
+        $(window).resize(fancypages.dashboard.UpdateSize);
 
         // Initialise all the asset related stuff
         $("#asset-modal").live('shown', function () {
-            var assetManager = $("#asset-manager");
-            assetManager.attr('src', assetManager.data("src"));
+          var assetManager = $("#asset-manager");
+          assetManager.attr('src', assetManager.data("src")).load(function(){
+            var modalHeight = $(window).height() - 100;
+            $('.slide-pane', fancypages.dashboard.getAssetDocument()).css('height', modalHeight - 100);
+            $('.slide-pane', fancypages.dashboard.getAssetDocument()).jScrollPane({
+              horizontalDragMaxWidth: 0
+            });
+          });
 
-            //$(this).css('width', $(window).width() - 100);
-            //$(this).css('height', $(window).height() - 100);
+          $(this).css({
+            width: $(window).width() - 100,
+            height: $(window).height() - 100,
+            top: 100,
+            left: 100,
+            marginLeft: '-50px',
+            marginTop: '-50px'
+          });
         });
     },
 
@@ -253,7 +251,11 @@ fancypages.dashboard = {
             // Scrolls IFrame to the top of editing areas
             var destination = widget.offset().top - 20;
             $('html:not(:animated),body:not(:animated)', previewDoc).animate({ scrollTop: destination}, 500, 'swing' );
-
+            
+            // Add Class to widget editing
+            $('.widget', previewDoc).removeClass('editing');
+            widget.addClass('editing');
+            
             fancypages.dashboard.loadWidgetForm(widgetUrl, $(widget).data('container-name'));
         });
 
@@ -294,7 +296,7 @@ fancypages.dashboard = {
         $('button[data-behaviours~=page-settings]').on('click', function () {
           $('div[id=widget_input_wrapper]').html("");
           $('#page-settings').show();
-          $( '.editor' ).animate({ backgroundColor: "#333" }, 500 );
+          $( '.editor' ).animate({ backgroundColor: "#444" }, 500 );
         });
 
         $('body', previewDoc).css('margin-bottom', '600px');
@@ -312,7 +314,9 @@ fancypages.dashboard = {
             $('#page-settings').hide();
 
             fancypages.dashboard.editor.init();
-            $( '.editor' ).animate({ backgroundColor: "#444" }, 500 );
+            $( '.editor' ).animate({ backgroundColor: "#555" }, 500 ).delay(500).animate({ backgroundColor: "#444" }, 500 );
+            
+            fancypages.dashboard.UpdateSize();
         });
     },
 
@@ -340,7 +344,7 @@ fancypages.dashboard = {
                 $('div[id=widget_input_wrapper]').html("");
                 parent.fancypages.dashboard.reloadPreview();
                 $('#page-settings').show();
-                $( '.editor' ).animate({ backgroundColor: "#333" }, 500 );
+                $( '.editor' ).animate({ backgroundColor: "#444" }, 500 );
             },
             error: function () {
                 parent.oscar.messages.error(
@@ -370,6 +374,23 @@ fancypages.dashboard = {
     getPreviewDocument: function (elem) {
         return $('#page-preview').contents();
     },
+    
+    getAssetDocument: function (elem) {
+        return $('#asset-manager').contents();
+    },
+    
+    editingWidget: function() {
+      var widgetId = $('div[id=widget_input_wrapper]').find('form').data('widget-id'),
+          previewDoc = fancypages.dashboard.getPreviewDocument(),
+          editingWidget = $('body', previewDoc).find('#widget-' + widgetId);
+      // Add Class to widget editing by removing others first
+      $('.widget', previewDoc).removeClass('editing');
+      editingWidget.addClass('editing');
+      
+      // Scrolls IFrame to the top of editing areas
+      var destination = editingWidget.offset().top - 20;
+      $('html:not(:animated),body:not(:animated)', previewDoc).animate({ scrollTop: destination}, 500, 'swing' );
+    },
 
     /**
      * Reload the preview displayed in the iframe of the customise page.
@@ -382,8 +403,25 @@ fancypages.dashboard = {
         setTimeout(function () {
           $('#page-preview').attr('src', $('#page-preview').attr('src')).load(function(){
             $('div[data-behaviours~=loading]').fadeOut(300);
-          });
+            fancypages.dashboard.editingWidget();
+          }); 
         }, 300);
+        
+        
+    },
+    
+    // Function setting the height of the IFrame and the Sidebar
+    UpdateSize: function () {
+        var pageHeight = $(window).height(),
+            navBarTop = $('.navbar-fixed-top').outerHeight(),
+            subBarTop = $('.subnav-fixed').outerHeight(),
+            buttonsTop = $('.button-nav').outerHeight(),
+            buttonsBottom = $('.form-actions.fixed').outerHeight(),
+            sumHeight = pageHeight - navBarTop - subBarTop;
+            
+        $('#page-preview').css('height', sumHeight);
+        $('.sidebar-content').css('height', sumHeight - buttonsTop - buttonsBottom);
+        $('.sidebar-content').jScrollPane();
     }
 };
 
