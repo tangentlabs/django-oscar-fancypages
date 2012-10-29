@@ -299,7 +299,9 @@ fancypages.dashboard = {
           $( '.editor' ).animate({ backgroundColor: "#444" }, 500 );
         });
 
-        $('body', previewDoc).css('margin-bottom', '600px');
+        $('body', previewDoc).css('margin-bottom', '600px').addClass('edit-page');
+        
+        fancypages.dashboard.carouselPosition();
 
 
     },
@@ -391,6 +393,30 @@ fancypages.dashboard = {
       var destination = editingWidget.offset().top - 20;
       $('html:not(:animated),body:not(:animated)', previewDoc).animate({ scrollTop: destination}, 500, 'swing' );
     },
+    
+    // Checks for carousels, initiates viewable items based on where the carousel is
+    carouselPosition: function() {
+      var previewDoc = fancypages.dashboard.getPreviewDocument(),
+          es_carousel = $('.es-carousel-wrapper', previewDoc);
+          
+      $('.sidebar .es-carousel-wrapper', previewDoc).each(function(){
+        var es_carouselHeight = $(this).find('.products li:first').height();
+        $(this).find('.products').css('height', es_carouselHeight);
+        $(this).elastislide({
+            minItems: 1,
+            onClick:  true
+        });
+      });
+      
+      $('.tab-pane .es-carousel-wrapper', previewDoc).each(function(){
+        var es_carouselHeight = $(this).find('.products li:first').height();
+        $(this).find('.products').css('height', es_carouselHeight);
+        $(this).elastislide({
+            minItems: 4,
+            onClick:  true
+        });
+      });
+    },
 
     /**
      * Reload the preview displayed in the iframe of the customise page.
@@ -406,10 +432,9 @@ fancypages.dashboard = {
             fancypages.dashboard.editingWidget();
           }); 
         }, 300);
-        
-        
     },
     
+
     // Function setting the height of the IFrame and the Sidebar
     UpdateSize: function () {
         var pageHeight = $(window).height(),
