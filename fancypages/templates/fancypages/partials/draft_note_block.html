@@ -1,8 +1,10 @@
 {% load i18n %}
 
-{% if not edit_mode and user.is_staff %}
-<div class="alert alert-danger">
-    <strong>{% trans "Note:" %}</strong>
-    {% trans "You can only see this because you are logged in as a user with access rights to the dashboard." %}
-</div>
+{% if object.is_visible %}
+    {% if not edit_mode and user.is_staff %}
+        <div class="alert alert-danger">
+            <strong>{% trans "Note:" %}</strong>
+            {% trans "You can only see this because you are logged in as a user with access rights to the dashboard." %}
+        </div>
+    {% endif %}
 {% endif %}
