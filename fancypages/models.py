@@ -539,3 +539,17 @@ class VideoWidget(Widget):
 
     source = models.CharField(_('Video Type'), choices=SOURCES, max_length=50)
     video_code = models.CharField(_('Video Code'), max_length=50)
+
+
+class TwitterWidget(Widget):
+    name = _("Twitter")
+    code = 'twitter'
+    template_name = "fancypages/widgets/twitter.html"
+
+    username = models.CharField(_('Twitter username'), max_length=50)
+    max_tweets = models.PositiveIntegerField(_('Maximum tweets'), default=5)
+
+    def __unicode__(self):
+        if self.username:
+            return u"Twitter user '@%s'" % self.username
+        return u"Twitter: %s" % self.id

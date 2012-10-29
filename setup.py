@@ -22,6 +22,7 @@ setup(
         'django-model-utils>=1.1.0',
         'django-compressor>=1.2',
         'South>=0.7.6',
+        'django-twitter-tag==0.4.0',
     ],
     # See http://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
