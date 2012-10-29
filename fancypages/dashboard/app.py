@@ -47,6 +47,9 @@ class FancypagesDashboardApplication(Application):
     page_customise_view = views.PageCustomiseView
     page_preview_view = views.PagePreviewView
 
+    product_page_customise_view = views.ProductPageCustomiseView
+    product_page_preview_view = views.ProductPagePreviewView
+
     container_add_widget_view = views.ContainerAddWidgetView
 
     widget_select_view = views.WidgetSelectView
@@ -117,6 +120,11 @@ class FancypagesDashboardApplication(Application):
             url(r'^widget/(?P<pk>\d+)/add-tab/$',
                 self.widget_add_tab_view.as_view(),
                 name='widget-add-tab'),
+
+            url(r'^product/customise/(?P<pk>\d+)/$',
+                self.product_page_customise_view.as_view(), name='product-page-customise'),
+            url(r'^product/preview/(?P<pk>\d+)/$',
+                self.product_page_preview_view.as_view(), name='product-page-preview'),
         )
         return self.post_process_urls(urlpatterns)
 

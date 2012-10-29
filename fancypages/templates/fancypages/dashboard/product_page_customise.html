@@ -1,0 +1,48 @@
+{% extends 'fancypages/dashboard/layout.html' %}
+{% load i18n %}
+{% load fancypages_tags %}
+
+{% block body_class %}fancypages edit-page{% endblock %}
+
+{% block title %}
+{% blocktrans with title=page.title %}Customise product page "{{ title }}" {% endblocktrans %} | {{ block.super }}
+{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block header %}
+{% endblock header %}
+
+{% block dashboard_content %}
+<div class="row-fluid page-wrapper">
+    <div class="editor">
+        <div class="button-nav">
+            <button data-behaviours="page-settings"><span><i class="icon-file"></i> <span>{% trans "Settings" %}</span></span></button>
+            <button data-behaviours="preview-check"><span><i class="icon-eye-open"></i> <span>{% trans "Preview" %}</span></span></button>
+        </div>
+        <div class="sidebar-content">
+            {% comment %}
+            <div id="page-settings">
+                <h3><i class="icon-file"></i> <span>Product Page Settings</span></h3>
+                <form method="post" action="." class="form-stacked">
+                    {% csrf_token %}
+                    {% include "oscar/partials/form_fields.html" %}
+                    <div class="form-actions fixed">
+                        <div>
+                            <a href="">{% trans "Cancel" %}</a>
+                            <button type="submit" class="btn btn-primary pull-right">{% trans "Save" %}</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            {% endcomment %}
+            <div id="widget_input_wrapper"></div>
+        </div>
+    </div>
+
+    <div class="preview">
+        <iframe id="page-preview" frameborder='0' src="{% url fp-dashboard:product-page-preview product.id %}"></iframe>
+        <div class="loading" data-behaviours="loading"></div>
+    </div>
+</div>
+{% endblock dashboard_content %}

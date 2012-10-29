@@ -13,9 +13,19 @@ class FancyContainerNode(template.Node):
         self.container_name = template.Variable(container_name)
 
     def render(self, context):
+        container = None
         try:
             container = self.container_name.resolve(context)
         except template.VariableDoesNotExist:
+            try:
+                for ctn in context['object'].containers.all():
+                    if ctn.variable_name == self.container_name.var:
+                        container = ctn
+                        break
+            except KeyError:
+                return u''
+
+        if not container:
             return u''
 
         extra_ctx = {

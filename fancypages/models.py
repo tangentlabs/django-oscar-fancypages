@@ -549,3 +549,8 @@ class TabContainer(Container):
     def save(self, *args, **kwargs):
         self.variable_name = slugify(self.title)
         return super(TabContainer, self).save(*args, **kwargs)
+
+
+class ProductPageContainer(Container):
+    product = models.ForeignKey('catalogue.Product', verbose_name=_("Product page container"),
+                                related_name="containers")

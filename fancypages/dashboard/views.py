@@ -227,6 +227,25 @@ class PageCustomiseView(PageUpdateView):
             args=(self.object.id,)
         )
 
+class ProductPageCustomiseView(generic.DetailView):
+    model = get_model('catalogue', 'Product')
+    context_object_name = 'product'
+    template_name = "fancypages/dashboard/product_page_customise.html"
+
+
+class ProductPagePreviewView(generic.DetailView):
+    model = get_model('catalogue', 'Product')
+    context_object_name = 'product'
+    template_name = "fancypages/pages/product_page.html"
+
+    def get_context_data(self, **kwargs):
+        ctx = super(ProductPagePreviewView, self).get_context_data(**kwargs)
+        for container in self.object.containers.all():
+            ctx[container.variable_name] = container
+        ctx['edit_mode'] = True
+        ctx['widget_create_form'] = forms.WidgetCreateSelectForm()
+        return ctx
+
 
 class FancypagesMixin(object):
 

@@ -1,5 +1,5 @@
 from django import forms
-from django.db.models import get_model, Q
+from django.db.models import get_model
 from django.contrib.sites.models import Site
 from django.utils.translation import ugettext_lazy as _
 from django.template import loader, TemplateDoesNotExist
@@ -64,6 +64,10 @@ class PageForm(MoveNodeForm):
     def __init__(self, page_type, *args, **kwargs):
         super(PageForm, self).__init__(*args, **kwargs)
         self.fields['page_type'].initial = page_type
+
+        instance = kwargs.get('instance', None)
+        if instance:
+            self.fields['display_on_sites'].initial = instance.display_on_sites.all()
 
     def save(self, commit=True):
         sites = self.cleaned_data.pop('display_on_sites')
