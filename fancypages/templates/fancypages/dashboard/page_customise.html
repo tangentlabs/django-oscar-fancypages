@@ -28,6 +28,9 @@
                     {% include "oscar/partials/form_fields.html" %}
                     <div class="form-actions fixed">
                         <div>
+                            <a href="{% url fancypages:page-detail page.slug %}" target="_blank">{% trans "View on site" %}</a>
+                        </div>
+                         <div>
                             <a href="">{% trans "Cancel" %}</a>
                             <button type="submit" class="btn btn-primary pull-right">{% trans "Save" %}</button>
                         </div>
@@ -37,11 +40,11 @@
             <div id="widget_input_wrapper"></div>
         </div>
     </div>
-    
+
     <div class="preview">
         <iframe id="page-preview" frameborder='0' src="{% url fp-dashboard:page-preview page.slug %}"></iframe>
         <div class="loading" data-behaviours="loading"></div>
     </div>
-    
+
 </div>
 {% endblock dashboard_content %}
