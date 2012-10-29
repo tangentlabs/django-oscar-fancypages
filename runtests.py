@@ -15,6 +15,7 @@ location = lambda x: os.path.join(os.path.dirname(os.path.realpath(__file__)), x
 def configure():
     if not settings.configured:
         settings.configure(
+            SITE_ID = 1,
             DATABASES={
                 'default': {
                     'ENGINE': 'django.db.backends.sqlite3',

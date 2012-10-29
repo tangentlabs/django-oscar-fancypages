@@ -1,5 +1,6 @@
 from django import forms
-from django.db.models import get_model
+from django.db.models import get_model, Q
+from django.contrib.sites.models import Site
 from django.utils.translation import ugettext_lazy as _
 from django.template import loader, TemplateDoesNotExist
 
@@ -55,10 +56,21 @@ class PageTypeForm(forms.ModelForm):
 
 
 class PageForm(MoveNodeForm):
+    display_on_sites = forms.ModelMultipleChoiceField(
+        queryset=Site.objects.exclude(domain__startswith='m.')
+    )
 
     def __init__(self, page_type, *args, **kwargs):
         super(PageForm, self).__init__(*args, **kwargs)
         self.fields['page_type'].initial = page_type
+
+    def save(self, commit=True):
+        sites = self.cleaned_data.pop('display_on_sites')
+        print sites
+        instance = super(PageForm, self).save(commit=True)
+        if instance.id is not None:
+            instance.display_on_sites = sites
+        return instance
 
     class Meta:
         model = Page

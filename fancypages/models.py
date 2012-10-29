@@ -90,7 +90,7 @@ class PageQuerySet(MP_NodeQuerySet):
 
 class PageManager(models.Manager):
     """
-    This manager is required to provide access to ``treebeard``'s custom
+    This manager is required to provide access to treebeard's custom
     manager and queryset. Otherwise it breaks the category handling.
     """
     def get_query_set(self):
@@ -124,6 +124,12 @@ class Page(MP_Node):
     # overrides the visibility date range when set to false making the
     # page invisible
     is_active = models.BooleanField(_("Is active"), default=True)
+
+    visible_on_mobile = models.BooleanField(_("Visible on mobile"), default=True)
+    display_on_sites = models.ManyToManyField('sites.Site', default=None,
+                                              null=True, blank=True,
+                                              verbose_name=_("Display on sites"),
+                                              related_name="pages")
 
     objects = PageManager()
 
