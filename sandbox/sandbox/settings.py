@@ -10,6 +10,8 @@ ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
 
+SITE_ID = 1
+
 MANAGERS = ADMINS
 
 DATABASES = {
