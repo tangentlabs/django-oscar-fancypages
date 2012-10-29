@@ -56,25 +56,10 @@ class PageTypeForm(forms.ModelForm):
 
 
 class PageForm(MoveNodeForm):
-    display_on_sites = forms.ModelMultipleChoiceField(
-        queryset=Site.objects.exclude(domain__startswith='m.'),
-        required=False,
-    )
 
     def __init__(self, page_type, *args, **kwargs):
         super(PageForm, self).__init__(*args, **kwargs)
         self.fields['page_type'].initial = page_type
-
-        instance = kwargs.get('instance', None)
-        if instance:
-            self.fields['display_on_sites'].initial = instance.display_on_sites.all()
-
-    def save(self, commit=True):
-        sites = self.cleaned_data.pop('display_on_sites')
-        instance = super(PageForm, self).save(commit=True)
-        if instance.id is not None:
-            instance.display_on_sites = sites
-        return instance
 
     class Meta:
         model = Page
@@ -116,29 +101,13 @@ class WidgetUpdateSelectForm(forms.Form):
 
 
 class WidgetForm(forms.ModelForm):
-    display_on_sites = forms.ModelMultipleChoiceField(
-        queryset=Site.objects.exclude(domain__startswith='m.'),
-        required=False,
-    )
 
     def __init__(self, *args, **kwargs):
         super(WidgetForm, self).__init__(*args, **kwargs)
 
         order = self.fields.keyOrder
         order.pop(order.index('display_on_sites'))
-        order.pop(order.index('visible_on_mobile'))
-        self.fields.keyOrder += ['display_on_sites', 'visible_on_mobile']
-
-        instance = kwargs['instance']
-        if instance:
-            self.fields['display_on_sites'].initial = instance.display_on_sites.all()
-
-    def save(self, commit=True):
-        sites = self.cleaned_data.pop('display_on_sites')
-        instance = super(WidgetForm, self).save(commit=True)
-        if instance.id is not None:
-            instance.display_on_sites = sites
-        return instance
+        self.fields.keyOrder += ['display_on_sites']
 
     class Meta:
         exclude = ('container',)

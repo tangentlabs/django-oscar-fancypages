@@ -1,6 +1,5 @@
 from webtest import AppError
 
-from django import http
 from django.conf import settings
 from django.db.models import get_model
 from django.contrib.sites.models import Site
@@ -211,24 +210,6 @@ class TestAPublishedPage(FancyPagesWebTest):
         self.set_current_site(self.glitter_main)
         self.assertRaises(AppError, self.get, self.main_url)
 
-    def test_can_not_be_seen_on_mobile_channel(self):
-        self.page.visible_on_mobile = False
-        self.page.save()
-
-        self.set_current_site(self.glitter_sub)
-        page = self.get(self.sub_url)
-        self.assertContains(page, self.main_widget.title)
-
-        mobile_sub_url = 'm.%s' % self.glitter_sub.domain
-        mobile_site = Site.objects.get(domain=mobile_sub_url)
-        self.set_current_site(mobile_site)
-
-        self.sub_url = "http://%s%s" % (
-            mobile_site.domain,
-            self.abs_url
-        )
-        self.assertRaises(AppError, self.get, self.main_url)
-
 
 class TestAWidgetOnAPublishedPage(FancyPagesWebTest):
     is_anonymous = True
@@ -328,23 +309,4 @@ class TestAWidgetOnAPublishedPage(FancyPagesWebTest):
 
         self.set_current_site(self.glitter_main)
         page = self.get(self.main_url)
-        self.assertNotContains(page, self.main_widget.title)
-
-    def test_can_not_be_seen_on_mobile_channel(self):
-        self.main_widget.visible_on_mobile = False
-        self.main_widget.save()
-
-        self.set_current_site(self.glitter_sub)
-        page = self.get(self.sub_url)
-        self.assertContains(page, self.main_widget.title)
-
-        mobile_sub_url = 'm.%s' % self.glitter_sub.domain
-        mobile_site = Site.objects.get(domain=mobile_sub_url)
-        self.set_current_site(mobile_site)
-
-        sub_url = "http://%s%s" % (
-            mobile_site.domain,
-            self.abs_url
-        )
-        page = self.get(sub_url)
         self.assertNotContains(page, self.main_widget.title)

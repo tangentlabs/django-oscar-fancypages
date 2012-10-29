@@ -127,7 +127,6 @@ class Page(MP_Node):
     # page invisible
     is_active = models.BooleanField(_("Is active"), default=True)
 
-    visible_on_mobile = models.BooleanField(_("Visible on mobile"), default=True)
     display_on_sites = models.ManyToManyField('sites.Site', default=None,
                                               null=True, blank=True,
                                               verbose_name=_("Display on sites"),
@@ -275,16 +274,13 @@ class Container(models.Model):
     def render(self, request=None, **kwargs):
         current_site = Site.objects.get_current()
 
-        filters = {}
-
-        if current_site.domain.startswith('m.'):
-            filters['visible_on_mobile'] = True
-
-        ordered_widgets = self.widgets.filter(
-            Q(display_on_sites__isnull=True) |
-            Q(display_on_sites=current_site),
-            **filters
-        ).select_subclasses()
+        ordered_widgets = self.widgets.all()
+        if not kwargs.get('edit_mode', False):
+            ordered_widgets = ordered_widgets.filter(
+                Q(display_on_sites__isnull=True) |
+                Q(display_on_sites=current_site),
+            )
+        ordered_widgets = ordered_widgets.select_subclasses()
 
         tmpl = loader.get_template(self.template_name)
 
@@ -320,7 +316,6 @@ class Widget(models.Model):
 
     display_order = models.PositiveIntegerField()
 
-    visible_on_mobile = models.BooleanField(_("Visible on mobile"), default=True)
     display_on_sites = models.ManyToManyField('sites.Site', default=None,
                                               null=True, blank=True,
                                               verbose_name=_("Display on sites"),

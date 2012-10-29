@@ -1,7 +1,6 @@
 from django.http import Http404
 from django.views.generic import DetailView
 from django.contrib.sites.models import Site
-from django.shortcuts import get_object_or_404
 
 from fancypages import models
 
@@ -29,9 +28,6 @@ class PageDetailView(PageEditorMixin, DetailView):
         if (page.display_on_sites.all()
             and current_site not in page.display_on_sites.all()):
             raise Http404("page is not visible on this page")
-
-        if current_site.domain.startswith('m.') and not page.visible_on_mobile:
-            raise Http404("page is not visible on mobile")
         return page
 
     def get(self, request, *args, **kwargs):
