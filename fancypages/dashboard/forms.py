@@ -61,6 +61,15 @@ class PageForm(MoveNodeForm):
         super(PageForm, self).__init__(*args, **kwargs)
         self.fields['page_type'].initial = page_type
 
+    def save(self):
+        sites = self.cleaned_data.pop('display_on_sites')
+        instance = super(PageForm, self).save(commit=True)
+
+        if sites:
+            instance.display_on_sites = sites
+
+        return instance
+
     class Meta:
         model = Page
         # the fields in the MP_Node model have to be added here because
