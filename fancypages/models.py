@@ -10,6 +10,7 @@ from django.template import (loader, Context, RequestContext,
                              TemplateDoesNotExist)
 
 from treebeard.mp_tree import MP_Node, MP_NodeQuerySet
+from model_utils.managers import InheritanceManager
 
 
 Product = models.get_model('catalogue', 'Product')
