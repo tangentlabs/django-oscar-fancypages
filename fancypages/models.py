@@ -524,3 +524,17 @@ class TabContainer(Container):
     def save(self, *args, **kwargs):
         self.variable_name = slugify(self.title)
         return super(TabContainer, self).save(*args, **kwargs)
+
+
+class TwitterWidget(Widget):
+    name = _("Twitter")
+    code = 'twitter'
+    template_name = "fancypages/widgets/twitter.html"
+
+    username = models.CharField(_('Twitter username'), max_length=50)
+    max_tweets = models.PositiveIntegerField(_('Maximum tweets'), default=5)
+
+    def __unicode__(self):
+        if self.username:
+            return u"Twitter user '@%s'" % self.username
+        return u"Twitter: %s" % self.id
