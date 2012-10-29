@@ -555,6 +555,22 @@ class ProductPageContainer(Container):
     product = models.ForeignKey('catalogue.Product', verbose_name=_("Product page container"),
                                 related_name="containers")
 
+
+class VideoWidget(Widget):
+    name = _("Video")
+    code = 'video'
+    template_name = "fancypages/widgets/video.html"
+
+    SOURCE_YOUTUBE = 'youtube'
+
+    SOURCES = (
+        (SOURCE_YOUTUBE, _('YouTube video')),
+    )
+
+    source = models.CharField(_('Video Type'), choices=SOURCES, max_length=50)
+    video_code = models.CharField(_('Video Code'), max_length=50)
+
+
 class TwitterWidget(Widget):
     name = _("Twitter")
     code = 'twitter'
