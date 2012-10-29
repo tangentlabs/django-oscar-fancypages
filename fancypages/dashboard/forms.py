@@ -60,18 +60,12 @@ class PageForm(MoveNodeForm):
         super(PageForm, self).__init__(*args, **kwargs)
         self.fields['page_type'].initial = page_type
 
-    def save(self, commit=True):
-        instance = super(PageForm, self).save(commit=False)
-
-        if commit:
-            instance.save()
-
-        return instance
-
     class Meta:
         model = Page
-        exclude = ('depth', 'numchild', 'path', 'slug',
-                   'relative_url')
+        # the fields in the MP_Node model have to be added here because
+        # we change the meta class which overwrites all settings for
+        # the form in django-treebeard
+        exclude = ('path', 'depth', 'numchild', 'slug', 'relative_url')
         widgets = {
             'page_type': forms.HiddenInput()
         }

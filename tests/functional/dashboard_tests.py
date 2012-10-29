@@ -95,6 +95,39 @@ class TestAStaffMember(test.FancyPagesWebTest):
         self.assertContains(page, "Create new page")
         self.assertContains(page, "Page Management")
 
+    def test_can_delete_a_child_page(self):
+        parent_page = Page.add_root(
+            title="A new page",
+            page_type=self.article_type,
+        )
+        self.assertEquals(Page.objects.get(id=parent_page.id).numchild, 0)
+        Page.add_root(
+            title="Another page",
+            page_type=self.article_type,
+        )
+
+        parent_page.add_child(
+            title="The child",
+            page_type=self.article_type,
+        )
+        self.assertEquals(Page.objects.get(id=parent_page.id).numchild, 1)
+
+        self.assertEquals(Page.objects.count(), 3)
+        page = self.get(reverse("fp-dashboard:page-list"))
+        page = page.click("Delete", index=1)
+
+        page.forms['page-delete-form'].submit()
+        self.assertEquals(Page.objects.count(), 2)
+
+        self.assertEquals(Page.objects.get(id=parent_page.id).numchild, 0)
+        parent_page = Page.objects.get(id=parent_page.id)
+
+        Page.add_root(
+            title="3rd page",
+            page_type=self.article_type,
+        )
+        self.assertEquals(Page.objects.count(), 3)
+
 
 class TestAPageTemplate(test.FancyPagesWebTest):
     is_staff = True

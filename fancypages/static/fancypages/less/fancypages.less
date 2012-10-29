@@ -23,12 +23,14 @@ body.fancypages.edit-page {
   margin: 0px;
   height: 100%;
   position:absolute;
-  border-right:1px solid #ccc;
   top:0;
   left:-@editorGutter;
   bottom:0;
-  width:@editorWidth - 1;
+  width:@editorWidth;
   .box-shadow(inset -3px -7px 10px rgba(0,0,0,.1));
+}
+.sidebar-content {
+  width:@editorWidth - 2;
 }
 .sidebar-content,
 .slide-pane {
@@ -42,9 +44,12 @@ body.fancypages.edit-page {
     background: #999;
     .border-radius(5px)
   }
+  .jspVerticalBar {
+    width:6px;
+  }
   .jspTrack,
   .jspHorizontalBar {
-    padding:0 2px;
+/*    padding:0 2px;*/
     background: #333;
   }
 }
@@ -90,11 +95,11 @@ body.fancypages.edit-page {
   .nav > li > a {
     padding: 5px 5px 3px;
     text-transform:uppercase;
+    color: #ccc;
     &:hover,
     &:focus {
-      color: #555;
       text-decoration: none;
-      background-color: #E5E5E5;
+      background-color: #222;
       -webkit-box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.125);
       -moz-box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.125);
       box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.125);
@@ -106,7 +111,8 @@ body.fancypages.edit-page {
   .navbar-inner {
     min-height: 15px;
     padding-left: 5px;
-    padding-right: 5px
+    padding-right: 5px;
+    #gradient > .vertical(lighten(#222, 10%), lighten(#111, 10%));
   }
   .icon-text {
     width:auto;
@@ -183,9 +189,11 @@ input[type="color"]:focus,
 }
 .wysihtml5-wrapper {
   overflow: auto;
+  overflow-x:hidden;
 }
 .wysihtml5-wrapper textarea {
   height:250px;
+  overflow-x:hidden;
 }
 
 .wysihtml5-toolbar {
@@ -294,16 +302,6 @@ input[type="color"]:focus,
     margin-right:2.564102564102564% / 2.5;
   }
   text-align: center;
-  .image_container {
-    background:#fff;
-    min-height:130px;
-    line-height:130px;
-    margin-bottom: 0;
-    img {
-      max-height:130px;
-      width:auto;
-    }
-  }
   .caption {
     h6 {
       width: 100%;
@@ -311,6 +309,17 @@ input[type="color"]:focus,
       overflow: hidden;
       margin:0;
     }
+  }
+}
+.image_container {
+  background:#fff;
+  min-height:130px;
+  line-height:130px;
+  margin-bottom: 0;
+  text-align:center;
+  img {
+    max-height:130px;
+    width:auto;
   }
 }
 //Loading
@@ -323,4 +332,5 @@ input[type="color"]:focus,
   left:0;
   display:none;
 }
+
 
