@@ -13,3 +13,5 @@ dist/
 cover/
 public/
 docs/build/
+
+.ropeproject

@@ -148,6 +148,7 @@ INSTALLED_APPS = [
 
     'fancypages',
     'fancypages.assets',
+    'twitter_tag',
 ]
 
 from oscar import get_core_apps
