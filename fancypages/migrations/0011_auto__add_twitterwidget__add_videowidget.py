@@ -12,13 +12,25 @@ class Migration(SchemaMigration):
         db.create_table('fancypages_twitterwidget', (
             ('widget_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Widget'], unique=True, primary_key=True)),
             ('username', self.gf('django.db.models.fields.CharField')(max_length=50)),
+            ('max_tweets', self.gf('django.db.models.fields.PositiveIntegerField')(default=5)),
         ))
         db.send_create_signal('fancypages', ['TwitterWidget'])
+
+        # Adding model 'VideoWidget'
+        db.create_table('fancypages_videowidget', (
+            ('widget_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Widget'], unique=True, primary_key=True)),
+            ('source', self.gf('django.db.models.fields.CharField')(max_length=50)),
+            ('video_code', self.gf('django.db.models.fields.CharField')(max_length=50)),
+        ))
+        db.send_create_signal('fancypages', ['VideoWidget'])
 
 
     def backwards(self, orm):
         # Deleting model 'TwitterWidget'
         db.delete_table('fancypages_twitterwidget')
+
+        # Deleting model 'VideoWidget'
+        db.delete_table('fancypages_videowidget')
 
 
     models = {
@@ -219,6 +231,7 @@ class Migration(SchemaMigration):
             'date_visible_end': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'date_visible_start': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'depth': ('django.db.models.fields.PositiveIntegerField', [], {}),
+            'display_on_sites': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'pages'", 'default': 'None', 'to': "orm['sites.Site']", 'blank': 'True', 'symmetrical': 'False', 'null': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'numchild': ('django.db.models.fields.PositiveIntegerField', [], {'default': '0'}),
@@ -227,7 +240,8 @@ class Migration(SchemaMigration):
             'relative_url': ('django.db.models.fields.CharField', [], {'max_length': '500', 'null': 'True', 'blank': 'True'}),
             'slug': ('django.db.models.fields.SlugField', [], {'unique': 'True', 'max_length': '100'}),
             'status': ('django.db.models.fields.CharField', [], {'default': "u'draft'", 'max_length': '15'}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '100'})
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
+            'visible_on_mobile': ('django.db.models.fields.BooleanField', [], {'default': 'True'})
         },
         'fancypages.pagetemplate': {
             'Meta': {'object_name': 'PageTemplate'},
@@ -243,6 +257,11 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'template': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'page_types'", 'to': "orm['fancypages.PageTemplate']"})
+        },
+        'fancypages.productpagecontainer': {
+            'Meta': {'object_name': 'ProductPageContainer', '_ormbases': ['fancypages.Container']},
+            'container_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['fancypages.Container']", 'unique': 'True', 'primary_key': 'True'}),
+            'product': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'containers'", 'to': "orm['catalogue.Product']"})
         },
         'fancypages.singleproductwidget': {
             'Meta': {'ordering': "['display_order']", 'object_name': 'SingleProductWidget', '_ormbases': ['fancypages.Widget']},
@@ -273,14 +292,23 @@ class Migration(SchemaMigration):
         },
         'fancypages.twitterwidget': {
             'Meta': {'ordering': "['display_order']", 'object_name': 'TwitterWidget', '_ormbases': ['fancypages.Widget']},
+            'max_tweets': ('django.db.models.fields.PositiveIntegerField', [], {'default': '5'}),
             'username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
+            'widget_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['fancypages.Widget']", 'unique': 'True', 'primary_key': 'True'})
+        },
+        'fancypages.videowidget': {
+            'Meta': {'ordering': "['display_order']", 'object_name': 'VideoWidget', '_ormbases': ['fancypages.Widget']},
+            'source': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
+            'video_code': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'widget_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['fancypages.Widget']", 'unique': 'True', 'primary_key': 'True'})
         },
         'fancypages.widget': {
             'Meta': {'ordering': "['display_order']", 'object_name': 'Widget'},
             'container': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'widgets'", 'to': "orm['fancypages.Container']"}),
+            'display_on_sites': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'widget_widget'", 'default': 'None', 'to': "orm['sites.Site']", 'blank': 'True', 'symmetrical': 'False', 'null': 'True'}),
             'display_order': ('django.db.models.fields.PositiveIntegerField', [], {}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'visible_on_mobile': ('django.db.models.fields.BooleanField', [], {'default': 'True'})
         },
         'offer.benefit': {
             'Meta': {'object_name': 'Benefit'},
@@ -376,6 +404,12 @@ class Migration(SchemaMigration):
             'object_id': ('django.db.models.fields.PositiveIntegerField', [], {}),
             'page_url': ('oscar.models.fields.ExtendedURLField', [], {'max_length': '128', 'db_index': 'True'}),
             'position': ('django.db.models.fields.CharField', [], {'max_length': '100'})
+        },
+        'sites.site': {
+            'Meta': {'ordering': "('domain',)", 'object_name': 'Site', 'db_table': "'django_site'"},
+            'domain': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
         }
     }
 
