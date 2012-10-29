@@ -1,8 +1,10 @@
 import os
 
 from django.db import models
+from django.db.models import Q
 from django.utils import timezone
 from django.forms import ValidationError
+from django.contrib.sites.models import Site
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ImproperlyConfigured
@@ -271,7 +273,18 @@ class Container(models.Model):
                              related_name='containers', null=True)
 
     def render(self, request=None, **kwargs):
-        ordered_widgets = self.widgets.select_subclasses()
+        current_site = Site.objects.get_current()
+
+        filters = {}
+
+        if current_site.domain.startswith('m.'):
+            filters['visible_on_mobile'] = True
+
+        ordered_widgets = self.widgets.filter(
+            Q(display_on_sites__isnull=True) |
+            Q(display_on_sites=current_site),
+            **filters
+        ).select_subclasses()
 
         tmpl = loader.get_template(self.template_name)
 
@@ -306,6 +319,12 @@ class Widget(models.Model):
                                   related_name="widgets")
 
     display_order = models.PositiveIntegerField()
+
+    visible_on_mobile = models.BooleanField(_("Visible on mobile"), default=True)
+    display_on_sites = models.ManyToManyField('sites.Site', default=None,
+                                              null=True, blank=True,
+                                              verbose_name=_("Display on sites"),
+                                              related_name="%(class)s_widget")
 
     objects = InheritanceManager()
 

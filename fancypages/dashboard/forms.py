@@ -57,7 +57,8 @@ class PageTypeForm(forms.ModelForm):
 
 class PageForm(MoveNodeForm):
     display_on_sites = forms.ModelMultipleChoiceField(
-        queryset=Site.objects.exclude(domain__startswith='m.')
+        queryset=Site.objects.exclude(domain__startswith='m.'),
+        required=False,
     )
 
     def __init__(self, page_type, *args, **kwargs):
