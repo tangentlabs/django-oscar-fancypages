@@ -67,7 +67,6 @@ class PageForm(MoveNodeForm):
 
     def save(self, commit=True):
         sites = self.cleaned_data.pop('display_on_sites')
-        print sites
         instance = super(PageForm, self).save(commit=True)
         if instance.id is not None:
             instance.display_on_sites = sites
@@ -113,6 +112,30 @@ class WidgetUpdateSelectForm(forms.Form):
 
 
 class WidgetForm(forms.ModelForm):
+    display_on_sites = forms.ModelMultipleChoiceField(
+        queryset=Site.objects.exclude(domain__startswith='m.'),
+        required=False,
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(WidgetForm, self).__init__(*args, **kwargs)
+
+        order = self.fields.keyOrder
+        order.pop(order.index('display_on_sites'))
+        order.pop(order.index('visible_on_mobile'))
+        self.fields.keyOrder += ['display_on_sites', 'visible_on_mobile']
+
+        instance = kwargs['instance']
+        if instance:
+            self.fields['display_on_sites'].initial = instance.display_on_sites.all()
+
+    def save(self, commit=True):
+        sites = self.cleaned_data.pop('display_on_sites')
+        instance = super(WidgetForm, self).save(commit=True)
+        if instance.id is not None:
+            instance.display_on_sites = sites
+        return instance
+
     class Meta:
         exclude = ('container',)
         widgets = {
@@ -120,7 +143,7 @@ class WidgetForm(forms.ModelForm):
         }
 
 
-class AssetWidgetForm(forms.ModelForm):
+class AssetWidgetForm(WidgetForm):
     asset_id = forms.IntegerField(widget=forms.HiddenInput())
     asset_type = forms.CharField(widget=forms.HiddenInput())
 
@@ -163,7 +186,7 @@ class AssetWidgetForm(forms.ModelForm):
         abstract = True
 
 
-class TextWidgetForm(forms.ModelForm):
+class TextWidgetForm(WidgetForm):
     class Meta:
         exclude = ('container',)
         widgets = {
@@ -172,7 +195,7 @@ class TextWidgetForm(forms.ModelForm):
         }
 
 
-class TitleTextWidgetForm(forms.ModelForm):
+class TitleTextWidgetForm(WidgetForm):
     class Meta:
         exclude = ('container',)
         widgets = {
