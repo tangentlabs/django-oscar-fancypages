@@ -251,6 +251,7 @@ class ProductPagePreviewView(generic.DetailView):
     def get_context_data(self, **kwargs):
         ctx = super(ProductPagePreviewView, self).get_context_data(**kwargs)
         for container in self.object.containers.all():
+            print container.variable_name
             ctx[container.variable_name] = container
         ctx['edit_mode'] = True
         ctx['widget_create_form'] = forms.WidgetCreateSelectForm()

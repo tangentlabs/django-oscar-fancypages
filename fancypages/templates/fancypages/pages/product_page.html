@@ -67,6 +67,12 @@
         </div><!-- /span6 -->
     </div><!-- /row-fluid -->
 
+    <div class="row-fluid">
+        <div class="span12">
+            {% fancypages-container product-description-container edit_mode %}
+        </div>
+    </div>
+
 	{% block product_description %}
 	{% if product.description %}
     <div id="product_description" class="sub-header">
@@ -75,6 +81,12 @@
     <p>{{ product.description|safe }}</p>
 	{% endif %}
 	{% endblock %}
+
+    <div class="row-fluid">
+        <div class="span12">
+            {% fancypages-container product-info-container edit_mode %}
+        </div>
+    </div>
 
 	{% block product_info %}
 	<div class="sub-header">
@@ -117,6 +129,12 @@
         </tr>
     </table>
 	{% endblock %}
+
+    <div class="row-fluid">
+        <div class="span12">
+            {% fancypages-container product-review-container edit_mode %}
+        </div>
+    </div>
 
     {% block product_review %}
     <section>
