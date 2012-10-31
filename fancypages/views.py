@@ -8,11 +8,10 @@ class PageEditorMixin(object):
     edit_mode = False
 
     def get_context_data(self, **kwargs):
-        kwargs = {
-            'edit_mode': False,
-        }
-        kwargs.update(kwargs)
-        return kwargs
+        kwargs.update({
+            'edit_mode': self.edit_mode,
+        })
+        return super(PageEditorMixin, self).get_context_data(**kwargs)
 
 
 class PageDetailView(PageEditorMixin, DetailView):

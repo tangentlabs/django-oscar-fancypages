@@ -1,6 +1,10 @@
 {% extends "fancypages/layout_2_col.html" %}
 {% load fancypages_tags %}
 
+{% block keywords %}
+{{ page.keywords }}
+{% endblock keywords %}
+
 {% block title %}
 {{ page.title }} | {{ block.super }}
 {% endblock %}

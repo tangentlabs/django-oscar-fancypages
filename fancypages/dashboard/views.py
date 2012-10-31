@@ -125,10 +125,10 @@ class PageListView(generic.ListView):
 
 
 class PagePreviewView(PageDetailView):
+    edit_mode = True
 
     def get_context_data(self, **kwargs):
         ctx = super(PagePreviewView, self).get_context_data(**kwargs)
-        ctx['edit_mode'] = True
         ctx['widget_create_form'] = forms.WidgetCreateSelectForm()
         return ctx
 
