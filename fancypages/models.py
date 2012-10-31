@@ -32,9 +32,11 @@ class PageType(models.Model):
     name = models.CharField(_("Name"), max_length=100)
     code = models.SlugField(_("Code"), max_length=100, unique=True)
 
-    template =  models.ForeignKey("fancypages.PageTemplate",
-                                  verbose_name=_("Page template"),
-                                  related_name="page_types")
+    template = models.ForeignKey(
+        "fancypages.PageTemplate",
+        verbose_name=_("Page template"),
+        related_name="page_types"
+    )
 
     def get_container_names(self):
         if not self.template.template_name:
@@ -99,6 +101,7 @@ class PageManager(models.Manager):
 
 class Page(MP_Node):
     title = models.CharField(_("Title"), max_length=100)
+    description = models.TextField(_("Description"), null=True, blank=True, default=None)
     slug = models.SlugField(_("Code"), max_length=100, unique=True)
 
     page_type = models.ForeignKey('fancypages.PageType',
