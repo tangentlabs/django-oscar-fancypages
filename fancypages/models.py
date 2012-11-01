@@ -396,7 +396,18 @@ class TitleTextWidget(Widget):
         return self.title
 
 
-class ImageWidget(Widget):
+class ImageMetaMixin(models.Model):
+    """
+    Mixin for meta data for image widgets
+    """
+    title = models.CharField(_("Image title"), max_length=100, blank=True, null=True)
+    alt_text = models.CharField(_("Alternative text"), max_length=100, blank=True, null=True)
+
+    class Meta:
+        abstract = True
+
+
+class ImageWidget(Widget, ImageMetaMixin):
     name = _("Image")
     code = 'image'
     template_name = "fancypages/widgets/imagewidget.html"
