@@ -102,7 +102,7 @@ class PageManager(models.Manager):
 class Page(MP_Node):
     title = models.CharField(_("Title"), max_length=100)
     description = models.TextField(_("Description"), null=True, blank=True, default=None)
-    keywords = models.TextField(_("Keywords"), null=True, blank=True)
+    keywords = models.CharField(_("Keywords"), max_length=255, null=True, blank=True)
     slug = models.SlugField(_("Code"), max_length=100, unique=True)
 
     page_type = models.ForeignKey('fancypages.PageType',

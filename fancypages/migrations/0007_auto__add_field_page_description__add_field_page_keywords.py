@@ -13,10 +13,18 @@ class Migration(SchemaMigration):
                       self.gf('django.db.models.fields.TextField')(default=None, null=True, blank=True),
                       keep_default=False)
 
+        # Adding field 'Page.keywords'
+        db.add_column('fancypages_page', 'keywords',
+                      self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True),
+                      keep_default=False)
+
 
     def backwards(self, orm):
         # Deleting field 'Page.description'
         db.delete_column('fancypages_page', 'description')
+
+        # Deleting field 'Page.keywords'
+        db.delete_column('fancypages_page', 'keywords')
 
 
     models = {
@@ -220,6 +228,7 @@ class Migration(SchemaMigration):
             'description': ('django.db.models.fields.TextField', [], {'default': 'None', 'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
+            'keywords': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'numchild': ('django.db.models.fields.PositiveIntegerField', [], {'default': '0'}),
             'page_type': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'pages'", 'to': "orm['fancypages.PageType']"}),
             'path': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '255'}),

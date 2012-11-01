@@ -67,8 +67,6 @@ class PageForm(MoveNodeForm):
         exclude = ('path', 'depth', 'numchild', 'slug', 'relative_url')
         widgets = {
             'page_type': forms.HiddenInput(),
-            'description': forms.Textarea(attrs={'rows': 10, 'cols': 80}),
-            'keywords': forms.Textarea(attrs={'rows': 3, 'cols': 80}),
         }
 
 
