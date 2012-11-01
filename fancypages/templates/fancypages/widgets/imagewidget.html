@@ -4,6 +4,8 @@
 {% block widget %}
 <div class="thumbnail">
     {# FIXME an image currently doesnt work with the render tag #}
-    <img src="{{ object.image_asset.image.url }}" alt="{{ object.image_asset.name }}" />
+    <img src="{{ object.image_asset.image.url }}"
+         {% if object.title %}title="{{ object.title }}"{% endif %}
+         {% if object.alt_text %}alt="{{ object.alt_text }}"{% endif %} />
 </div>
 {% endblock %}
