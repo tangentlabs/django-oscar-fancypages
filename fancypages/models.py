@@ -406,6 +406,7 @@ class ImageMetaMixin(models.Model):
     """
     title = models.CharField(_("Image title"), max_length=100, blank=True, null=True)
     alt_text = models.CharField(_("Alternative text"), max_length=100, blank=True, null=True)
+    link = models.CharField(_("Link URL"), max_length=500, blank=True, null=True)
 
     class Meta:
         abstract = True

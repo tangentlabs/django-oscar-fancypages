@@ -2,10 +2,12 @@
 {% load fancypages_tags %}
 
 {% block widget %}
-<div class="thumbnail">
+{% if object.link %}
+<a href="{{ object.link }}">
     {# FIXME an image currently doesnt work with the render tag #}
-    <img src="{{ object.image_asset.image.url }}"
-         {% if object.title %}title="{{ object.title }}"{% endif %}
-         {% if object.alt_text %}alt="{{ object.alt_text }}"{% endif %} />
-</div>
+    {% include "fancypages/widgets/partials/image_thumbnail.html" %}
+</a>
+{% else %}
+    {% include "fancypages/widgets/partials/image_thumbnail.html" %}
+{% endif %}
 {% endblock %}
