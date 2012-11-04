@@ -108,3 +108,9 @@ class TestAStaffUser(FancyPagesWebTest):
         page = self.get(reverse('fancypages:page-detail', args=(self.page.slug,)))
         self.assertContains(page, self.left_widget.title)
         self.assertContains(page, self.main_widget.title)
+
+        self.assertNotContains(
+            page,
+            ("You can only see this because you are logged in as "
+             "a user with access rights to the dashboard")
+        )
