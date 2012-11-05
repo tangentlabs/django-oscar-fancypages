@@ -251,11 +251,11 @@ fancypages.dashboard = {
             // Scrolls IFrame to the top of editing areas
             var destination = widget.offset().top - 20;
             $('html:not(:animated),body:not(:animated)', previewDoc).animate({ scrollTop: destination}, 500, 'swing' );
-            
+
             // Add Class to widget editing
             $('.widget', previewDoc).removeClass('editing');
             widget.addClass('editing');
-            
+
             fancypages.dashboard.loadWidgetForm(widgetUrl, $(widget).data('container-name'));
         });
 
@@ -294,12 +294,13 @@ fancypages.dashboard = {
 
         // Show Page previews
         $('button[data-behaviours~=page-settings]').on('click', function () {
-          $('div[id=widget_input_wrapper]').html("");
-          $('#page-settings').show();
-          $( '.editor' ).animate({ backgroundColor: "#444" }, 500 );
+            $('div[id=widget_input_wrapper]').html("");
+            $('#page-settings').show();
+            $('.editor').animate({ backgroundColor: "#444" }, 500);
         });
 
-        $('body', previewDoc).css('margin-bottom', '600px');
+        $('body', previewDoc).css('margin-bottom', '600px').addClass('edit-page');
+        fancypages.dashboard.carouselPosition();
 
 
     },
@@ -314,8 +315,8 @@ fancypages.dashboard = {
             $('#page-settings').hide();
 
             fancypages.dashboard.editor.init();
-            $( '.editor' ).animate({ backgroundColor: "#555" }, 500 ).delay(500).animate({ backgroundColor: "#444" }, 500 );
-            
+            $('.editor').animate({backgroundColor: "#555"}, 500).delay(500).animate({backgroundColor: "#444"}, 500);
+
             fancypages.dashboard.UpdateSize();
         });
     },
@@ -374,22 +375,53 @@ fancypages.dashboard = {
     getPreviewDocument: function (elem) {
         return $('#page-preview').contents();
     },
-    
+
     getAssetDocument: function (elem) {
         return $('#asset-manager').contents();
     },
-    
-    editingWidget: function() {
-      var widgetId = $('div[id=widget_input_wrapper]').find('form').data('widget-id'),
-          previewDoc = fancypages.dashboard.getPreviewDocument(),
-          editingWidget = $('body', previewDoc).find('#widget-' + widgetId);
-      // Add Class to widget editing by removing others first
-      $('.widget', previewDoc).removeClass('editing');
-      editingWidget.addClass('editing');
-      
-      // Scrolls IFrame to the top of editing areas
-      var destination = editingWidget.offset().top - 20;
-      $('html:not(:animated),body:not(:animated)', previewDoc).animate({ scrollTop: destination}, 500, 'swing' );
+
+    editingWidget: function () {
+        var widgetId = $('div[id=widget_input_wrapper]').find('form').data('widget-id');
+        if (widgetId === undefined) {
+            return false;
+        }
+        var previewDoc = fancypages.dashboard.getPreviewDocument(),
+            editingWidget = $('body', previewDoc).find('#widget-' + widgetId);
+        // Add Class to widget editing by removing others first
+        $('.widget', previewDoc).removeClass('editing');
+        editingWidget.addClass('editing');
+
+        // Scrolls IFrame to the top of editing areas
+        var destination = editingWidget.offset().top - 20;
+        $('html:not(:animated),body:not(:animated)', previewDoc)
+            .animate({scrollTop: destination}, 500, 'swing');
+    },
+
+    /*
+     * Checks for carousels, initiates viewable items based on where the
+     * carousel is
+     */
+    carouselPosition: function () {
+        var previewDoc = fancypages.dashboard.getPreviewDocument(),
+            es_carousel = $('.es-carousel-wrapper', previewDoc);
+
+        $('.sidebar .es-carousel-wrapper', previewDoc).each(function () {
+            var es_carouselHeight = $(this).find('.products li:first').height();
+            $(this).find('.products').css('height', es_carouselHeight);
+            $(this).elastislide({
+                minItems: 1,
+                onClick:  true
+            });
+        });
+
+        $('.tab-pane .es-carousel-wrapper', previewDoc).each(function () {
+            var es_carouselHeight = $(this).find('.products li:first').height();
+            $(this).find('.products').css('height', es_carouselHeight);
+            $(this).elastislide({
+                minItems: 4,
+                onClick:  true
+            });
+        });
     },
 
     /**
@@ -404,12 +436,12 @@ fancypages.dashboard = {
           $('#page-preview').attr('src', $('#page-preview').attr('src')).load(function(){
             $('div[data-behaviours~=loading]').fadeOut(300);
             fancypages.dashboard.editingWidget();
-          }); 
+          });
         }, 300);
-        
-        
+
+
     },
-    
+
     // Function setting the height of the IFrame and the Sidebar
     UpdateSize: function () {
         var pageHeight = $(window).height(),
@@ -418,7 +450,7 @@ fancypages.dashboard = {
             buttonsTop = $('.button-nav').outerHeight(),
             buttonsBottom = $('.form-actions.fixed').outerHeight(),
             sumHeight = pageHeight - navBarTop - subBarTop;
-            
+
         $('#page-preview').css('height', sumHeight);
         $('.sidebar-content').css('height', sumHeight - buttonsTop - buttonsBottom);
         $('.sidebar-content').jScrollPane();

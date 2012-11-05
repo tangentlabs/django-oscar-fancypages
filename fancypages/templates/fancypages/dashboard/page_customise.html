@@ -18,7 +18,7 @@
     <div class="editor">
         <div class="button-nav">
             <button data-behaviours="page-settings"><span><i class="icon-file"></i> <span>{% trans "Settings" %}</span></span></button>
-            <button data-behaviours="preview-check"><span><i class="icon-eye-open"></i> <span>{% trans "Preview" %}</span></span></button>
+            <a href="{% url fancypages:page-detail page.slug %}" target="_blank"><span><i class="icon-eye-open"></i> <span>{% trans "View on site" %}</span></span></a>
         </div>
         <div class="sidebar-content">
             <div id="page-settings">
@@ -27,10 +27,7 @@
                     {% csrf_token %}
                     {% include "oscar/partials/form_fields.html" %}
                     <div class="form-actions fixed">
-                        <div>
-                            <a href="{% url fancypages:page-detail page.slug %}" target="_blank">{% trans "View on site" %}</a>
-                        </div>
-                        <div>
+                         <div>
                             <a href="">{% trans "Cancel" %}</a>
                             <button type="submit" class="btn btn-primary pull-right">{% trans "Save" %}</button>
                         </div>
@@ -40,11 +37,11 @@
             <div id="widget_input_wrapper"></div>
         </div>
     </div>
-    
+
     <div class="preview">
         <iframe id="page-preview" frameborder='0' src="{% url fp-dashboard:page-preview page.slug %}"></iframe>
         <div class="loading" data-behaviours="loading"></div>
     </div>
-    
+
 </div>
 {% endblock dashboard_content %}
