@@ -534,12 +534,25 @@ class TabbedBlockWidget(Widget):
             )
 
 
+class ProductPageContainer(Container):
+    product = models.ForeignKey(
+        'catalogue.Product',
+        verbose_name=_("Product page container"),
+        related_name="containers"
+    )
+
+    def __unicode__(self):
+        return "Container %s for %s" % (self.variable_name, self.product)
+
+
 class TabContainer(Container):
     title = models.CharField(max_length=100, default=_('New tab'))
 
-    tab_block = models.ForeignKey(TabbedBlockWidget,
-                                  verbose_name=_("Tab block"),
-                                  related_name="tabs")
+    tab_block = models.ForeignKey(
+        TabbedBlockWidget,
+        verbose_name=_("Tab block"),
+        related_name="tabs"
+    )
 
     display_order = models.PositiveIntegerField()
 

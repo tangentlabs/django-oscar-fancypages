@@ -250,7 +250,7 @@ fancypages.dashboard = {
 
             // Scrolls IFrame to the top of editing areas
             var destination = widget.offset().top - 20;
-            $('html:not(:animated),body:not(:animated)', previewDoc).animate({ scrollTop: destination}, 500, 'swing' );
+            $('html:not(:animated),body:not(:animated)', previewDoc).animate({ scrollTop: destination}, 500, 'swing');
 
             // Add Class to widget editing
             $('.widget', previewDoc).removeClass('editing');
@@ -285,10 +285,10 @@ fancypages.dashboard = {
         $('button[data-behaviours~=preview-check]').on('click', function () {
             $('div[data-behaviours~=loading]').fadeIn(300);
             setTimeout(function () {
-              $('body', previewDoc).toggleClass('preview');
-              $('.navbar.accounts', previewDoc).add('.header', previewDoc).fadeToggle('slow');
-              $(this).find('i').toggleClass('icon-eye-close');
-              $('div[data-behaviours~=loading]').delay(700).fadeOut();
+                $('body', previewDoc).toggleClass('preview');
+                $('.navbar.accounts', previewDoc).add('.header', previewDoc).fadeToggle('slow');
+                $(this).find('i').toggleClass('icon-eye-close');
+                $('div[data-behaviours~=loading]').delay(700).fadeOut();
             }, 300);
         });
 

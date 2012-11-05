@@ -112,6 +112,15 @@ def render_attribute(context, attr_name, *args):
     return wrapped_attr % (widget.id, attr_name, unicode(value))
 
 
+@register.assignment_tag(takes_context=True)
+def get_object_visibility(context, obj):
+    try:
+        return obj.is_visible
+    except AttributeError:
+        pass
+    return True
+
+
 @register.simple_tag(takes_context=True)
 def render_widget_form(context, form):
     model_name = form._meta.model.__name__.lower()

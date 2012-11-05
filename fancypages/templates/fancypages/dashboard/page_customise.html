@@ -16,10 +16,10 @@
 {% block dashboard_content %}
 <div class="row-fluid page-wrapper">
     <div class="editor">
-        <div class="button-nav">
-            <button data-behaviours="page-settings"><span><i class="icon-file"></i> <span>{% trans "Settings" %}</span></span></button>
-            <a href="{% url fancypages:page-detail page.slug %}" target="_blank"><span><i class="icon-eye-open"></i> <span>{% trans "View on site" %}</span></span></a>
-        </div>
+
+        {% url fancypages:page-detail page.slug as page_url %}
+        {% include "fancypages/dashboard/partials/nav_editor.html" with page_url=page_url %}
+
         <div class="sidebar-content">
             <div id="page-settings">
                 <h3><i class="icon-file"></i> <span>Page Settings</span></h3>
