@@ -493,7 +493,7 @@ class OfferWidget(Widget):
         return u"Offer '%s'" % self.id
 
 
-class ImageAndTextWidget(Widget):
+class ImageAndTextWidget(Widget, ImageMetaMixin):
     name = _("Image and text")
     code = 'image-text'
     template_name = "fancypages/widgets/imageandtextwidget.html"
