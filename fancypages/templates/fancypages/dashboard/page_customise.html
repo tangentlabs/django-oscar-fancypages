@@ -28,6 +28,9 @@
                     {% include "oscar/partials/form_fields.html" %}
                     <div class="form-actions fixed">
                         <div>
+                            <a href="{% url fancypages:page-detail page.slug %}" target="_blank">{% trans "View on site" %}</a>
+                        </div>
+                        <div>
                             <a href="">{% trans "Cancel" %}</a>
                             <button type="submit" class="btn btn-primary pull-right">{% trans "Save" %}</button>
                         </div>

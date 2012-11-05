@@ -4,6 +4,10 @@
 
 {% block body_class %}fp-page{% endblock %}
 
+{% block keywords %}
+{{ page.keywords }}
+{% endblock keywords %}
+
 {% block title %}
 {{ page.title }} | {{ block.super }}
 {% endblock %}

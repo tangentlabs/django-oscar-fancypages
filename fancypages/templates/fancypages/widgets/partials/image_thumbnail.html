@@ -1,0 +1,7 @@
+<div class="thumbnail">
+    {% with image_asset_name=object.image_asset.name image_url=object.image_asset.image.url %}
+    <img src="{{ image_url }}"
+         title="{{ object.title|default:image_asset_name }}"
+         alt="{{ object.alt_text|default:image_asset_name }}" />
+     {% endwith %}
+ </div>

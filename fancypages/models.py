@@ -32,9 +32,11 @@ class PageType(models.Model):
     name = models.CharField(_("Name"), max_length=100)
     code = models.SlugField(_("Code"), max_length=100, unique=True)
 
-    template =  models.ForeignKey("fancypages.PageTemplate",
-                                  verbose_name=_("Page template"),
-                                  related_name="page_types")
+    template = models.ForeignKey(
+        "fancypages.PageTemplate",
+        verbose_name=_("Page template"),
+        related_name="page_types"
+    )
 
     def get_container_names(self):
         if not self.template.template_name:
@@ -99,6 +101,8 @@ class PageManager(models.Manager):
 
 class Page(MP_Node):
     title = models.CharField(_("Title"), max_length=100)
+    description = models.TextField(_("Description"), null=True, blank=True, default=None)
+    keywords = models.CharField(_("Keywords"), max_length=255, null=True, blank=True)
     slug = models.SlugField(_("Code"), max_length=100, unique=True)
 
     page_type = models.ForeignKey('fancypages.PageType',
@@ -330,10 +334,11 @@ class Widget(models.Model):
         if not isinstance(cls, type):
             raise TypeError('itersubclasses must be called with '
                             'new-style classes, not %.100r' % cls)
-        if _seen is None: _seen = set()
+        if _seen is None:
+            _seen = set()
         try:
             subs = cls.__subclasses__()
-        except TypeError: # fails only when cls is type
+        except TypeError:  # fails only when cls is type
             subs = cls.__subclasses__(cls)
         for sub in subs:
             if sub not in _seen:
@@ -361,7 +366,6 @@ class Widget(models.Model):
         if self.display_order is None:
             self.display_order = self.container.widgets.count()
         super(Widget, self).save(**kwargs)
-
 
     def __unicode__(self):
         return "Widget #%s" % self.id
@@ -396,7 +400,19 @@ class TitleTextWidget(Widget):
         return self.title
 
 
-class ImageWidget(Widget):
+class ImageMetaMixin(models.Model):
+    """
+    Mixin for meta data for image widgets
+    """
+    title = models.CharField(_("Image title"), max_length=100, blank=True, null=True)
+    alt_text = models.CharField(_("Alternative text"), max_length=100, blank=True, null=True)
+    link = models.CharField(_("Link URL"), max_length=500, blank=True, null=True)
+
+    class Meta:
+        abstract = True
+
+
+class ImageWidget(Widget, ImageMetaMixin):
     name = _("Image")
     code = 'image'
     template_name = "fancypages/widgets/imagewidget.html"

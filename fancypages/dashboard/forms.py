@@ -41,7 +41,6 @@ class PageTemplateForm(forms.ModelForm):
             )
         return template_name
 
-
     class Meta:
         model = PageTemplate
 
@@ -50,7 +49,7 @@ class PageTypeForm(forms.ModelForm):
     class Meta:
         model = PageType
         widgets = {
-            'description': forms.Textarea(attrs={'row': 10, 'cols': 80}),
+            'description': forms.Textarea(attrs={'rows': 10, 'cols': 80}),
         }
 
 
@@ -67,7 +66,7 @@ class PageForm(MoveNodeForm):
         # the form in django-treebeard
         exclude = ('path', 'depth', 'numchild', 'slug', 'relative_url')
         widgets = {
-            'page_type': forms.HiddenInput()
+            'page_type': forms.HiddenInput(),
         }
 
 
@@ -123,7 +122,9 @@ class AssetWidgetForm(forms.ModelForm):
         asset_type = self.cleaned_data.get('asset_type', '')
         model = get_model('assets', asset_type)
         if model is None:
-            raise forms.ValidationError("asset type %s is invalid" % asset_type)
+            raise forms.ValidationError(
+                "asset type %s is invalid" % asset_type
+            )
 
         asset_id = self.cleaned_data.get('asset_id', None)
         try:
