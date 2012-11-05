@@ -269,6 +269,9 @@ class Container(models.Model):
                              related_name='containers', null=True)
 
     def render(self, request=None, **kwargs):
+        """
+        Render the container and all its contained widgets.
+        """
         ordered_widgets = self.widgets.select_subclasses()
 
         tmpl = loader.get_template(self.template_name)
@@ -278,12 +281,16 @@ class Container(models.Model):
         else:
             ctx = Context()
 
-        ctx['container_name'] = self.variable_name
+        ctx['container'] = self
         ctx['rendered_widgets'] = []
+
         for widget in ordered_widgets:
-            ctx['rendered_widgets'].append(
-                (widget.id, widget.render(request, **kwargs))
-            )
+            try:
+                rendered_widget = widget.render(request, **kwargs)
+            except ImproperlyConfigured:
+                continue
+
+            ctx['rendered_widgets'].append((widget.id, rendered_widget))
 
         ctx.update(kwargs)
         return tmpl.render(ctx)
@@ -354,10 +361,12 @@ class Widget(models.Model):
             )
 
         tmpl = loader.get_template(self.template_name)
+
         if request:
             ctx = RequestContext(request)
         else:
             ctx = Context()
+
         ctx[self.context_object_name] = self
         ctx.update(kwargs)
         return tmpl.render(ctx)

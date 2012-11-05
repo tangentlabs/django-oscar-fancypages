@@ -5,9 +5,10 @@ from django.core.urlresolvers import reverse
 from fancypages import test
 
 Page = get_model('fancypages', 'Page')
+Widget = get_model('fancypages', 'Widget')
 PageType = get_model('fancypages', 'PageType')
-PageTemplate = get_model('fancypages', 'PageTemplate')
 TextWidget = get_model('fancypages', 'TextWidget')
+PageTemplate = get_model('fancypages', 'PageTemplate')
 TitleTextWidget = get_model('fancypages', 'TitleTextWidget')
 
 
@@ -87,7 +88,7 @@ class TestAWidget(test.FancyPagesWebTest):
         widget = TextWidget.objects.get(id=self.third_text_widget.id)
         self.assertEquals(widget.display_order, 1)
 
-    def test_a_widget_can_be_added_to_a_container(self):
+    def test_can_be_added_to_a_container(self):
         container = self.page.get_container_from_name('main-container')
         num_widgets = container.widgets.count()
         response = self.get(reverse('fp-dashboard:widget-add',
@@ -96,6 +97,11 @@ class TestAWidget(test.FancyPagesWebTest):
         json_response = json.loads(response.body)
         self.assertEquals(json_response['success'], True)
         self.assertEquals(container.widgets.count(), num_widgets + 1)
+
+    def test_a_widget_without_template_is_ignored(self):
+        container = self.page.get_container_from_name('main-container')
+        Widget.objects.create(container=container)
+        self.get(reverse('fancypages:page-detail', args=(self.page.slug,)))
 
 
 class TestAMovableWidget(test.FancyPagesWebTest):
