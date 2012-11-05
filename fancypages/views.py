@@ -11,6 +11,9 @@ class PageEditorMixin(object):
         kwargs.update({
             'edit_mode': self.edit_mode,
         })
+        if self.object and hasattr(self.object, 'containers'):
+            for container in self.object.containers.all():
+                kwargs[container.variable_name] = container
         return super(PageEditorMixin, self).get_context_data(**kwargs)
 
 
@@ -28,12 +31,6 @@ class PageDetailView(PageEditorMixin, DetailView):
             raise Http404
 
         return response
-
-    def get_context_data(self, **kwargs):
-        ctx = super(PageDetailView, self).get_context_data(**kwargs)
-        for container in self.object.containers.all():
-            ctx[container.variable_name] = container
-        return ctx
 
     def get_template_names(self):
         return [
