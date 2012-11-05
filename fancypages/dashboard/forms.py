@@ -106,7 +106,7 @@ class WidgetForm(forms.ModelForm):
         }
 
 
-class AssetWidgetForm(forms.ModelForm):
+class AssetWidgetForm(WidgetForm):
     asset_id = forms.IntegerField(widget=forms.HiddenInput())
     asset_type = forms.CharField(widget=forms.HiddenInput())
 
@@ -151,7 +151,7 @@ class AssetWidgetForm(forms.ModelForm):
         abstract = True
 
 
-class TextWidgetForm(forms.ModelForm):
+class TextWidgetForm(WidgetForm):
     class Meta:
         exclude = ('container',)
         widgets = {
@@ -160,7 +160,7 @@ class TextWidgetForm(forms.ModelForm):
         }
 
 
-class TitleTextWidgetForm(forms.ModelForm):
+class TitleTextWidgetForm(WidgetForm):
     class Meta:
         exclude = ('container',)
         widgets = {
