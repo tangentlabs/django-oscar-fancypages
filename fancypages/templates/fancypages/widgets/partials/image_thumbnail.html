@@ -3,5 +3,12 @@
     <img src="{{ image_url }}"
          title="{{ object.title|default:image_asset_name }}"
          alt="{{ object.alt_text|default:image_asset_name }}" />
-     {% endwith %}
- </div>
+
+        {% if object.code == 'image-text' %}
+        <div class="caption">
+            <h3>{{ object.title|default:image_asset_name }}</h3>
+            <p>{{ object.image_asset.description }}</p>
+        </div>
+        {% endif %}
+    {% endwith %}
+</div>
