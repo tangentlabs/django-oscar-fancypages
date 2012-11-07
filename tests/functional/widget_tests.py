@@ -91,8 +91,10 @@ class TestAWidget(test.FancyPagesWebTest):
     def test_can_be_added_to_a_container(self):
         container = self.page.get_container_from_name('main-container')
         num_widgets = container.widgets.count()
-        response = self.get(reverse('fp-dashboard:widget-add',
-                                    args=(container.id, self.text_widget.code)))
+        response = self.get(reverse(
+            'fp-dashboard:container-add-widget',
+            args=(container.id, self.text_widget.code)
+        ))
 
         json_response = json.loads(response.body)
         self.assertEquals(json_response['success'], True)
