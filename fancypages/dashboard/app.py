@@ -46,6 +46,7 @@ class FancypagesDashboardApplication(Application):
     page_delete_view = views.PageDeleteView
     page_customise_view = views.PageCustomiseView
     page_preview_view = views.PagePreviewView
+    page_select_view = views.PageSelectView
 
     product_page_customise_view = views.ProductPageCustomiseView
     product_page_preview_view = views.ProductPagePreviewView
@@ -139,6 +140,12 @@ class FancypagesDashboardApplication(Application):
                 r'^preview/(?P<slug>[\w-]+(/[\w-]+)*)/$',
                 self.page_preview_view.as_view(),
                 name='page-preview'
+            ),
+
+            url(
+                r'^selector/$',
+                self.page_select_view.as_view(),
+                name='page-select'
             ),
 
             url(

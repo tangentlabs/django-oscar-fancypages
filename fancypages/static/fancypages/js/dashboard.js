@@ -34,24 +34,8 @@ fancypages.dashboard = {
 
             //load the form to select a new widget to add to the container
             //and display it in a modal
-            $("a[data-behaviours~=load-add-widget]").click(function (ev) {
-                var addButton = $(this);
-                $.ajax({
-                    type: "GET",
-                    url: addButton.data('action'),
-                    success: function (data) {
-                        addButton.after(data);
-
-                        $(data).load(function () {
-                            $(this).modal('show');
-                        });
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        parent.oscar.messages.error(
-                            "Could not get availabe widget for this container. Please try it again."
-                        );
-                    }
-                });
+            $("a[data-behaviours~=load-modal]").click(function (ev) {
+                return fancypages.dashboard.loadModal(this);
             });
 
             // Listen on modal cancel buttons and hide and remove the modal
@@ -106,6 +90,7 @@ fancypages.dashboard = {
     },
     editor: {
         init: function () {
+
             var wrapperElement = $('div[id=widget_input_wrapper]') || document;
 
             // initialise wysihtml5 rich-text for editor
@@ -139,6 +124,21 @@ fancypages.dashboard = {
                     fancypages.dashboard.editor.updatePreview(editor);
                 });
             });
+
+            //load the content of a modal via ajax
+            //and display it in a modal
+            $("a[data-behaviours~=load-modal]").click(function (ev) {
+                return fancypages.dashboard.loadModal(this);
+            });
+
+            // Listen on modal cancel buttons and hide and remove the modal
+            // when clicked.
+            $("button[data-behaviours~=remove-modal]").live('click', function (ev) {
+                ev.preventDefault();
+                fancypages.dashboard.removeModal(this);
+                $(this).parents('div[id$=_modal]').remove();
+            });
+
         },
 
         /*
@@ -201,23 +201,36 @@ fancypages.dashboard = {
 
         // Initialise all the asset related stuff
         $("#asset-modal").live('shown', function () {
-            var assetManager = $("#asset-manager");
-            assetManager.attr('src', assetManager.data("src")).load(function () {
-                var modalHeight = $(window).height() - 100;
-                $('.slide-pane', fancypages.dashboard.getAssetDocument()).css('height', modalHeight - 100);
-                $('.slide-pane', fancypages.dashboard.getAssetDocument()).jScrollPane({
-                    horizontalDragMaxWidth: 0
-                });
+          var assetManager = $("#asset-manager");
+          assetManager.attr('src', assetManager.data("src")).load(function(){
+            var modalHeight = $(window).height() - 100;
+            $('.slide-pane', fancypages.dashboard.getAssetDocument()).css('height', modalHeight - 100);
+            $('.slide-pane', fancypages.dashboard.getAssetDocument()).jScrollPane({
+              horizontalDragMaxWidth: 0
             });
+          });
 
-            $(this).css({
-                width: $(window).width() - 100,
-                height: $(window).height() - 100,
-                top: 100,
-                left: 100,
-                marginLeft: '-50px',
-                marginTop: '-50px'
-            });
+          $(this).css({
+            width: $(window).width() - 100,
+            height: $(window).height() - 100,
+            top: 100,
+            left: 100,
+            marginLeft: '-50px',
+            marginTop: '-50px'
+          });
+        });
+    },
+
+    loadModal: function(elem) {
+        var target = $(elem).data('target');
+        var url = $(elem).attr('href');
+        console.log(url);
+        return $(target).load(url, function(response, status, xhr) {
+            if (status == "error") {
+                parent.oscar.messages.error(
+                    "Unable to load contents of url: " + url
+                );
+            }
         });
     },
 
@@ -250,7 +263,7 @@ fancypages.dashboard = {
 
             // Scrolls IFrame to the top of editing areas
             var destination = widget.offset().top - 20;
-            $('html:not(:animated),body:not(:animated)', previewDoc).animate({ scrollTop: destination}, 500, 'swing');
+            $('html:not(:animated),body:not(:animated)', previewDoc).animate({ scrollTop: destination}, 500, 'swing' );
 
             // Add Class to widget editing
             $('.widget', previewDoc).removeClass('editing');
@@ -285,18 +298,18 @@ fancypages.dashboard = {
         $('button[data-behaviours~=preview-check]').on('click', function () {
             $('div[data-behaviours~=loading]').fadeIn(300);
             setTimeout(function () {
-                $('body', previewDoc).toggleClass('preview');
-                $('.navbar.accounts', previewDoc).add('.header', previewDoc).fadeToggle('slow');
-                $(this).find('i').toggleClass('icon-eye-close');
-                $('div[data-behaviours~=loading]').delay(700).fadeOut();
+              $('body', previewDoc).toggleClass('preview');
+              $('.navbar.accounts', previewDoc).add('.header', previewDoc).fadeToggle('slow');
+              $(this).find('i').toggleClass('icon-eye-close');
+              $('div[data-behaviours~=loading]').delay(700).fadeOut();
             }, 300);
         });
 
         // Show Page previews
         $('button[data-behaviours~=page-settings]').on('click', function () {
-            $('div[id=widget_input_wrapper]').html("");
-            $('#page-settings').show();
-            $('.editor').animate({ backgroundColor: "#444" }, 500);
+          $('div[id=widget_input_wrapper]').html("");
+          $('#page-settings').show();
+          $( '.editor' ).animate({ backgroundColor: "#444" }, 500 );
             fancypages.dashboard.UpdateSize();
         });
 
@@ -315,7 +328,7 @@ fancypages.dashboard = {
             $('#page-settings').hide();
 
             fancypages.dashboard.editor.init();
-            $('.editor').animate({backgroundColor: "#555"}, 500).delay(500).animate({backgroundColor: "#444"}, 500);
+            $( '.editor' ).animate({ backgroundColor: "#555" }, 500 ).delay(500).animate({ backgroundColor: "#444" }, 500 );
 
             fancypages.dashboard.UpdateSize();
         });
@@ -345,7 +358,7 @@ fancypages.dashboard = {
                 $('div[id=widget_input_wrapper]').html("");
                 parent.fancypages.dashboard.reloadPreview();
                 $('#page-settings').show();
-                $('.editor').animate({backgroundColor: "#444"}, 500);
+                $( '.editor' ).animate({ backgroundColor: "#444" }, 500 );
             },
             error: function () {
                 parent.oscar.messages.error(
@@ -382,16 +395,16 @@ fancypages.dashboard = {
         return $('#asset-manager').contents();
     },
 
-    editingWidget: function () {
+    editingWidget: function() {
         var widgetId = $('div[id=widget_input_wrapper]').find('form').data('widget-id'),
             previewDoc = fancypages.dashboard.getPreviewDocument(),
-            editingWidget = $('body', previewDoc).find('#widget-' + widgetId);
-        // Add Class to widget editing by removing others first
-        $('.widget', previewDoc).removeClass('editing');
-        editingWidget.addClass('editing');
+          editingWidget = $('body', previewDoc).find('#widget-' + widgetId);
+      // Add Class to widget editing by removing others first
+      $('.widget', previewDoc).removeClass('editing');
+      editingWidget.addClass('editing');
 
-        // Scrolls IFrame to the top of editing areas
-        var destination = editingWidget.offset().top - 20;
+      // Scrolls IFrame to the top of editing areas
+      var destination = editingWidget.offset().top - 20;
         $('html:not(:animated),body:not(:animated)', previewDoc).animate({ scrollTop: destination}, 500, 'swing');
     },
 
@@ -404,10 +417,10 @@ fancypages.dashboard = {
     reloadPreview: function () {
         $('div[data-behaviours~=loading]').fadeIn(300);
         setTimeout(function () {
-            $('#page-preview').attr('src', $('#page-preview').attr('src')).load(function () {
-                $('div[data-behaviours~=loading]').fadeOut(300);
-                fancypages.dashboard.editingWidget();
-            });
+          $('#page-preview').attr('src', $('#page-preview').attr('src')).load(function(){
+            $('div[data-behaviours~=loading]').fadeOut(300);
+            fancypages.dashboard.editingWidget();
+          });
         }, 300);
     },
 
