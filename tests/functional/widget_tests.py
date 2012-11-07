@@ -20,7 +20,7 @@ class TestAWidget(test.FancyPagesWebTest):
         self.page_type = PageType.objects.create(name='Article', code='article',
                                                  template=self.template)
         self.prepare_template_file(
-            "{% load fancypages_tags%}"
+            "{% load fp_container_tags%}"
             "{% fancypages-container main-container %}"
         )
 

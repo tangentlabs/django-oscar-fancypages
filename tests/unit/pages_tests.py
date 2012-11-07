@@ -2,6 +2,7 @@ from django.core.exceptions import ImproperlyConfigured
 
 from fancypages import test
 from fancypages import models
+from fancypages.utils import get_container_names_from_template
 
 
 class TestPageType(test.FancyPagesTestCase):
@@ -13,14 +14,14 @@ class TestPageType(test.FancyPagesTestCase):
             description="For testing",
             template_name="somewhere_else.html"
         )
-        self.prepare_template_file("""{% load fancypages_tags %}
+        self.prepare_template_file("""{% load fp_container_tags %}
 {% block main-content %}
 {% fancypages-container first-container %}
 {% templatetag opencomment %}
 {% endblock %}
 {% fancypages-container another-container %}
 """)
-        self.assertSequenceEqual(page_type.get_container_names(), [])
+        self.assertSequenceEqual(get_container_names_from_template(page_type.template), [])
 
     def test_can_extract_container_names_from_template(self):
         page_type = models.PageType.objects.create(
@@ -28,7 +29,7 @@ class TestPageType(test.FancyPagesTestCase):
             code='article',
             template=self.template
         )
-        self.prepare_template_file("""{% load fancypages_tags %}
+        self.prepare_template_file("""{% load fp_container_tags %}
 {% block main-content %}
 {% fancypages-container first-container %}
 {% templatetag opencomment %}
@@ -36,7 +37,7 @@ class TestPageType(test.FancyPagesTestCase):
 {% fancypages-container another-container %}
 """)
         self.assertSequenceEqual(
-            page_type.get_container_names(),
+            get_container_names_from_template(page_type.template),
             [u'first-container', u'another-container']
         )
 
@@ -46,7 +47,7 @@ class TestPageType(test.FancyPagesTestCase):
             code='article',
             template=self.template
         )
-        self.prepare_template_file("""{% load fancypages_tags %}
+        self.prepare_template_file("""{% load fp_container_tags %}
 {% block main-content %}
 {% fancypages-container first-container %}
 {% fancypages-container first-container %}
@@ -55,7 +56,8 @@ class TestPageType(test.FancyPagesTestCase):
 """)
         self.assertRaises(
             ImproperlyConfigured,
-            page_type.get_container_names
+            get_container_names_from_template,
+            page_type.template
         )
 
 class TestAPage(test.FancyPagesTestCase):
@@ -66,7 +68,7 @@ class TestAPage(test.FancyPagesTestCase):
             code='article',
             template=self.template
         )
-        self.prepare_template_file("""{% load fancypages_tags %}
+        self.prepare_template_file("""{% load fp_container_tags %}
 {% block main-content %}
 {% fancypages-container first-container %}
 {% fancypages-container second-container %}
@@ -92,7 +94,7 @@ class TestContainer(test.FancyPagesTestCase):
             template=self.template
         )
 
-        self.prepare_template_file("{% load fancypages_tags %}"
+        self.prepare_template_file("{% load fp_container_tags %}"
                                    "{% fancypages-container test-container %}")
 
         basic_page = models.Page.add_root(
@@ -100,7 +102,7 @@ class TestContainer(test.FancyPagesTestCase):
             page_type=page_type,
         )
 
-        container_names = page_type.get_container_names()
+        container_names = get_container_names_from_template(page_type.template)
         self.assertEquals(container_names, [u'test-container'])
 
         self.assertEquals(basic_page.containers.count(), 1)
@@ -112,7 +114,7 @@ class TestContainer(test.FancyPagesTestCase):
             template=self.template
         )
 
-        self.prepare_template_file("{% load fancypages_tags %}"
+        self.prepare_template_file("{% load fp_container_tags %}"
                                    "{% fancypages-container test-container %}")
 
         basic_page = models.Page.add_root(
@@ -120,7 +122,7 @@ class TestContainer(test.FancyPagesTestCase):
             page_type=page_type,
         )
 
-        container_names = page_type.get_container_names()
+        container_names = get_container_names_from_template(page_type.template)
         self.assertEquals(container_names, [u'test-container'])
 
         basic_page.create_container(container_names[0])

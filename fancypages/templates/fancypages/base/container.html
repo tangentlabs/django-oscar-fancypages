@@ -1,4 +1,5 @@
-{% load fancypages_tags %}
+{% load i18n %}
+{% load fp_widget_tags %}
 
 <div class="sortable connectedSortable" data-container-id="{{ container.id }}">
 
@@ -22,6 +23,6 @@
 <div class="widget-add-control">
     <a data-toggle="modal" href="#{{ container.variable_name }}_modal"
        data-action="{% url fp-dashboard:widget-select container.id %}"
-       data-behaviours="load-add-widget" class="btn btn-large"><i class="icon-plus"></i> Add content</a>
+       data-behaviours="load-add-widget" class="btn btn-large"><i class="icon-plus"></i>{% trans "Add content" %}</a>
 </div>
 {% endif %}
