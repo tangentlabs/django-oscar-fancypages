@@ -201,23 +201,23 @@ fancypages.dashboard = {
 
         // Initialise all the asset related stuff
         $("#asset-modal").live('shown', function () {
-          var assetManager = $("#asset-manager");
-          assetManager.attr('src', assetManager.data("src")).load(function(){
-            var modalHeight = $(window).height() - 100;
-            $('.slide-pane', fancypages.dashboard.getAssetDocument()).css('height', modalHeight - 100);
-            $('.slide-pane', fancypages.dashboard.getAssetDocument()).jScrollPane({
-              horizontalDragMaxWidth: 0
+            var assetManager = $("#asset-manager");
+            assetManager.attr('src', assetManager.data("src")).load(function () {
+                var modalHeight = $(window).height() - 100;
+                $('.slide-pane', fancypages.dashboard.getAssetDocument()).css('height', modalHeight - 100);
+                $('.slide-pane', fancypages.dashboard.getAssetDocument()).jScrollPane({
+                    horizontalDragMaxWidth: 0
+                });
             });
-          });
 
-          $(this).css({
-            width: $(window).width() - 100,
-            height: $(window).height() - 100,
-            top: 100,
-            left: 100,
-            marginLeft: '-50px',
-            marginTop: '-50px'
-          });
+            $(this).css({
+                width: $(window).width() - 100,
+                height: $(window).height() - 100,
+                top: 100,
+                left: 100,
+                marginLeft: '-50px',
+                marginTop: '-50px'
+            });
         });
     },
 
@@ -345,7 +345,7 @@ fancypages.dashboard = {
                 $('div[id=widget_input_wrapper]').html("");
                 parent.fancypages.dashboard.reloadPreview();
                 $('#page-settings').show();
-                $( '.editor' ).animate({ backgroundColor: "#444" }, 500 );
+                $('.editor').animate({backgroundColor: "#444"}, 500);
             },
             error: function () {
                 parent.oscar.messages.error(
@@ -361,6 +361,7 @@ fancypages.dashboard = {
 
     setSelectedAsset: function (assetType, assetId, assetUrl) {
         $('#asset-modal').modal('hide');
+        console.log('setting the new image');
 
         var assetInput = $("#asset-input");
         $("#id_asset_id", assetInput).attr('value', assetId);
@@ -433,13 +434,11 @@ fancypages.dashboard = {
     reloadPreview: function () {
         $('div[data-behaviours~=loading]').fadeIn(300);
         setTimeout(function () {
-          $('#page-preview').attr('src', $('#page-preview').attr('src')).load(function(){
-            $('div[data-behaviours~=loading]').fadeOut(300);
-            fancypages.dashboard.editingWidget();
-          });
+            $('#page-preview').attr('src', $('#page-preview').attr('src')).load(function () {
+                $('div[data-behaviours~=loading]').fadeOut(300);
+                fancypages.dashboard.editingWidget();
+            });
         }, 300);
-
-
     },
 
     // Function setting the height of the IFrame and the Sidebar
@@ -456,5 +455,3 @@ fancypages.dashboard = {
         $('.sidebar-content').jScrollPane();
     }
 };
-
-
