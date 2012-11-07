@@ -230,6 +230,18 @@ class PageCustomiseView(PageUpdateView):
         )
 
 
+class PageSelectView(generic.ListView):
+    model = Page
+    template_name = "fancypages/dashboard/page_select.html"
+
+    def get_queryset(self, queryset=None):
+        return self.model.objects.filter(depth=1)
+
+    def get_context_data(self, **kwargs):
+        ctx = super(PageSelectView, self).get_context_data(**kwargs)
+        return ctx
+
+
 class FancypagesMixin(object):
 
     def get_widget_class(self):

@@ -21,8 +21,14 @@
 
 {% if edit_mode %}
 <div class="widget-add-control">
-    <a data-toggle="modal" href="#{{ container.variable_name }}_modal"
-       data-action="{% url fp-dashboard:widget-select container.id %}"
-       data-behaviours="load-add-widget" class="btn btn-large"><i class="icon-plus"></i>{% trans "Add content" %}</a>
+    <a data-toggle="modal"
+       data-behaviours="load-modal"
+       class="btn btn-large"
+       data-target="#{{ container.variable_name }}_modal"
+       href="{% url fp-dashboard:widget-select container.id %}">
+       <i class="icon-plus"></i> Add content
+    </a>
+</div>
+<div id="{{ container.variable_name }}_modal" class="modal fade hide" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 </div>
 {% endif %}
