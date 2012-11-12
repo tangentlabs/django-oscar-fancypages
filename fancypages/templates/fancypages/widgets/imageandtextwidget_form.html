@@ -1,8 +1,10 @@
 {% load i18n %}
-{% load fancypages_tags %}
+{% load fp_widget_tags %}
 <div id="asset-input">
     <div class="thumbnail">
-        <img src="{% if form.asset %}{{ form.asset.image.url }}{% else %}{{ missing_image_url }}{% endif %}"/>
+        <div class="image_container">
+            <img src="{% if form.asset %}{{ form.asset.image.url }}{% else %}{{ missing_image_url }}{% endif %}"/>
+        </div>
     </div>
     <a href="#asset-modal" role="button" class="btn btn-large btn-danger btn-block" data-toggle="modal">{% trans "Libary" %}</a>
     {% include "fancypages/partials/editor_form_fields.html" %}

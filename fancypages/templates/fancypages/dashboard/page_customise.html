@@ -1,6 +1,6 @@
 {% extends 'fancypages/dashboard/layout.html' %}
 {% load i18n %}
-{% load fancypages_tags %}
+{% load fp_widget_tags %}
 
 {% block body_class %}fancypages edit-page{% endblock %}
 
@@ -16,10 +16,10 @@
 {% block dashboard_content %}
 <div class="row-fluid page-wrapper">
     <div class="editor">
-        <div class="button-nav">
-            <button data-behaviours="page-settings"><span><i class="icon-file"></i> <span>{% trans "Settings" %}</span></span></button>
-            <button data-behaviours="preview-check"><span><i class="icon-eye-open"></i> <span>{% trans "Preview" %}</span></span></button>
-        </div>
+
+        {% url fancypages:page-detail page.slug as page_url %}
+        {% include "fancypages/dashboard/partials/nav_editor.html" with page_url=page_url %}
+
         <div class="sidebar-content">
             <div id="page-settings">
                 <h3><i class="icon-file"></i> <span>Page Settings</span></h3>
@@ -27,10 +27,7 @@
                     {% csrf_token %}
                     {% include "oscar/partials/form_fields.html" %}
                     <div class="form-actions fixed">
-                        <div>
-                            <a href="{% url fancypages:page-detail page.slug %}" target="_blank">{% trans "View on site" %}</a>
-                        </div>
-                        <div>
+                         <div>
                             <a href="">{% trans "Cancel" %}</a>
                             <button type="submit" class="btn btn-primary pull-right">{% trans "Save" %}</button>
                         </div>
@@ -40,11 +37,11 @@
             <div id="widget_input_wrapper"></div>
         </div>
     </div>
-    
+
     <div class="preview">
         <iframe id="page-preview" frameborder='0' src="{% url fp-dashboard:page-preview page.slug %}"></iframe>
         <div class="loading" data-behaviours="loading"></div>
     </div>
-    
+
 </div>
 {% endblock dashboard_content %}

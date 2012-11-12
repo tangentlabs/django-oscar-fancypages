@@ -5,12 +5,13 @@ from django.utils import timezone
 from django.forms import ValidationError
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
+from django.template import loader, RequestContext, Context
 from django.core.exceptions import ImproperlyConfigured
-from django.template import (loader, Context, RequestContext,
-                             TemplateDoesNotExist)
 
 from treebeard.mp_tree import MP_Node, MP_NodeQuerySet
 from model_utils.managers import InheritanceManager
+
+from fancypages.utils import get_container_names_from_template
 
 
 Product = models.get_model('catalogue', 'Product')
@@ -37,34 +38,6 @@ class PageType(models.Model):
         verbose_name=_("Page template"),
         related_name="page_types"
     )
-
-    def get_container_names(self):
-        if not self.template.template_name:
-            return []
-
-        # FIXME: This import should be at the top of the file but causes
-        # a problem due to circluar import. This needs a closer look to fix it
-        # properly
-        from fancypages.templatetags import fancypages_tags
-        container_names = []
-        try:
-            template = loader.get_template(self.template.template_name)
-        except TemplateDoesNotExist:
-            return []
-
-        for node in template:
-            container_nodes = node.get_nodes_by_type(fancypages_tags.FancyContainerNode)
-
-            for cnode in container_nodes:
-                var_name = cnode.container_name.var
-                if var_name in container_names:
-                    raise ImproperlyConfigured(
-                        "duplicate container name '%s' in template '%s'",
-                        var_name,
-                        self.template.template_name
-                    )
-                container_names.append(var_name)
-        return container_names
 
     def save(self, *args, **kwargs):
         if not self.code:
@@ -163,10 +136,6 @@ class Page(MP_Node):
             return
         self.containers.create(variable_name=name)
 
-    def initialise_containers(self):
-        for name in self.get_container_names():
-            self.containers.create(variable_name=name)
-
     @models.permalink
     def get_absolute_url(self):
         return ('fancypages:page-detail', (), {
@@ -204,7 +173,7 @@ class Page(MP_Node):
         super(Page, self).save(*args, **kwargs)
 
         existing_containers = [c.variable_name for c in self.containers.all()]
-        for cname in self.page_type.get_container_names():
+        for cname in get_container_names_from_template(self.page_type.template):
             if cname not in existing_containers:
                 self.containers.create(
                     page=self,
@@ -269,6 +238,9 @@ class Container(models.Model):
                              related_name='containers', null=True)
 
     def render(self, request=None, **kwargs):
+        """
+        Render the container and all its contained widgets.
+        """
         ordered_widgets = self.widgets.select_subclasses()
 
         tmpl = loader.get_template(self.template_name)
@@ -278,12 +250,16 @@ class Container(models.Model):
         else:
             ctx = Context()
 
-        ctx['container_name'] = self.variable_name
+        ctx['container'] = self
         ctx['rendered_widgets'] = []
+
         for widget in ordered_widgets:
-            ctx['rendered_widgets'].append(
-                (widget.id, widget.render(request, **kwargs))
-            )
+            try:
+                rendered_widget = widget.render(request, **kwargs)
+            except ImproperlyConfigured:
+                continue
+
+            ctx['rendered_widgets'].append((widget.id, rendered_widget))
 
         ctx.update(kwargs)
         return tmpl.render(ctx)
@@ -354,10 +330,12 @@ class Widget(models.Model):
             )
 
         tmpl = loader.get_template(self.template_name)
+
         if request:
             ctx = RequestContext(request)
         else:
             ctx = Context()
+
         ctx[self.context_object_name] = self
         ctx.update(kwargs)
         return tmpl.render(ctx)
@@ -525,12 +503,25 @@ class TabbedBlockWidget(Widget):
             )
 
 
+class ProductPageContainer(Container):
+    product = models.ForeignKey(
+        'catalogue.Product',
+        verbose_name=_("Product page container"),
+        related_name="containers"
+    )
+
+    def __unicode__(self):
+        return "Container %s for %s" % (self.variable_name, self.product)
+
+
 class TabContainer(Container):
     title = models.CharField(max_length=100, default=_('New tab'))
 
-    tab_block = models.ForeignKey(TabbedBlockWidget,
-                                  verbose_name=_("Tab block"),
-                                  related_name="tabs")
+    tab_block = models.ForeignKey(
+        TabbedBlockWidget,
+        verbose_name=_("Tab block"),
+        related_name="tabs"
+    )
 
     display_order = models.PositiveIntegerField()
 
@@ -540,3 +531,36 @@ class TabContainer(Container):
     def save(self, *args, **kwargs):
         self.variable_name = slugify(self.title)
         return super(TabContainer, self).save(*args, **kwargs)
+
+
+class VideoWidget(Widget):
+    name = _("Video")
+    code = 'video'
+    template_name = "fancypages/widgets/video.html"
+
+    SOURCE_YOUTUBE = 'youtube'
+    SOURCES = (
+        (SOURCE_YOUTUBE, _('YouTube video')),
+    )
+
+    source = models.CharField(_('Video Type'), choices=SOURCES, max_length=50)
+    video_code = models.CharField(_('Video Code'), max_length=50)
+
+    def __unicode__(self):
+        if self.source:
+            return "Video '%s'" % self.video_code
+        return "Video #%s" % self.id
+
+
+class TwitterWidget(Widget):
+    name = _("Twitter")
+    code = 'twitter'
+    template_name = "fancypages/widgets/twitter.html"
+
+    username = models.CharField(_('Twitter username'), max_length=50)
+    max_tweets = models.PositiveIntegerField(_('Maximum tweets'), default=5)
+
+    def __unicode__(self):
+        if self.username:
+            return u"Twitter user '@%s'" % self.username
+        return u"Twitter: %s" % self.id

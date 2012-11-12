@@ -1,10 +1,10 @@
 {% extends "fancypages/base/widget.html" %}
-{% load fancypages_tags %}
+{% load fp_widget_tags %}
 {% load i18n %}
 {% block widget %}
     {% if object.offer %}
         <div class="sub-header">
-            <h1>{{ object.offer.name }}</h1>
+            <h2>{{ object.offer.name }}</h2>
         </div>
         {% if object.offer.description %}
             <div class="well">
@@ -14,7 +14,7 @@
         {% with object.products as products %}
             {% if products.count %}
                 <section>
-                    <div class="mod">
+                    <div class="mod-offer mod">
                         <ol class="products four">
                             {% for product in products %}
                                 <li>{% include "catalogue/partials/product.html" %}</li>

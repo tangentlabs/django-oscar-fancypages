@@ -1,5 +1,5 @@
 {% load i18n %}
-{% load fancypages_tags %}
+{% load fp_widget_tags %}
 
 <div class="tabbable">
     <ul class="nav nav-tabs">
@@ -12,7 +12,7 @@
         {% if edit_mode %}
         <li>
             <a data-action="{% url fp-dashboard:widget-add-tab widget.id %}"
-               data-behaviours="add-tab" class="btn btn-large">
+               data-behaviours="add-tab">
                 <i class="icon-plus"></i>{% trans "Add tab" %}
             </a>
         </li>

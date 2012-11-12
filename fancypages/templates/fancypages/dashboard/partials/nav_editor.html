@@ -1,0 +1,11 @@
+{% load i18n %}
+
+<div class="button-nav">
+    <button data-behaviours="page-settings"><span><i class="icon-file"></i> <span>{% trans "Settings" %}</span></span></button>
+    <a href="{{ page_url }}" target="_blank">
+        <span>
+            <i class="icon-eye-open"></i>
+            <span>{% trans "View on site" %}</span>
+        </span>
+    </a>
+</div>

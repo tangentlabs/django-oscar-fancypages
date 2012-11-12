@@ -47,6 +47,9 @@ class FancypagesDashboardApplication(Application):
     page_customise_view = views.PageCustomiseView
     page_preview_view = views.PagePreviewView
 
+    product_page_customise_view = views.ProductPageCustomiseView
+    product_page_preview_view = views.ProductPagePreviewView
+
     container_add_widget_view = views.ContainerAddWidgetView
 
     widget_select_view = views.WidgetSelectView
@@ -59,64 +62,122 @@ class FancypagesDashboardApplication(Application):
         urlpatterns = patterns('',
             url(r'^assets/', include(self.assets_app.urls)),
 
-            url(r'^templates/$',
+            url(
+                r'^templates/$',
                 self.page_template_list_view.as_view(),
-                name='page-template-list'),
-            url(r'^template/create/$',
+                name='page-template-list'
+            ),
+            url(
+                r'^template/create/$',
                 self.page_template_create_view.as_view(),
-                name='page-template-create'),
-            url(r'^template/update/(?P<pk>\d+)/$',
+                name='page-template-create'
+            ),
+            url(
+                r'^template/update/(?P<pk>\d+)/$',
                 self.page_template_update_view.as_view(),
-                name='page-template-update'),
-            url(r'^template/delete/(?P<pk>\d+)/$',
+                name='page-template-update'
+            ),
+            url(
+                r'^template/delete/(?P<pk>\d+)/$',
                 self.page_template_delete_view.as_view(),
-                name='page-template-delete'),
+                name='page-template-delete'
+            ),
 
-            url(r'^types/$', self.page_type_list_view.as_view(),
-                name='page-type-list'),
-            url(r'^type/create/$', self.page_type_create_view.as_view(),
-                name='page-type-create'),
-            url(r'^type/update/(?P<pk>\d+)/$', self.page_type_update_view.as_view(),
-                name='page-type-update'),
-            url(r'^type/delete/(?P<pk>\d+)/$', self.page_type_delete_view.as_view(),
-                name='page-type-delete'),
+            url(
+                r'^types/$',
+                self.page_type_list_view.as_view(),
+                name='page-type-list'
+            ),
+            url(
+                r'^type/create/$',
+                self.page_type_create_view.as_view(),
+                name='page-type-create'
+            ),
+            url(
+                r'^type/update/(?P<pk>\d+)/$',
+                self.page_type_update_view.as_view(),
+                name='page-type-update'
+            ),
+            url(
+                r'^type/delete/(?P<pk>\d+)/$',
+                self.page_type_delete_view.as_view(),
+                name='page-type-delete'
+            ),
 
-            url(r'^$', self.page_list_view.as_view(), name='page-list'),
-            url(r'^create/$',
-                self.page_create_redirect_view.as_view(), name='page-create'),
-            url(r'^create/(?P<page_type_code>[\w-]+)/$',
-                self.page_create_view.as_view(), name='page-create'),
-            url(r'^update/(?P<pk>\d+)/$',
-                self.page_update_view.as_view(), name='page-update'),
-            url(r'^delete/(?P<pk>\d+)/$',
-                self.page_delete_view.as_view(), name='page-delete'),
+            url(
+                r'^$',
+                self.page_list_view.as_view(),
+                name='page-list'
+            ),
+            url(
+                r'^create/$',
+                self.page_create_redirect_view.as_view(),
+                name='page-create'
+            ),
+            url(
+                r'^create/(?P<page_type_code>[\w-]+)/$',
+                self.page_create_view.as_view(),
+                name='page-create'
+            ),
+            url(
+                r'^update/(?P<pk>\d+)/$',
+                self.page_update_view.as_view(),
+                name='page-update'
+            ),
+            url(
+                r'^delete/(?P<pk>\d+)/$',
+                self.page_delete_view.as_view(),
+                name='page-delete'
+            ),
 
-            url(r'^customise/(?P<pk>\d+)/$',
-                self.page_customise_view.as_view(), name='page-customise'),
-            url(r'^preview/(?P<slug>[\w-]+(/[\w-]+)*)/$',
-                self.page_preview_view.as_view(), name='page-preview'),
+            url(
+                r'^customise/(?P<pk>\d+)/$',
+                self.page_customise_view.as_view(),
+                name='page-customise'
+            ),
+            url(
+                r'^preview/(?P<slug>[\w-]+(/[\w-]+)*)/$',
+                self.page_preview_view.as_view(),
+                name='page-preview'
+            ),
 
-            # FIXME: This need to be renamed to a widget-related URL
-            # should be something like: widget/add/<code>/<container_pk>
-            url(r'^container/(?P<pk>\d+)/add/(?P<code>[\w-]+)/$',
+            url(
+                r'^container/(?P<pk>\d+)/add/(?P<code>[\w-]+)/$',
                 self.container_add_widget_view.as_view(),
-                name='widget-add'),
+                name='container-add-widget'
+            ),
 
-            url(r'^widget/(?P<container_id>\d+)/select/$',
+            url(
+                r'^widget/(?P<container_id>\d+)/select/$',
                 self.widget_select_view.as_view(),
                 name='widget-select'),
-            url(r'^widget/update/(?P<pk>\d+)/$',
+            url(
+                r'^widget/update/(?P<pk>\d+)/$',
                 self.widget_update_view.as_view(),
                 name='widget-update'),
-            url(r'^widget/delete/(?P<pk>\d+)/$',
+            url(
+                r'^widget/delete/(?P<pk>\d+)/$',
                 self.widget_delete_view.as_view(),
                 name='widget-delete'),
-            url(r'^widget/move/(?P<pk>\d+)/to/(?P<container_pk>\d+)/(?P<index>\d+)/$',
+            url(
+                r'^widget/move/(?P<pk>\d+)/to/(?P<container_pk>\d+)/(?P<index>\d+)/$',
                 self.widget_move_view.as_view(),
                 name='widget-move'),
-            url(r'^widget/(?P<pk>\d+)/add-tab/$',
+            url(
+                r'^widget/(?P<pk>\d+)/add-tab/$',
                 self.widget_add_tab_view.as_view(),
                 name='widget-add-tab'),
+
+            url(
+                r'^product/customise/(?P<pk>\d+)/$',
+                self.product_page_customise_view.as_view(),
+                name='product-page-customise'
+            ),
+            url(
+                r'^product/preview/(?P<pk>\d+)/$',
+                self.product_page_preview_view.as_view(),
+                name='product-page-preview'
+            ),
         )
         return self.post_process_urls(urlpatterns)
 

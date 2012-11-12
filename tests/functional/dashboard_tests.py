@@ -27,7 +27,7 @@ class TestAStaffMember(test.FancyPagesWebTest):
                                                   template=empty_template)
 
         self.prepare_template_file(
-            "{% load fancypages_tags%}"
+            "{% load fp_container_tags%}"
             "{% fancypages-container first-container %}"
             "{% fancypages-container second-container %}"
         )

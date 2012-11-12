@@ -1,7 +1,14 @@
 {% load i18n %}
+{% load staticfiles %}
 <div id="asset-input">
     <div class="thumbnail">
-        <img src="{% if form.asset %}{{ form.asset.image.url }}{% else %}{{ missing_image_url }}{% endif %}"/>
+        <div class="image_container">
+            {% if form.asset %}
+                <img src="{{ form.asset.image.url }}"/>
+            {% else %}
+                <img src="{% static "fancypages/img/missing-img.png" %}" alt="Upload image" />
+            {% endif %}
+        </div>
     </div>
     {{ form }}
     <a href="#asset-modal" role="button" class="btn btn-large btn-danger btn-block" data-toggle="modal">{% trans "Libary" %}</a>

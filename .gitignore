@@ -6,6 +6,7 @@
 
 .coverage
 .vagrant
+.ropeproject
 
 .tox/
 

@@ -1,6 +1,6 @@
 {% extends "fancypages/base/widget.html" %}
-{% load fancypages_tags %}
+{% load fp_widget_tags %}
 
 {% block widget %}
-{% include "oscar/catalogue/partials/product.html" with product=object.product %}
+{% include "oscar/promotions/singleproduct.html" with product=object.product %}
 {% endblock %}
