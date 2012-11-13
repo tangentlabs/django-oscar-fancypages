@@ -1,6 +1,7 @@
 {% extends "fancypages/layout_2_col.html" %}
-{% load fancypages_tags %}
+
 {% load staticfiles %}
+{% load fp_container_tags %}
 
 {% block body_class %}fp-page{% endblock %}
 
@@ -28,4 +29,3 @@
     {{ block.super }}
     <script type="text/javascript" src="{% static "fancypages/js/carousel-reset.js" %}"></script>
 {% endblock %}
-

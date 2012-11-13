@@ -201,23 +201,23 @@ fancypages.dashboard = {
 
         // Initialise all the asset related stuff
         $("#asset-modal").live('shown', function () {
-          var assetManager = $("#asset-manager");
-          assetManager.attr('src', assetManager.data("src")).load(function(){
-            var modalHeight = $(window).height() - 100;
-            $('.slide-pane', fancypages.dashboard.getAssetDocument()).css('height', modalHeight - 100);
-            $('.slide-pane', fancypages.dashboard.getAssetDocument()).jScrollPane({
-              horizontalDragMaxWidth: 0
+            var assetManager = $("#asset-manager");
+            assetManager.attr('src', assetManager.data("src")).load(function () {
+                var modalHeight = $(window).height() - 100;
+                $('.slide-pane', fancypages.dashboard.getAssetDocument()).css('height', modalHeight - 100);
+                $('.slide-pane', fancypages.dashboard.getAssetDocument()).jScrollPane({
+                    horizontalDragMaxWidth: 0
+                });
             });
-          });
 
-          $(this).css({
-            width: $(window).width() - 100,
-            height: $(window).height() - 100,
-            top: 100,
-            left: 100,
-            marginLeft: '-50px',
-            marginTop: '-50px'
-          });
+            $(this).css({
+                width: $(window).width() - 100,
+                height: $(window).height() - 100,
+                top: 100,
+                left: 100,
+                marginLeft: '-50px',
+                marginTop: '-50px'
+            });
         });
     },
 
@@ -250,12 +250,12 @@ fancypages.dashboard = {
 
             // Scrolls IFrame to the top of editing areas
             var destination = widget.offset().top - 20;
-            $('html:not(:animated),body:not(:animated)', previewDoc).animate({ scrollTop: destination}, 500, 'swing' );
-            
+            $('html:not(:animated),body:not(:animated)', previewDoc).animate({ scrollTop: destination}, 500, 'swing');
+
             // Add Class to widget editing
             $('.widget', previewDoc).removeClass('editing');
             widget.addClass('editing');
-            
+
             fancypages.dashboard.loadWidgetForm(widgetUrl, $(widget).data('container-name'));
         });
 
@@ -285,10 +285,10 @@ fancypages.dashboard = {
         $('button[data-behaviours~=preview-check]').on('click', function () {
             $('div[data-behaviours~=loading]').fadeIn(300);
             setTimeout(function () {
-              $('body', previewDoc).toggleClass('preview');
-              $('.navbar.accounts', previewDoc).add('.header', previewDoc).fadeToggle('slow');
-              $(this).find('i').toggleClass('icon-eye-close');
-              $('div[data-behaviours~=loading]').delay(700).fadeOut();
+                $('body', previewDoc).toggleClass('preview');
+                $('.navbar.accounts', previewDoc).add('.header', previewDoc).fadeToggle('slow');
+                $(this).find('i').toggleClass('icon-eye-close');
+                $('div[data-behaviours~=loading]').delay(700).fadeOut();
             }, 300);
         });
 
@@ -301,7 +301,7 @@ fancypages.dashboard = {
         });
 
         $('body', previewDoc).css('margin-bottom', '600px').addClass('edit-page');
-        
+
         fancypages.dashboard.carouselPosition();
 
 
@@ -317,8 +317,8 @@ fancypages.dashboard = {
             $('#page-settings').hide();
 
             fancypages.dashboard.editor.init();
-            $( '.editor' ).animate({ backgroundColor: "#555" }, 500 ).delay(500).animate({ backgroundColor: "#444" }, 500 );
-            
+            $('.editor').animate({backgroundColor: "#555"}, 500).delay(500).animate({backgroundColor: "#444"}, 500);
+
             fancypages.dashboard.UpdateSize();
         });
     },
@@ -347,7 +347,7 @@ fancypages.dashboard = {
                 $('div[id=widget_input_wrapper]').html("");
                 parent.fancypages.dashboard.reloadPreview();
                 $('#page-settings').show();
-                $( '.editor' ).animate({ backgroundColor: "#444" }, 500 );
+                $('.editor').animate({backgroundColor: "#444"}, 500);
             },
             error: function () {
                 parent.oscar.messages.error(
@@ -363,6 +363,7 @@ fancypages.dashboard = {
 
     setSelectedAsset: function (assetType, assetId, assetUrl) {
         $('#asset-modal').modal('hide');
+        console.log('setting the new image');
 
         var assetInput = $("#asset-input");
         $("#id_asset_id", assetInput).attr('value', assetId);
@@ -377,22 +378,53 @@ fancypages.dashboard = {
     getPreviewDocument: function (elem) {
         return $('#page-preview').contents();
     },
-    
+
     getAssetDocument: function (elem) {
         return $('#asset-manager').contents();
     },
-    
-    editingWidget: function() {
-      var widgetId = $('div[id=widget_input_wrapper]').find('form').data('widget-id'),
-          previewDoc = fancypages.dashboard.getPreviewDocument(),
-          editingWidget = $('body', previewDoc).find('#widget-' + widgetId);
-      // Add Class to widget editing by removing others first
-      $('.widget', previewDoc).removeClass('editing');
-      editingWidget.addClass('editing');
-      
-      // Scrolls IFrame to the top of editing areas
-      var destination = editingWidget.offset().top - 20;
-      $('html:not(:animated),body:not(:animated)', previewDoc).animate({ scrollTop: destination}, 500, 'swing' );
+
+    editingWidget: function () {
+        var widgetId = $('div[id=widget_input_wrapper]').find('form').data('widget-id');
+        if (widgetId === undefined) {
+            return false;
+        }
+        var previewDoc = fancypages.dashboard.getPreviewDocument(),
+            editingWidget = $('body', previewDoc).find('#widget-' + widgetId);
+        // Add Class to widget editing by removing others first
+        $('.widget', previewDoc).removeClass('editing');
+        editingWidget.addClass('editing');
+
+        // Scrolls IFrame to the top of editing areas
+        var destination = editingWidget.offset().top - 20;
+        $('html:not(:animated),body:not(:animated)', previewDoc)
+            .animate({scrollTop: destination}, 500, 'swing');
+    },
+
+    /*
+     * Checks for carousels, initiates viewable items based on where the
+     * carousel is
+     */
+    carouselPosition: function () {
+        var previewDoc = fancypages.dashboard.getPreviewDocument(),
+            es_carousel = $('.es-carousel-wrapper', previewDoc);
+
+        $('.sidebar .es-carousel-wrapper', previewDoc).each(function () {
+            var es_carouselHeight = $(this).find('.products li:first').height();
+            $(this).find('.products').css('height', es_carouselHeight);
+            $(this).elastislide({
+                minItems: 1,
+                onClick:  true
+            });
+        });
+
+        $('.tab-pane .es-carousel-wrapper', previewDoc).each(function () {
+            var es_carouselHeight = $(this).find('.products li:first').height();
+            $(this).find('.products').css('height', es_carouselHeight);
+            $(this).elastislide({
+                minItems: 4,
+                onClick:  true
+            });
+        });
     },
     
     // Checks for carousels, initiates viewable items based on where the carousel is
@@ -428,13 +460,12 @@ fancypages.dashboard = {
     reloadPreview: function () {
         $('div[data-behaviours~=loading]').fadeIn(300);
         setTimeout(function () {
-          $('#page-preview').attr('src', $('#page-preview').attr('src')).load(function(){
-            $('div[data-behaviours~=loading]').fadeOut(300);
-            fancypages.dashboard.editingWidget();
-          }); 
+            $('#page-preview').attr('src', $('#page-preview').attr('src')).load(function () {
+                $('div[data-behaviours~=loading]').fadeOut(300);
+                fancypages.dashboard.editingWidget();
+            });
         }, 300);
     },
-    
 
     // Function setting the height of the IFrame and the Sidebar
     UpdateSize: function () {
@@ -444,11 +475,9 @@ fancypages.dashboard = {
             buttonsTop = $('.button-nav').outerHeight(),
             buttonsBottom = $('.form-actions.fixed').outerHeight(),
             sumHeight = pageHeight - navBarTop - subBarTop;
-            
+
         $('#page-preview').css('height', sumHeight);
         $('.sidebar-content').css('height', sumHeight - buttonsTop - buttonsBottom);
         $('.sidebar-content').jScrollPane();
     }
 };
-
-

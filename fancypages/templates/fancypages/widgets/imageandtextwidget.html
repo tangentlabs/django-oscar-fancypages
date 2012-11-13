@@ -1,19 +1,17 @@
 {% extends "fancypages/base/widget.html" %}
-{% load fancypages_tags %}
+{% load fp_widget_tags %}
 
 {% block widget %}
-<div class="row-fluid">
-    <div class="span5">
-        <div class="thumbnail">
-            {# FIXME an image currently doesnt work with the render tag #}
-            <img src="{{ object.image_asset.image.url }}" alt="{{ object.image_asset.name }}" />
-            <div class="caption">
-                <p>{{ object.image_asset.description }}</p>
-            </div>
-        </div>
-    </div>
-    <div class="span7">
-        {% render_attribute "text" "safe" %}
-    </div>
+
+{% if object.link %}
+<a href="{{ object.link }}">
+    {# FIXME an image currently doesnt work with the render tag #}
+    {% include "fancypages/widgets/partials/image_thumbnail.html" %}
+</a>
+{% else %}
+    {% include "fancypages/widgets/partials/image_thumbnail.html" %}
+{% endif %}
+<div class="well">
+    {% render_attribute "text" "safe" %}
 </div>
 {% endblock %}

@@ -3,6 +3,8 @@ from webtest import AppError
 from django.db.models import get_model
 from django.core.urlresolvers import reverse
 
+from oscar.test.helpers import create_product
+
 from fancypages.test import FancyPagesWebTest
 
 
@@ -108,3 +110,30 @@ class TestAStaffUser(FancyPagesWebTest):
         page = self.get(reverse('fancypages:page-detail', args=(self.page.slug,)))
         self.assertContains(page, self.left_widget.title)
         self.assertContains(page, self.main_widget.title)
+
+        self.assertNotContains(
+            page,
+            ("You can only see this because you are logged in as "
+             "a user with access rights to the dashboard")
+        )
+
+    def test_can_customise_a_product_page(self):
+        product = create_product()
+        self.assertEquals(product.containers.count(), 0)
+
+        # Loading this page creates the missing containers
+        self.get(reverse(
+            'fp-dashboard:product-page-customise',
+            args=(product.id,)
+        ))
+
+        # We need to get the preview page separately because it is
+        # rendered in an iframe and so the markup is not available in
+        # the parent page
+        page = self.get(reverse(
+            'fp-dashboard:product-page-preview',
+            args=(product.id,)
+        ))
+
+        self.assertEquals(product.containers.count(), 4)
+        self.assertContains(page, "Add content")
