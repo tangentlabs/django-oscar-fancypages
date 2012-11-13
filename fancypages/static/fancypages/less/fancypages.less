@@ -15,7 +15,9 @@ body.fancypages.edit-page {
 }
 .page-wrapper {
   position:relative;
-  margin-top:78px;
+}
+.fancypages.edit-page .container-fluid > .content {
+    margin-top:0;
 }
 
 // Editor
@@ -55,10 +57,11 @@ body.fancypages.edit-page {
 }
 .editing-area,
 #page-settings {
-  > h3, 
+  > h3,
   > form .widget-settings > div > label,
   > form .control-group > label,
-  > form .control-group > .controls > label {
+  > form .control-group > .controls > label,
+  #asset-input > label {
     color:#fff;
   }
   > h3 {
@@ -117,7 +120,7 @@ body.fancypages.edit-page {
   .icon-text {
     width:auto;
   }
-  
+
 }
 .editor {
   background:#333;
@@ -141,6 +144,7 @@ body.fancypages.edit-page {
     border:0;
     width:50%;
     float:left;
+    text-align:center;
     display:block;
     .border-radius(3px);
     .box-shadow(inset 0 1px 0 rgba(255,255,255,.2), 0 1px 2px rgba(0,0,0,.05));
@@ -171,6 +175,9 @@ body.fancypages.edit-page {
     margin-right:5px;
   }
 }
+.button-nav a:hover {
+  text-decoration:none;
+}
 textarea:focus,
 input[type="text"]:focus,
 input[type="password"]:focus,
@@ -193,7 +200,8 @@ input[type="color"]:focus,
   overflow: auto;
   overflow-x:hidden;
 }
-.wysihtml5-wrapper textarea {
+.wysihtml5-wrapper textarea,
+.editor textarea {
   height:250px;
   overflow-x:hidden;
 }
@@ -334,5 +342,3 @@ input[type="color"]:focus,
   left:0;
   display:none;
 }
-
-

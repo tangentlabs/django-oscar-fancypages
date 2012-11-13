@@ -297,12 +297,12 @@ fancypages.dashboard = {
             $('div[id=widget_input_wrapper]').html("");
             $('#page-settings').show();
             $('.editor').animate({ backgroundColor: "#444" }, 500);
+            fancypages.dashboard.UpdateSize();
         });
 
         $('body', previewDoc).css('margin-bottom', '600px').addClass('edit-page');
+
         fancypages.dashboard.carouselPosition();
-
-
     },
 
     /**
@@ -356,6 +356,7 @@ fancypages.dashboard = {
             submitButton.attr('disabled', false);
             submitButton.text(submitButton.data('original-text'));
             form.data('locked', false);
+            fancypages.dashboard.UpdateSize();
         });
     },
 
@@ -382,11 +383,8 @@ fancypages.dashboard = {
     },
 
     editingWidget: function () {
-        var widgetId = $('div[id=widget_input_wrapper]').find('form').data('widget-id');
-        if (widgetId === undefined) {
-            return false;
-        }
-        var previewDoc = fancypages.dashboard.getPreviewDocument(),
+        var widgetId = $('div[id=widget_input_wrapper]').find('form').data('widget-id'),
+            previewDoc = fancypages.dashboard.getPreviewDocument(),
             editingWidget = $('body', previewDoc).find('#widget-' + widgetId);
         // Add Class to widget editing by removing others first
         $('.widget', previewDoc).removeClass('editing');
@@ -394,35 +392,7 @@ fancypages.dashboard = {
 
         // Scrolls IFrame to the top of editing areas
         var destination = editingWidget.offset().top - 20;
-        $('html:not(:animated),body:not(:animated)', previewDoc)
-            .animate({scrollTop: destination}, 500, 'swing');
-    },
-
-    /*
-     * Checks for carousels, initiates viewable items based on where the
-     * carousel is
-     */
-    carouselPosition: function () {
-        var previewDoc = fancypages.dashboard.getPreviewDocument(),
-            es_carousel = $('.es-carousel-wrapper', previewDoc);
-
-        $('.sidebar .es-carousel-wrapper', previewDoc).each(function () {
-            var es_carouselHeight = $(this).find('.products li:first').height();
-            $(this).find('.products').css('height', es_carouselHeight);
-            $(this).elastislide({
-                minItems: 1,
-                onClick:  true
-            });
-        });
-
-        $('.tab-pane .es-carousel-wrapper', previewDoc).each(function () {
-            var es_carouselHeight = $(this).find('.products li:first').height();
-            $(this).find('.products').css('height', es_carouselHeight);
-            $(this).elastislide({
-                minItems: 4,
-                onClick:  true
-            });
-        });
+        $('html:not(:animated),body:not(:animated)', previewDoc).animate({ scrollTop: destination}, 500, 'swing');
     },
 
     /**
@@ -444,8 +414,8 @@ fancypages.dashboard = {
     // Function setting the height of the IFrame and the Sidebar
     UpdateSize: function () {
         var pageHeight = $(window).height(),
-            navBarTop = $('.navbar-fixed-top').outerHeight(),
-            subBarTop = $('.subnav-fixed').outerHeight(),
+            navBarTop = $('.navbar-accounts').outerHeight(),
+            subBarTop = $('.navbar-primary').outerHeight(),
             buttonsTop = $('.button-nav').outerHeight(),
             buttonsBottom = $('.form-actions.fixed').outerHeight(),
             sumHeight = pageHeight - navBarTop - subBarTop;
@@ -453,5 +423,31 @@ fancypages.dashboard = {
         $('#page-preview').css('height', sumHeight);
         $('.sidebar-content').css('height', sumHeight - buttonsTop - buttonsBottom);
         $('.sidebar-content').jScrollPane();
+    },
+    /*
+    * Checks for carousels, initiates viewable items based on where the
+    * carousel is
+    */
+    carouselPosition: function () {
+        var previewDoc = fancypages.dashboard.getPreviewDocument(),
+            es_carousel = $('.es-carousel-wrapper', previewDoc);
+
+        $('.sidebar .es-carousel-wrapper', previewDoc).each(function () {
+            var es_carouselHeight = $(this).find('.products li:first').height();
+            $(this).find('.products').css('height', es_carouselHeight);
+            $(this).elastislide({
+                minItems: 1,
+                onClick: true
+            });
+        });
+
+        $('.tab-pane .es-carousel-wrapper', previewDoc).each(function () {
+            var es_carouselHeight = $(this).find('.products li:first').height();
+            $(this).find('.products').css('height', es_carouselHeight);
+            $(this).elastislide({
+                minItems: 4,
+                onClick: true
+            });
+        });
     }
 };
