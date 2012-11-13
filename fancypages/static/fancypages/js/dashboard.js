@@ -297,6 +297,7 @@ fancypages.dashboard = {
           $('div[id=widget_input_wrapper]').html("");
           $('#page-settings').show();
           $( '.editor' ).animate({ backgroundColor: "#444" }, 500 );
+          fancypages.dashboard.UpdateSize();
         });
 
         $('body', previewDoc).css('margin-bottom', '600px').addClass('edit-page');
@@ -438,8 +439,8 @@ fancypages.dashboard = {
     // Function setting the height of the IFrame and the Sidebar
     UpdateSize: function () {
         var pageHeight = $(window).height(),
-            navBarTop = $('.navbar-fixed-top').outerHeight(),
-            subBarTop = $('.subnav-fixed').outerHeight(),
+            navBarTop = $('.navbar-accounts').outerHeight(),
+            subBarTop = $('.navbar-primary').outerHeight(),
             buttonsTop = $('.button-nav').outerHeight(),
             buttonsBottom = $('.form-actions.fixed').outerHeight(),
             sumHeight = pageHeight - navBarTop - subBarTop;
