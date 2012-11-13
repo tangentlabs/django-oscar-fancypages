@@ -358,6 +358,7 @@ fancypages.dashboard = {
             submitButton.attr('disabled', false);
             submitButton.text(submitButton.data('original-text'));
             form.data('locked', false);
+            fancypages.dashboard.UpdateSize();
         });
     },
 
@@ -427,30 +428,6 @@ fancypages.dashboard = {
         });
     },
     
-    // Checks for carousels, initiates viewable items based on where the carousel is
-    carouselPosition: function() {
-      var previewDoc = fancypages.dashboard.getPreviewDocument(),
-          es_carousel = $('.es-carousel-wrapper', previewDoc);
-          
-      $('.sidebar .es-carousel-wrapper', previewDoc).each(function(){
-        var es_carouselHeight = $(this).find('.products li:first').height();
-        $(this).find('.products').css('height', es_carouselHeight);
-        $(this).elastislide({
-            minItems: 1,
-            onClick:  true
-        });
-      });
-      
-      $('.tab-pane .es-carousel-wrapper', previewDoc).each(function(){
-        var es_carouselHeight = $(this).find('.products li:first').height();
-        $(this).find('.products').css('height', es_carouselHeight);
-        $(this).elastislide({
-            minItems: 4,
-            onClick:  true
-        });
-      });
-    },
-
     /**
      * Reload the preview displayed in the iframe of the customise page.
      * A preview reload is necessary (or advised) whenever the content of

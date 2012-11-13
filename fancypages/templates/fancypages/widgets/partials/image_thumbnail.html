@@ -6,7 +6,7 @@
 
         {% if object.code == 'image-text' %}
         <div class="caption">
-            <h3>{{ object.title|default:image_asset_name }}</h3>
+            <p>{{ object.title|default:image_asset_name }}</p>
             <p>{{ object.image_asset.description }}</p>
         </div>
         {% endif %}
