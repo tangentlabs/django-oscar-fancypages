@@ -7,23 +7,20 @@
     <strong>Select a page from the list below:</strong>
     <ul>
     {% for page in object_list %}
-        <li><a href="javascript:void(0)" data-dismiss="modal" onclick="$('#id_link').val('{% url fancypages:page-detail page.slug %}')">{{ page.title }}</a></li>
+        {# <li><a href="javascript:void(0)" data-dismiss="modal" onclick="$('#id_link').val('{% url fancypages:page-detail page.slug %}')">{{ page.title }}</a></li> #}
         {# todo: change the above code to use data attributes #}
-        <!--
-        {#
         <li>
-            <a href="{% url fancypages:page-detail page.slug %}"
-               data-behaviours=""
-               data-target="#id_link">
+            <a data-target="#id_link"
+               data-behaviours="update-editor-field"
+               data-src="{% url fancypages:page-detail page.slug %}"
+               data-dismiss="modal"
+               href="#">
                {{ page.title }}
             </a>
         </li>
-        #}
-        -->
     {% endfor %}
     </ul>
 </div>
 <div class="modal-footer">
     <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-    <button class="btn btn-primary">Save changes</button>
 </div>
