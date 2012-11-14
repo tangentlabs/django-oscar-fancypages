@@ -46,6 +46,13 @@ fancypages.dashboard = {
                 $(this).parents('div[id$=_modal]').remove();
             });
 
+            $("a[data-behaviours~=update-editor-field]").click(function (ev) {
+                ev.preventDefault();
+                var target = $(this).data('target');
+                var src = $(this).data('src');
+                $(target).val(src);
+            });
+
             // initialise modal for adding widget
             $('form[id$=add_widget_form] input[type=radio]').live('click', function (ev) {
                 ev.preventDefault();
@@ -88,6 +95,7 @@ fancypages.dashboard = {
             });
         }
     },
+
     editor: {
         init: function () {
 
@@ -224,13 +232,14 @@ fancypages.dashboard = {
     loadModal: function(elem) {
         var target = $(elem).data('target');
         var url = $(elem).attr('href');
-        console.log(url);
+
         return $(target).load(url, function(response, status, xhr) {
             if (status == "error") {
                 parent.oscar.messages.error(
                     "Unable to load contents of url: " + url
                 );
             }
+            fancypages.dashboard.preview.init();
         });
     },
 
