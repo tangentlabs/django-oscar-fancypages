@@ -138,15 +138,6 @@ fancypages.dashboard = {
             $("a[data-behaviours~=load-modal]").click(function (ev) {
                 return fancypages.dashboard.loadModal(this);
             });
-
-            // Listen on modal cancel buttons and hide and remove the modal
-            // when clicked.
-            $("button[data-behaviours~=remove-modal]").live('click', function (ev) {
-                ev.preventDefault();
-                fancypages.dashboard.removeModal(this);
-                $(this).parents('div[id$=_modal]').remove();
-            });
-
         },
 
         /*
@@ -209,23 +200,23 @@ fancypages.dashboard = {
 
         // Initialise all the asset related stuff
         $("#asset-modal").live('shown', function () {
-          var assetManager = $("#asset-manager");
-          assetManager.attr('src', assetManager.data("src")).load(function(){
-            var modalHeight = $(window).height() - 100;
-            $('.slide-pane', fancypages.dashboard.getAssetDocument()).css('height', modalHeight - 100);
-            $('.slide-pane', fancypages.dashboard.getAssetDocument()).jScrollPane({
-              horizontalDragMaxWidth: 0
+            var assetManager = $("#asset-manager");
+            assetManager.attr('src', assetManager.data("src")).load(function(){
+                var modalHeight = $(window).height() - 100;
+                $('.slide-pane', fancypages.dashboard.getAssetDocument()).css('height', modalHeight - 100);
+                $('.slide-pane', fancypages.dashboard.getAssetDocument()).jScrollPane({
+                    horizontalDragMaxWidth: 0
+                });
             });
-          });
 
-          $(this).css({
-            width: $(window).width() - 100,
-            height: $(window).height() - 100,
-            top: 100,
-            left: 100,
-            marginLeft: '-50px',
-            marginTop: '-50px'
-          });
+            $(this).css({
+                width: $(window).width() - 100,
+                height: $(window).height() - 100,
+                top: 100,
+                left: 100,
+                marginLeft: '-50px',
+                marginTop: '-50px'
+            });
         });
     },
 
@@ -407,13 +398,14 @@ fancypages.dashboard = {
     editingWidget: function() {
         var widgetId = $('div[id=widget_input_wrapper]').find('form').data('widget-id'),
             previewDoc = fancypages.dashboard.getPreviewDocument(),
-          editingWidget = $('body', previewDoc).find('#widget-' + widgetId);
-      // Add Class to widget editing by removing others first
-      $('.widget', previewDoc).removeClass('editing');
-      editingWidget.addClass('editing');
+            editingWidget = $('body', previewDoc).find('#widget-' + widgetId);
 
-      // Scrolls IFrame to the top of editing areas
-      var destination = editingWidget.offset().top - 20;
+        // Add Class to widget editing by removing others first
+        $('.widget', previewDoc).removeClass('editing');
+        editingWidget.addClass('editing');
+
+        // Scrolls IFrame to the top of editing areas
+        var destination = editingWidget.offset().top - 20;
         $('html:not(:animated),body:not(:animated)', previewDoc).animate({ scrollTop: destination}, 500, 'swing');
     },
 
