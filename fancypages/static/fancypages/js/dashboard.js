@@ -201,7 +201,7 @@ fancypages.dashboard = {
         // Initialise all the asset related stuff
         $("#asset-modal").live('shown', function () {
             var assetManager = $("#asset-manager");
-            assetManager.attr('src', assetManager.data("src")).load(function(){
+            assetManager.attr('src', assetManager.data("src")).load(function () {
                 var modalHeight = $(window).height() - 100;
                 $('.slide-pane', fancypages.dashboard.getAssetDocument()).css('height', modalHeight - 100);
                 $('.slide-pane', fancypages.dashboard.getAssetDocument()).jScrollPane({
@@ -220,11 +220,11 @@ fancypages.dashboard = {
         });
     },
 
-    loadModal: function(elem) {
+    loadModal: function (elem) {
         var target = $(elem).data('target');
         var url = $(elem).attr('href');
 
-        return $(target).load(url, function(response, status, xhr) {
+        return $(target).load(url, function (response, status, xhr) {
             if (status == "error") {
                 parent.oscar.messages.error(
                     "Unable to load contents of url: " + url
@@ -237,6 +237,16 @@ fancypages.dashboard = {
     removeModal: function (elem) {
         var modalElem = $(elem).parents('#delete-modal');
         modalElem.remove();
+    },
+
+    scrollToWidget: function (widget) {
+        // Scrolls IFrame to the top of editing areas
+        if (widget.offset()) {
+            var destination = widget.offset().top - 20;
+            var previewDoc = fancypages.dashboard.getPreviewDocument();
+
+            $('html:not(:animated),body:not(:animated)', previewDoc).animate({ scrollTop: destination}, 500, 'swing');
+        }
     },
 
     addPreviewListeners: function () {
@@ -261,9 +271,7 @@ fancypages.dashboard = {
             var widget = $(this).parents('.widget');
             var widgetUrl = "/dashboard/fancypages/widget/update/" + $(widget).data('widget-id') + "/";
 
-            // Scrolls IFrame to the top of editing areas
-            var destination = widget.offset().top - 20;
-            $('html:not(:animated),body:not(:animated)', previewDoc).animate({ scrollTop: destination}, 500, 'swing' );
+            fancypages.dashboard.scrollToWidget(widget);
 
             // Add Class to widget editing
             $('.widget', previewDoc).removeClass('editing');
@@ -298,18 +306,18 @@ fancypages.dashboard = {
         $('button[data-behaviours~=preview-check]').on('click', function () {
             $('div[data-behaviours~=loading]').fadeIn(300);
             setTimeout(function () {
-              $('body', previewDoc).toggleClass('preview');
-              $('.navbar.accounts', previewDoc).add('.header', previewDoc).fadeToggle('slow');
-              $(this).find('i').toggleClass('icon-eye-close');
-              $('div[data-behaviours~=loading]').delay(700).fadeOut();
+                $('body', previewDoc).toggleClass('preview');
+                $('.navbar.accounts', previewDoc).add('.header', previewDoc).fadeToggle('slow');
+                $(this).find('i').toggleClass('icon-eye-close');
+                $('div[data-behaviours~=loading]').delay(700).fadeOut();
             }, 300);
         });
 
         // Show Page previews
         $('button[data-behaviours~=page-settings]').on('click', function () {
-          $('div[id=widget_input_wrapper]').html("");
-          $('#page-settings').show();
-          $( '.editor' ).animate({ backgroundColor: "#444" }, 500 );
+            $('div[id=widget_input_wrapper]').html("");
+            $('#page-settings').show();
+            $('.editor').animate({backgroundColor: "#444"}, 500);
             fancypages.dashboard.UpdateSize();
         });
 
@@ -328,7 +336,9 @@ fancypages.dashboard = {
             $('#page-settings').hide();
 
             fancypages.dashboard.editor.init();
-            $( '.editor' ).animate({ backgroundColor: "#555" }, 500 ).delay(500).animate({ backgroundColor: "#444" }, 500 );
+            $('.editor').animate({backgroundColor: "#555"}, 500)
+                        .delay(500)
+                        .animate({backgroundColor: "#444"}, 500);
 
             fancypages.dashboard.UpdateSize();
         });
@@ -358,7 +368,7 @@ fancypages.dashboard = {
                 $('div[id=widget_input_wrapper]').html("");
                 parent.fancypages.dashboard.reloadPreview();
                 $('#page-settings').show();
-                $( '.editor' ).animate({ backgroundColor: "#444" }, 500 );
+                $('.editor').animate({backgroundColor: "#444"}, 500);
             },
             error: function () {
                 parent.oscar.messages.error(
@@ -395,7 +405,7 @@ fancypages.dashboard = {
         return $('#asset-manager').contents();
     },
 
-    editingWidget: function() {
+    editingWidget: function () {
         var widgetId = $('div[id=widget_input_wrapper]').find('form').data('widget-id'),
             previewDoc = fancypages.dashboard.getPreviewDocument(),
             editingWidget = $('body', previewDoc).find('#widget-' + widgetId);
@@ -404,9 +414,7 @@ fancypages.dashboard = {
         $('.widget', previewDoc).removeClass('editing');
         editingWidget.addClass('editing');
 
-        // Scrolls IFrame to the top of editing areas
-        var destination = editingWidget.offset().top - 20;
-        $('html:not(:animated),body:not(:animated)', previewDoc).animate({ scrollTop: destination}, 500, 'swing');
+        fancypages.dashboard.scrollToWidget(editingWidget);
     },
 
     /**
@@ -418,10 +426,10 @@ fancypages.dashboard = {
     reloadPreview: function () {
         $('div[data-behaviours~=loading]').fadeIn(300);
         setTimeout(function () {
-          $('#page-preview').attr('src', $('#page-preview').attr('src')).load(function(){
-            $('div[data-behaviours~=loading]').fadeOut(300);
-            fancypages.dashboard.editingWidget();
-          });
+            $('#page-preview').attr('src', $('#page-preview').attr('src')).load(function () {
+                $('div[data-behaviours~=loading]').fadeOut(300);
+                fancypages.dashboard.editingWidget();
+            });
         }, 300);
     },
 
