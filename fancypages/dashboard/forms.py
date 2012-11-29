@@ -6,7 +6,6 @@ from treebeard.forms import MoveNodeForm
 
 from fancypages.widgets import SelectWidgetRadioFieldRenderer
 
-
 Page = get_model('fancypages', 'Page')
 
 

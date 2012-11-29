@@ -2,8 +2,8 @@ from django.http import Http404
 from django.db.models import get_model
 from django.views.generic import DetailView
 
-Container = get_model('fancypages', 'Container')
 Page = get_model('fancypages', 'Page')
+Container = get_model('fancypages', 'Container')
 
 
 class PageEditorMixin(object):

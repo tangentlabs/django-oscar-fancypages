@@ -14,14 +14,6 @@ node.add_child(Node(
     _('Pages'),
     'fp-dashboard:page-list')
 )
-node.add_child(Node(
-    _('Page Types'),
-    'fp-dashboard:page-type-list')
-)
-node.add_child(Node(
-    _('Page Templates'),
-    'fp-dashboard:page-template-list')
-)
 register(node, 100)
 
 
