@@ -1,6 +1,5 @@
 from django import http
 from django.views import generic
-from django.contrib import messages
 from django.db.models import get_model, Q
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
@@ -14,102 +13,10 @@ from fancypages.utils import get_container_names_from_template
 
 
 Page = get_model('fancypages', 'Page')
-PageTemplate = get_model('fancypages', 'PageTemplate')
-PageType = get_model('fancypages', 'PageType')
 Widget = get_model('fancypages', 'Widget')
 Container = get_model('fancypages', 'Container')
-TabbedBlockWidget = get_model('fancypages', 'TabbedBlockWidget')
-TabContainer = get_model('fancypages', 'TabContainer')
-
-
-class PageTemplateListView(generic.ListView):
-    model = PageTemplate
-    context_object_name = 'page_template_list'
-    template_name = "fancypages/dashboard/page_template_list.html"
-
-
-class PageTemplateCreateView(generic.CreateView):
-    model = PageTemplate
-    form_class = forms.PageTemplateForm
-    context_object_name = 'page_template'
-    template_name = "fancypages/dashboard/page_template_update.html"
-
-    def get_context_data(self, **kwargs):
-        ctx = super(PageTemplateCreateView, self).get_context_data(**kwargs)
-        ctx['page_title'] = _("Create new page template")
-        return ctx
-
-    def get_success_url(self):
-        return reverse('fp-dashboard:page-template-list')
-
-
-class PageTemplateUpdateView(generic.UpdateView):
-    model = PageTemplate
-    form_class = forms.PageTemplateForm
-    context_object_name = 'page_template'
-    template_name = "fancypages/dashboard/page_template_update.html"
-
-    def get_context_data(self, **kwargs):
-        ctx = super(PageTemplateUpdateView, self).get_context_data(**kwargs)
-        ctx['page_title'] = _("Update page template")
-        return ctx
-
-    def get_success_url(self):
-        return reverse('fp-dashboard:page-template-list')
-
-
-class PageTemplateDeleteView(generic.DeleteView):
-    model = PageTemplate
-    context_object_name = 'page_template'
-    template_name = "fancypages/dashboard/page_template_delete.html"
-
-    def get_success_url(self):
-        return reverse('fp-dashboard:page-template-list')
-
-
-class PageTypeListView(generic.ListView):
-    model = PageType
-    context_object_name = 'page_type_list'
-    template_name = "fancypages/dashboard/page_type_list.html"
-
-
-class PageTypeCreateView(generic.CreateView):
-    model = PageType
-    form_class = forms.PageTypeForm
-    context_object_name = 'page_type'
-    template_name = "fancypages/dashboard/page_type_update.html"
-
-    def get_context_data(self, **kwargs):
-        ctx = super(PageTypeCreateView, self).get_context_data(**kwargs)
-        ctx['page_title'] = _("Create new page type")
-        return ctx
-
-    def get_success_url(self):
-        return reverse('fp-dashboard:page-type-list')
-
-
-class PageTypeUpdateView(generic.UpdateView):
-    model = PageType
-    form_class = forms.PageTypeForm
-    context_object_name = 'page_type'
-    template_name = "fancypages/dashboard/page_type_update.html"
-
-    def get_context_data(self, **kwargs):
-        ctx = super(PageTypeUpdateView, self).get_context_data(**kwargs)
-        ctx['page_title'] = _("Update page type %s") % self.object.name
-        return ctx
-
-    def get_success_url(self):
-        return reverse('fp-dashboard:page-type-list')
-
-
-class PageTypeDeleteView(generic.DeleteView):
-    model = PageType
-    context_object_name = 'page_type'
-    template_name = "fancypages/dashboard/page_type_delete.html"
-
-    def get_success_url(self):
-        return reverse('fp-dashboard:page-type-list')
+TabWidget = get_model('fancypages', 'TabWidget')
+OrderedContainer = get_model('fancypages', 'OrderedContainer')
 
 
 class PageListView(generic.ListView):
@@ -119,11 +26,6 @@ class PageListView(generic.ListView):
 
     def get_queryset(self, queryset=None):
         return self.model.objects.filter(depth=1)
-
-    def get_context_data(self, **kwargs):
-        ctx = super(PageListView, self).get_context_data(**kwargs)
-        ctx['page_type_form'] = forms.PageTypeSelectForm()
-        return ctx
 
 
 class PagePreviewView(PageDetailView):
@@ -135,53 +37,10 @@ class PagePreviewView(PageDetailView):
         return ctx
 
 
-class PageCreateRedirectView(generic.RedirectView):
-
-    def get_redirect_url(self, **kwargs):
-        page_type_code = self.request.GET.get('page_type', None)
-
-        if not page_type_code:
-            messages.error(self.request, _("Please select a page type"))
-            return reverse('fp-dashboard:page-list')
-
-        try:
-            page_type = PageType.objects.get(code=page_type_code)
-        except PageType.DoesNotExist:
-            messages.error(self.request, _("Please select a page type"))
-            return reverse('fp-dashboard:page-list')
-
-        return reverse('fp-dashboard:page-create',
-                       kwargs={'page_type_code': page_type.code})
-
-
 class PageCreateView(generic.CreateView):
     template_name = "fancypages/dashboard/page_update.html"
     form_class = forms.PageForm
     model = Page
-
-    def get_context_data(self, **kwargs):
-        ctx = super(PageCreateView, self).get_context_data(**kwargs)
-        ctx['page_type'] = self.page_type
-        return ctx
-
-    def get_form(self, form_class):
-        return form_class(self.page_type, **self.get_form_kwargs())
-
-    def get_page_type(self):
-        code = self.kwargs.get('page_type_code', None)
-        try:
-            page_type = PageType.objects.get(code=code)
-        except PageType.DoesNotExist:
-            page_type = None
-        return page_type
-
-    def get(self, request, **kwargs):
-        self.page_type = self.get_page_type()
-        return super(PageCreateView, self).get(request, **kwargs)
-
-    def post(self, request, **kwargs):
-        self.page_type = self.get_page_type()
-        return super(PageCreateView, self).post(request, **kwargs)
 
     def get_success_url(self):
         return reverse('fp-dashboard:page-list')
@@ -189,19 +48,9 @@ class PageCreateView(generic.CreateView):
 
 class PageUpdateView(generic.UpdateView):
     template_name = "fancypages/dashboard/page_update.html"
-    context_object_name = 'page'
     form_class = forms.PageForm
+    context_object_name = 'page'
     model = Page
-
-    def get_context_data(self, **kwargs):
-        ctx = super(PageUpdateView, self).get_context_data(**kwargs)
-        return ctx
-
-    def get_form(self, form_class):
-        return form_class(
-            self.object.page_type,
-            **self.get_form_kwargs()
-        )
 
     def get_success_url(self):
         return reverse('fp-dashboard:page-list')
@@ -236,10 +85,6 @@ class PageSelectView(generic.ListView):
 
     def get_queryset(self, queryset=None):
         return self.model.objects.filter(depth=1)
-
-    def get_context_data(self, **kwargs):
-        ctx = super(PageSelectView, self).get_context_data(**kwargs)
-        return ctx
 
 
 class FancypagesMixin(object):
@@ -440,12 +285,13 @@ class ContainerAddWidgetView(JSONResponseMixin, generic.edit.BaseDetailView,
 
 class WidgetAddTabView(JSONResponseMixin, generic.edit.BaseDetailView,
                  FancypagesMixin):
-    model = TabbedBlockWidget
+    model = TabWidget
 
     def get_context_data(self, **kwargs):
         super(WidgetAddTabView, self).get_context_data(**kwargs)
-        TabContainer.objects.create(
-            tab_block=self.object,
+        OrderedContainer.objects.create(
+            title=_("New Tab"),
+            page_object=self.object,
             display_order=self.object.tabs.count(),
         )
         return {
@@ -467,7 +313,7 @@ class ProductPageCustomiseView(generic.DetailView):
 
         cnames = get_container_names_from_template(self.page_template_name)
         for cname in cnames:
-            instance.containers.get_or_create(variable_name=cname)
+            Container.get_container_by_name(instance, cname)
 
         return instance
 

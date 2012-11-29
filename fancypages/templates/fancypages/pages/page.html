@@ -1,4 +1,4 @@
-{% extends "fancypages/layout_2_col.html" %}
+{% extends "fancypages/layout.html" %}
 {% load staticfiles %}
 {% load fp_container_tags %}
 
@@ -12,16 +12,12 @@
 {{ page.title }} | {{ block.super }}
 {% endblock %}
 
-{% block column_left %}
-{% fancypages-container left-column edit_mode %}
-{% endblock %}
-
 {% block header %}
     <h1>{{ page.title }}</h1>
 {% endblock %}
 
 {% block content %}
-{% fancypages-container main-container %}
+    {% fancypages_container page-container %}
 {% endblock %}
 
 {% block extrascripts %}

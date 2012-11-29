@@ -184,14 +184,19 @@ fancypages.dashboard = {
             ev.preventDefault();
 
             var fieldElem = $('input', this);
+            if (!fieldElem) { 
+                return false;
+            }
             var widgetId = $(this).parents('form').data('widget-id');
             var fieldName = $(fieldElem).attr('id').replace('id_', '');
 
             var previewDoc = fancypages.dashboard.getPreviewDocument();
             var previewField = $('#widget-' + widgetId + '-' + fieldName, previewDoc);
             previewField.html($(fieldElem).val());
-
         });
+
+        // attach slider to column width slider
+        var sliderSelection = $('#id_left_column');
 
         fancypages.dashboard.UpdateSize();
 
@@ -201,7 +206,7 @@ fancypages.dashboard = {
         // Initialise all the asset related stuff
         $("#asset-modal").live('shown', function () {
             var assetManager = $("#asset-manager");
-            assetManager.attr('src', assetManager.data("src")).load(function(){
+            assetManager.attr('src', assetManager.data("src")).load(function () {
                 var modalHeight = $(window).height() - 100;
                 $('.slide-pane', fancypages.dashboard.getAssetDocument()).css('height', modalHeight - 100);
                 $('.slide-pane', fancypages.dashboard.getAssetDocument()).jScrollPane({
@@ -306,10 +311,10 @@ fancypages.dashboard = {
         $('button[data-behaviours~=preview-check]').on('click', function () {
             $('div[data-behaviours~=loading]').fadeIn(300);
             setTimeout(function () {
-              $('body', previewDoc).toggleClass('preview');
-              $('.navbar.accounts', previewDoc).add('.header', previewDoc).fadeToggle('slow');
-              $(this).find('i').toggleClass('icon-eye-close');
-              $('div[data-behaviours~=loading]').delay(700).fadeOut();
+                $('body', previewDoc).toggleClass('preview');
+                $('.navbar.accounts', previewDoc).add('.header', previewDoc).fadeToggle('slow');
+                $(this).find('i').toggleClass('icon-eye-close');
+                $('div[data-behaviours~=loading]').delay(700).fadeOut();
             }, 300);
         });
 
@@ -368,7 +373,7 @@ fancypages.dashboard = {
                 $('div[id=widget_input_wrapper]').html("");
                 parent.fancypages.dashboard.reloadPreview();
                 $('#page-settings').show();
-                $( '.editor' ).animate({ backgroundColor: "#444" }, 500 );
+                $('.editor').animate({backgroundColor: "#444"}, 500);
             },
             error: function () {
                 parent.oscar.messages.error(
@@ -405,7 +410,7 @@ fancypages.dashboard = {
         return $('#asset-manager').contents();
     },
 
-    editingWidget: function() {
+    editingWidget: function () {
         var widgetId = $('div[id=widget_input_wrapper]').find('form').data('widget-id'),
             previewDoc = fancypages.dashboard.getPreviewDocument(),
             editingWidget = $('body', previewDoc).find('#widget-' + widgetId);

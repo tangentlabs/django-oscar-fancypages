@@ -9,8 +9,7 @@ from fancypages.test import FancyPagesWebTest
 
 
 Page = get_model('fancypages', 'Page')
-PageType = get_model('fancypages', 'PageType')
-PageTemplate = get_model('fancypages', 'PageTemplate')
+Container = get_model('fancypages', 'Container')
 TitleTextWidget = get_model('fancypages', 'TitleTextWidget')
 
 
@@ -20,14 +19,15 @@ class TestAnAnonymousUser(FancyPagesWebTest):
 
     def setUp(self):
         super(TestAnAnonymousUser, self).setUp()
-        template = PageTemplate.objects.get(title="Article Template")
-        self.page_type = PageType.objects.create(name='Article', code='article',
-                                                 template=template)
-
+        self.prepare_template_file(
+            "{% load fp_container_tags%}"
+            "{% fancypages_container main-container %}"
+            "{% fancypages_container left-column %}"
+        )
         self.page = Page.add_root(
             title="A new page",
             slug='a-new-page',
-            page_type=self.page_type,
+            template_name=self.template_name,
         )
 
         self.left_container = self.page.get_container_from_name('left-column')
@@ -67,14 +67,15 @@ class TestAStaffUser(FancyPagesWebTest):
 
     def setUp(self):
         super(TestAStaffUser, self).setUp()
-        template = PageTemplate.objects.get(title="Article Template")
-        self.page_type = PageType.objects.create(name='Article', code='article',
-                                                 template=template)
-
+        self.prepare_template_file(
+            "{% load fp_container_tags%}"
+            "{% fancypages_container main-container %}"
+            "{% fancypages_container left-column %}"
+        )
         self.page = Page.add_root(
             title="A new page",
             slug='a-new-page',
-            page_type=self.page_type,
+            template_name=self.template_name,
         )
 
         self.left_container = self.page.get_container_from_name('left-column')
@@ -119,7 +120,7 @@ class TestAStaffUser(FancyPagesWebTest):
 
     def test_can_customise_a_product_page(self):
         product = create_product()
-        self.assertEquals(product.containers.count(), 0)
+        self.assertEquals(len(Container.get_containers(product)), 0)
 
         # Loading this page creates the missing containers
         self.get(reverse(
@@ -135,5 +136,5 @@ class TestAStaffUser(FancyPagesWebTest):
             args=(product.id,)
         ))
 
-        self.assertEquals(product.containers.count(), 4)
+        self.assertEquals(len(Container.get_containers(product)), 4)
         self.assertContains(page, "Add content")

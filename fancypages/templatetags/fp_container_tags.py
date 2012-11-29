@@ -1,4 +1,6 @@
 from django import template
+from django.db.models import get_model
+
 
 register = template.Library()
 
@@ -21,7 +23,7 @@ class FancyContainerNode(template.Node):
             container = self.container_name.resolve(context)
         except template.VariableDoesNotExist:
             try:
-                container = self.get_container_by_name(
+                container = get_model('fancypages', 'Container').get_container_by_name(
                     context['object'],
                     self.container_name.var,
                 )
@@ -45,20 +47,8 @@ class FancyContainerNode(template.Node):
             **extra_ctx
         )
 
-    def get_container_by_name(self, obj, name):
-        """
-        Get container of *obj* with the specified variable *name*. It
-        assumes that *obj* has a ``containers`` attribute and returns
-        the container with *name* or ``None`` if it cannot be found.
-        """
-        for ctn in obj.containers.all():
-            if ctn.variable_name == name:
-                return ctn
 
-        return None
-
-
-@register.tag(name='fancypages-container')
+@register.tag
 def fancypages_container(parser, token):
     # split_contents() knows not to split quoted strings.
     args = token.split_contents()
