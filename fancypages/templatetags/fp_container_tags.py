@@ -1,5 +1,7 @@
 from django import template
 from django.db.models import get_model
+from django.core.urlresolvers import reverse, NoReverseMatch
+from django.contrib.contenttypes.models import ContentType
 
 
 register = template.Library()
@@ -62,3 +64,47 @@ def fancypages_container(parser, token):
     tag_name, args = args[:1], args[1:]
     container_name = args.pop(0)
     return FancyContainerNode(container_name)
+
+
+@register.simple_tag(takes_context=True)
+def get_customise_url(context, instance=None):
+    if not instance:
+        instance = context.get('object', None)
+
+    if instance is None:
+        return u''
+
+    try:
+        content_type = ContentType.objects.get_for_model(instance)
+    except AttributeError:
+        return u''
+
+    try:
+        return reverse('fp-dashboard:content-customise', kwargs={
+            'content_type_pk': content_type.id,
+            'pk': instance.id,
+        })
+    except NoReverseMatch:
+        return u''
+
+
+@register.simple_tag(takes_context=True)
+def get_preview_url(context, instance=None):
+    if not instance:
+        instance = context.get('object', None)
+
+    if instance is None:
+        return u''
+
+    try:
+        content_type = ContentType.objects.get_for_model(instance)
+    except AttributeError:
+        return u''
+
+    try:
+        return reverse('fp-dashboard:content-preview', kwargs={
+            'content_type_pk': content_type.id,
+            'pk': instance.id,
+        })
+    except NoReverseMatch:
+        return u''

@@ -29,9 +29,6 @@ class FancypagesDashboardApplication(Application):
     page_preview_view = views.PagePreviewView
     page_select_view = views.PageSelectView
 
-    product_page_customise_view = views.ProductPageCustomiseView
-    product_page_preview_view = views.ProductPagePreviewView
-
     container_add_widget_view = views.ContainerAddWidgetView
 
     widget_select_view = views.WidgetSelectView
@@ -39,6 +36,9 @@ class FancypagesDashboardApplication(Application):
     widget_delete_view = views.WidgetDeleteView
     widget_move_view = views.WidgetMoveView
     widget_add_tab_view = views.WidgetAddTabView
+
+    content_customise_view = views.ContentCustomiseView
+    content_preview_view = views.ContentPreviewView
 
     def get_urls(self):
         urlpatterns = patterns('',
@@ -110,14 +110,14 @@ class FancypagesDashboardApplication(Application):
                 name='widget-add-tab'),
 
             url(
-                r'^product/customise/(?P<pk>\d+)/$',
-                self.product_page_customise_view.as_view(),
-                name='product-page-customise'
+                r'^content/(?P<content_type_pk>\d+)/customise/(?P<pk>\d+)/$',
+                self.content_customise_view.as_view(),
+                name='content-customise'
             ),
             url(
-                r'^product/preview/(?P<pk>\d+)/$',
-                self.product_page_preview_view.as_view(),
-                name='product-page-preview'
+                r'^content/(?P<content_type_pk>\d+)/preview/(?P<pk>\d+)/$',
+                self.content_preview_view.as_view(),
+                name='content-preview'
             ),
         )
         return self.post_process_urls(urlpatterns)

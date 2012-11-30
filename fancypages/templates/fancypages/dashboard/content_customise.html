@@ -1,11 +1,12 @@
 {% extends 'fancypages/dashboard/layout.html' %}
 {% load i18n %}
 {% load fp_widget_tags %}
+{% load fp_container_tags %}
 
 {% block body_class %}fancypages edit-page{% endblock %}
 
 {% block title %}
-{% blocktrans with title=page.title %}Customise product page "{{ title }}" {% endblocktrans %} | {{ block.super }}
+{% trans "Customise content page" %} | {{ block.super }}
 {% endblock %}
 
 {% block breadcrumbs %}{% endblock %}
@@ -26,7 +27,7 @@
     </div>
 
     <div class="preview">
-        <iframe id="page-preview" frameborder='0' src="{% url fp-dashboard:product-page-preview product.id %}"></iframe>
+        <iframe id="page-preview" frameborder='0' src="{% get_preview_url %}"></iframe>
         <div class="loading" data-behaviours="loading"></div>
     </div>
 </div>

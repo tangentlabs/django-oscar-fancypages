@@ -110,18 +110,14 @@ class TestAStaffUser(FancyPagesWebTest):
         self.assertEquals(len(Container.get_containers(product)), 0)
 
         # Loading this page creates the missing containers
-        self.get(reverse(
-            'fp-dashboard:product-page-customise',
-            args=(product.id,)
-        ))
+        from fancypages.templatetags.fp_container_tags import get_customise_url
+        self.get(get_customise_url({}, product))
 
         # We need to get the preview page separately because it is
         # rendered in an iframe and so the markup is not available in
         # the parent page
-        page = self.get(reverse(
-            'fp-dashboard:product-page-preview',
-            args=(product.id,)
-        ))
+        from fancypages.templatetags.fp_container_tags import get_preview_url
+        page = self.get(get_preview_url({}, product))
 
         self.assertEquals(len(Container.get_containers(product)), 4)
         self.assertContains(page, "Add content")

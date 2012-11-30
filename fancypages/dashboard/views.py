@@ -5,6 +5,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 from django.forms.models import modelform_factory
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.contenttypes.models import ContentType
 
 from fancypages.dashboard import forms
 from fancypages.views import PageDetailView
@@ -26,15 +27,6 @@ class PageListView(generic.ListView):
 
     def get_queryset(self, queryset=None):
         return self.model.objects.filter(depth=1)
-
-
-class PagePreviewView(PageDetailView):
-    edit_mode = True
-
-    def get_context_data(self, **kwargs):
-        ctx = super(PagePreviewView, self).get_context_data(**kwargs)
-        ctx['widget_create_form'] = forms.WidgetCreateSelectForm()
-        return ctx
 
 
 class PageCreateView(generic.CreateView):
@@ -66,6 +58,7 @@ class PageDeleteView(generic.DeleteView):
 
 class PageCustomiseView(PageUpdateView):
     template_name = "fancypages/dashboard/page_customise.html"
+    form_class = forms.PageForm
 
     def get_context_data(self, **kwargs):
         ctx = super(PageCustomiseView, self).get_context_data(**kwargs)
@@ -77,6 +70,17 @@ class PageCustomiseView(PageUpdateView):
             'fp-dashboard:page-customise',
             args=(self.object.id,)
         )
+
+
+class PagePreviewView(PageDetailView):
+    template_name = "fancypages/dashboard/page_update.html"
+    form_class = forms.PageForm
+    edit_mode = True
+
+    def get_context_data(self, **kwargs):
+        ctx = super(PagePreviewView, self).get_context_data(**kwargs)
+        ctx['widget_create_form'] = forms.WidgetCreateSelectForm()
+        return ctx
 
 
 class PageSelectView(generic.ListView):
@@ -299,32 +303,45 @@ class WidgetAddTabView(JSONResponseMixin, generic.edit.BaseDetailView,
         }
 
 
-class ProductPageCustomiseView(generic.DetailView):
-    model = get_model('catalogue', 'Product')
-    context_object_name = 'product'
-    template_name = "fancypages/dashboard/product_page_customise.html"
-    page_template_name = "fancypages/pages/product_page.html"
+class ContentTypeMixin(object):
+
+    def get_model(self):
+        if not self.model:
+            content_type = get_object_or_404(
+                ContentType,
+                id=self.kwargs.get('content_type_pk', None))
+            self.model = content_type.model_class()
+        return self.model
 
     def get_object(self, queryset=None):
-        instance = get_object_or_404(
-            self.model,
-            id=self.kwargs.get('pk', None)
-        )
+        model = self.get_model()
+        instance = get_object_or_404(model, id=self.kwargs.get('pk', None))
 
-        cnames = get_container_names_from_template(self.page_template_name)
+        cnames = get_container_names_from_template(
+            self.get_content_page_template_name(model))
         for cname in cnames:
             Container.get_container_by_name(instance, cname)
 
         return instance
 
+    def get_content_page_template_name(self, model):
+        model_name = self.get_model().__name__.lower()
+        return "fancypages/pages/%s_page.html" % model_name
 
-class ProductPagePreviewView(generic.DetailView):
-    model = get_model('catalogue', 'Product')
-    context_object_name = 'product'
-    template_name = "fancypages/pages/product_page.html"
+
+class ContentCustomiseView(ContentTypeMixin, generic.DetailView):
+    template_name = "fancypages/dashboard/content_customise.html"
+
+
+class ContentPreviewView(ContentTypeMixin, generic.DetailView):
+
+    def get_template_names(self):
+        return [
+            self.get_content_page_template_name(self.get_model())
+        ]
 
     def get_context_data(self, **kwargs):
-        ctx = super(ProductPagePreviewView, self).get_context_data(**kwargs)
+        ctx = super(ContentPreviewView, self).get_context_data(**kwargs)
         ctx['edit_mode'] = True
         ctx['widget_create_form'] = forms.WidgetCreateSelectForm()
         return ctx
