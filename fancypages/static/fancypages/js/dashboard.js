@@ -93,6 +93,12 @@ fancypages.dashboard = {
                     );
                 });
             });
+        },
+
+        getPreviewField: function (elem) {
+            previewDoc = fancypages.dashboard.getPreviewDocument();
+            var widgetId = elem.parents('form').data('widget-id');
+            return $('#widget-' + widgetId, previewDoc);
         }
     },
 
@@ -157,7 +163,6 @@ fancypages.dashboard = {
 
             var previewField = $('#widget-' + widgetId + '-' + fieldName, previewDoc);
             previewField.html($(editor.composer.element).html());
-
         }
     },
 
@@ -194,9 +199,6 @@ fancypages.dashboard = {
             var previewField = $('#widget-' + widgetId + '-' + fieldName, previewDoc);
             previewField.html($(fieldElem).val());
         });
-
-        // attach slider to column width slider
-        var sliderSelection = $('#id_left_column');
 
         fancypages.dashboard.UpdateSize();
 
@@ -282,7 +284,38 @@ fancypages.dashboard = {
             $('.widget', previewDoc).removeClass('editing');
             widget.addClass('editing');
 
-            fancypages.dashboard.loadWidgetForm(widgetUrl, $(widget).data('container-name'));
+            fancypages.dashboard.loadWidgetForm(widgetUrl, $(widget).data('container-name'), {
+                success: function () {
+                    // attach slider to column width slider
+                    var sliderSelection = $('#id_left_width');
+                    sliderSelection.after('<div id="left-width-slider"></div>');
+                    sliderSelection.css('display', 'none');
+                    var slider = $('#left-width-slider');
+
+                    var maxValue = sliderSelection.data('max');
+                    var minValue = sliderSelection.data('min');
+
+                    slider.slider({
+                        range: "min",
+                        value: sliderSelection.val(),
+                        min: minValue,
+                        max: (maxValue - 1),
+                        slide: function (ev, ui) {
+                            var previewField = fancypages.dashboard.preview.getPreviewField($(this));
+
+                            var leftColumn = $('.column-left', previewField);
+                            leftColumn[0].className = leftColumn[0].className.replace(/span\d+/g, '');
+                            leftColumn.addClass('span' + ui.value);
+
+                            var rightColumn = $('.column-right', previewField);
+                            rightColumn[0].className = rightColumn[0].className.replace(/span\d+/g, '');
+                            rightColumn.addClass('span' + (maxValue - ui.value));
+
+                            sliderSelection.attr('value', ui.value);
+                        }
+                    });
+                }
+            });
         });
 
 
@@ -334,7 +367,7 @@ fancypages.dashboard = {
     /**
      * Load the the widget form for the specified url
      */
-    loadWidgetForm: function (url, containerName) {
+    loadWidgetForm: function (url, containerName, options) {
         $.ajax(url).done(function (data) {
             var widgetWrapper = $('div[id=widget_input_wrapper]');
             widgetWrapper.html(data);
@@ -346,6 +379,10 @@ fancypages.dashboard = {
                         .animate({backgroundColor: "#444"}, 500);
 
             fancypages.dashboard.UpdateSize();
+
+            if (options && 'success' in options) {
+                options.success();
+            }
         });
     },
 
@@ -390,8 +427,6 @@ fancypages.dashboard = {
 
     setSelectedAsset: function (assetType, assetId, assetUrl) {
         $('#asset-modal').modal('hide');
-        console.log('setting the new image');
-
         var assetInput = $("#asset-input");
         $("#id_asset_id", assetInput).attr('value', assetId);
         $("#id_asset_type", assetInput).attr('value', assetType);

@@ -141,6 +141,18 @@ class ImageAndTextWidgetForm(AssetWidgetForm):
         }
 
 
+class TwoColumnLayoutWidgetForm(WidgetForm):
+    left_width = forms.IntegerField(
+        widget=forms.TextInput(attrs={
+            'data-min': 1,
+            # the max value is restricted to '11' in JS but we need the actual
+            # max value there so this is the way to pass it through
+            'data-max': 12,
+        }),
+        label=_("Proportion of columns")
+    )
+
+
 class TabWidgetForm(WidgetForm):
 
     def __init__(self, *args, **kwargs):
