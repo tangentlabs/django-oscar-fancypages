@@ -551,8 +551,9 @@ class TwitterWidget(Widget):
 
 
 class LayoutWidget(Widget):
-    pass
+    BOOTSTRAP_MAX_WIDTH = 12
 
+    containers = generic.GenericRelation('fancypages.Container')
     class Meta:
         abstract = True
 
@@ -562,12 +563,9 @@ class TwoColumnLayoutWidget(LayoutWidget):
     code = 'two-column-layout'
     template_name = "fancypages/widgets/two_column_layout.html"
 
-    BOOTSTRAP_MAX_WIDTH = 12
     LEFT_WIDTH_CHOICES = [(x, x) for x in range(1, 12)]
-
     left_width = models.PositiveIntegerField(_("Left Width"), max_length=3,
                                              choices=LEFT_WIDTH_CHOICES, default=6)
-    containers = generic.GenericRelation('fancypages.Container')
 
     @property
     def left_span(self):
@@ -578,3 +576,15 @@ class TwoColumnLayoutWidget(LayoutWidget):
     def right_span(self):
         """ Returns the bootstrap span class for the left container. """
         return u'span%d' % (self.BOOTSTRAP_MAX_WIDTH - self.left_width)
+
+
+class ThreeColumnLayoutWidget(LayoutWidget):
+    name = _("Three column layout")
+    code = 'three-column-layout'
+    template_name = "fancypages/widgets/three_column_layout.html"
+
+
+class FourColumnLayoutWidget(LayoutWidget):
+    name = _("Four column layout")
+    code = 'four-column-layout'
+    template_name = "fancypages/widgets/four_column_layout.html"

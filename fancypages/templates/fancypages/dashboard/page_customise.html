@@ -27,7 +27,7 @@
 
         <div class="sidebar-content">
             <div id="page-settings">
-                <h3><i class="icon-file"></i> <span>Page Settings</span></h3>
+                <h3><i class="icon-file"></i> <span>{% trans "Page Settings" %}</span></h3>
                 <form method="post" action="." class="form-stacked">
                     {% csrf_token %}
                     {% include "oscar/partials/form_fields.html" %}

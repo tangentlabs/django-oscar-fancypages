@@ -145,6 +145,18 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('fancypages', ['TwoColumnLayoutWidget'])
 
+        # Adding model 'ThreeColumnLayoutWidget'
+        db.create_table('fancypages_threecolumnlayoutwidget', (
+            ('widget_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Widget'], unique=True, primary_key=True)),
+        ))
+        db.send_create_signal('fancypages', ['ThreeColumnLayoutWidget'])
+
+        # Adding model 'FourColumnLayoutWidget'
+        db.create_table('fancypages_fourcolumnlayoutwidget', (
+            ('widget_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Widget'], unique=True, primary_key=True)),
+        ))
+        db.send_create_signal('fancypages', ['FourColumnLayoutWidget'])
+
 
     def backwards(self, orm):
         # Deleting model 'Page'
@@ -194,6 +206,12 @@ class Migration(SchemaMigration):
 
         # Deleting model 'TwoColumnLayoutWidget'
         db.delete_table('fancypages_twocolumnlayoutwidget')
+
+        # Deleting model 'ThreeColumnLayoutWidget'
+        db.delete_table('fancypages_threecolumnlayoutwidget')
+
+        # Deleting model 'FourColumnLayoutWidget'
+        db.delete_table('fancypages_fourcolumnlayoutwidget')
 
 
     models = {
@@ -370,6 +388,10 @@ class Migration(SchemaMigration):
             'title': ('django.db.models.fields.CharField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
             'variable_name': ('django.db.models.fields.SlugField', [], {'max_length': '50', 'null': 'True', 'blank': 'True'})
         },
+        'fancypages.fourcolumnlayoutwidget': {
+            'Meta': {'object_name': 'FourColumnLayoutWidget'},
+            'widget_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['fancypages.Widget']", 'unique': 'True', 'primary_key': 'True'})
+        },
         'fancypages.handpickedproductspromotionwidget': {
             'Meta': {'ordering': "['display_order']", 'object_name': 'HandPickedProductsPromotionWidget', '_ormbases': ['fancypages.Widget']},
             'promotion': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['promotions.HandPickedProductList']", 'null': 'True'}),
@@ -431,6 +453,10 @@ class Migration(SchemaMigration):
         'fancypages.textwidget': {
             'Meta': {'ordering': "['display_order']", 'object_name': 'TextWidget', '_ormbases': ['fancypages.Widget']},
             'text': ('django.db.models.fields.CharField', [], {'default': "'Your text goes here.'", 'max_length': '2000'}),
+            'widget_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['fancypages.Widget']", 'unique': 'True', 'primary_key': 'True'})
+        },
+        'fancypages.threecolumnlayoutwidget': {
+            'Meta': {'object_name': 'ThreeColumnLayoutWidget'},
             'widget_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['fancypages.Widget']", 'unique': 'True', 'primary_key': 'True'})
         },
         'fancypages.titletextwidget': {
