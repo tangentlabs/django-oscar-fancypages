@@ -371,8 +371,7 @@ class TextWidget(Widget):
     code = 'text'
     template_name = "fancypages/widgets/textwidget.html"
 
-    text = models.CharField(_("Text"), max_length=2000,
-                            default="Your text goes here.")
+    text = models.TextField(_("Text"), default="Your text goes here.")
 
     def __unicode__(self):
         return self.text[:20]
@@ -385,8 +384,7 @@ class TitleTextWidget(Widget):
 
     title = models.CharField(_("Title"), max_length=100,
                              default="Your title goes here.")
-    text = models.CharField(_("Text"), max_length=2000,
-                            default="Your text goes here.")
+    text = models.TextField(_("Text"), default="Your text goes here.")
 
     def __unicode__(self):
         return self.title
