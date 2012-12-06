@@ -1,63 +1,15 @@
 from django import forms
 from django.db.models import get_model
 from django.utils.translation import ugettext_lazy as _
-from django.template import loader, TemplateDoesNotExist
 
 from treebeard.forms import MoveNodeForm
 
 from fancypages.widgets import SelectWidgetRadioFieldRenderer
 
-
 Page = get_model('fancypages', 'Page')
-PageType = get_model('fancypages', 'PageType')
-PageTemplate = get_model('fancypages', 'PageTemplate')
-
-
-class PageTypeSelectForm(forms.Form):
-    page_type = forms.ChoiceField()
-
-    def __init__(self, *args, **kwargs):
-        super(PageTypeSelectForm, self).__init__(*args, **kwargs)
-
-        page_type_choices = []
-        for page_type in PageType.objects.all():
-            page_type_choices.append(
-                (page_type.code, page_type.name)
-            )
-
-        self.fields['page_type'].choices = page_type_choices
-
-
-class PageTemplateForm(forms.ModelForm):
-
-    def clean_template_name(self):
-        template_name = self.cleaned_data['template_name']
-        try:
-            loader.get_template(template_name)
-        except TemplateDoesNotExist:
-            raise forms.ValidationError(
-                "template %s does not exist please enter the path of "
-                "an existing template" % template_name
-            )
-        return template_name
-
-    class Meta:
-        model = PageTemplate
-
-
-class PageTypeForm(forms.ModelForm):
-    class Meta:
-        model = PageType
-        widgets = {
-            'description': forms.Textarea(attrs={'rows': 10, 'cols': 80}),
-        }
 
 
 class PageForm(MoveNodeForm):
-
-    def __init__(self, page_type, *args, **kwargs):
-        super(PageForm, self).__init__(*args, **kwargs)
-        self.fields['page_type'].initial = page_type
 
     class Meta:
         model = Page
@@ -65,9 +17,6 @@ class PageForm(MoveNodeForm):
         # we change the meta class which overwrites all settings for
         # the form in django-treebeard
         exclude = ('path', 'depth', 'numchild', 'slug', 'relative_url')
-        widgets = {
-            'page_type': forms.HiddenInput(),
-        }
 
 
 class WidgetCreateSelectForm(forms.Form):
@@ -192,10 +141,22 @@ class ImageAndTextWidgetForm(AssetWidgetForm):
         }
 
 
-class TabbedBlockWidgetForm(WidgetForm):
+class TwoColumnLayoutWidgetForm(WidgetForm):
+    left_width = forms.IntegerField(
+        widget=forms.TextInput(attrs={
+            'data-min': 1,
+            # the max value is restricted to '11' in JS but we need the actual
+            # max value there so this is the way to pass it through
+            'data-max': 12,
+        }),
+        label=_("Proportion of columns")
+    )
+
+
+class TabWidgetForm(WidgetForm):
 
     def __init__(self, *args, **kwargs):
-        super(TabbedBlockWidgetForm, self).__init__(*args, **kwargs)
+        super(TabWidgetForm, self).__init__(*args, **kwargs)
         instance = kwargs['instance']
         if instance:
             for tab in instance.tabs.all():
@@ -205,7 +166,7 @@ class TabbedBlockWidgetForm(WidgetForm):
                 self.fields[field_name].label = _("Tab title")
 
     def save(self):
-        instance = super(TabbedBlockWidgetForm, self).save()
+        instance = super(TabWidgetForm, self).save()
 
         for tab in instance.tabs.all():
             field_name = "tab_title_%d" % tab.id

@@ -14,14 +14,6 @@ node.add_child(Node(
     _('Pages'),
     'fp-dashboard:page-list')
 )
-node.add_child(Node(
-    _('Page Types'),
-    'fp-dashboard:page-type-list')
-)
-node.add_child(Node(
-    _('Page Templates'),
-    'fp-dashboard:page-template-list')
-)
 register(node, 100)
 
 
@@ -29,26 +21,13 @@ class FancypagesDashboardApplication(Application):
     name = 'fp-dashboard'
     assets_app = assets_app
 
-    page_template_list_view = views.PageTemplateListView
-    page_template_create_view = views.PageTemplateCreateView
-    page_template_update_view = views.PageTemplateUpdateView
-    page_template_delete_view = views.PageTemplateDeleteView
-
-    page_type_list_view = views.PageTypeListView
-    page_type_create_view = views.PageTypeCreateView
-    page_type_update_view = views.PageTypeUpdateView
-    page_type_delete_view = views.PageTypeDeleteView
-
     page_list_view = views.PageListView
-    page_create_redirect_view = views.PageCreateRedirectView
     page_create_view = views.PageCreateView
     page_update_view = views.PageUpdateView
     page_delete_view = views.PageDeleteView
     page_customise_view = views.PageCustomiseView
     page_preview_view = views.PagePreviewView
-
-    product_page_customise_view = views.ProductPageCustomiseView
-    product_page_preview_view = views.ProductPagePreviewView
+    page_select_view = views.PageSelectView
 
     container_add_widget_view = views.ContainerAddWidgetView
 
@@ -58,51 +37,12 @@ class FancypagesDashboardApplication(Application):
     widget_move_view = views.WidgetMoveView
     widget_add_tab_view = views.WidgetAddTabView
 
+    content_customise_view = views.ContentCustomiseView
+    content_preview_view = views.ContentPreviewView
+
     def get_urls(self):
         urlpatterns = patterns('',
             url(r'^assets/', include(self.assets_app.urls)),
-
-            url(
-                r'^templates/$',
-                self.page_template_list_view.as_view(),
-                name='page-template-list'
-            ),
-            url(
-                r'^template/create/$',
-                self.page_template_create_view.as_view(),
-                name='page-template-create'
-            ),
-            url(
-                r'^template/update/(?P<pk>\d+)/$',
-                self.page_template_update_view.as_view(),
-                name='page-template-update'
-            ),
-            url(
-                r'^template/delete/(?P<pk>\d+)/$',
-                self.page_template_delete_view.as_view(),
-                name='page-template-delete'
-            ),
-
-            url(
-                r'^types/$',
-                self.page_type_list_view.as_view(),
-                name='page-type-list'
-            ),
-            url(
-                r'^type/create/$',
-                self.page_type_create_view.as_view(),
-                name='page-type-create'
-            ),
-            url(
-                r'^type/update/(?P<pk>\d+)/$',
-                self.page_type_update_view.as_view(),
-                name='page-type-update'
-            ),
-            url(
-                r'^type/delete/(?P<pk>\d+)/$',
-                self.page_type_delete_view.as_view(),
-                name='page-type-delete'
-            ),
 
             url(
                 r'^$',
@@ -111,11 +51,6 @@ class FancypagesDashboardApplication(Application):
             ),
             url(
                 r'^create/$',
-                self.page_create_redirect_view.as_view(),
-                name='page-create'
-            ),
-            url(
-                r'^create/(?P<page_type_code>[\w-]+)/$',
                 self.page_create_view.as_view(),
                 name='page-create'
             ),
@@ -139,6 +74,12 @@ class FancypagesDashboardApplication(Application):
                 r'^preview/(?P<slug>[\w-]+(/[\w-]+)*)/$',
                 self.page_preview_view.as_view(),
                 name='page-preview'
+            ),
+
+            url(
+                r'^selector/$',
+                self.page_select_view.as_view(),
+                name='page-select'
             ),
 
             url(
@@ -169,14 +110,14 @@ class FancypagesDashboardApplication(Application):
                 name='widget-add-tab'),
 
             url(
-                r'^product/customise/(?P<pk>\d+)/$',
-                self.product_page_customise_view.as_view(),
-                name='product-page-customise'
+                r'^content/(?P<content_type_pk>\d+)/customise/(?P<pk>\d+)/$',
+                self.content_customise_view.as_view(),
+                name='content-customise'
             ),
             url(
-                r'^product/preview/(?P<pk>\d+)/$',
-                self.product_page_preview_view.as_view(),
-                name='product-page-preview'
+                r'^content/(?P<content_type_pk>\d+)/preview/(?P<pk>\d+)/$',
+                self.content_preview_view.as_view(),
+                name='content-preview'
             ),
         )
         return self.post_process_urls(urlpatterns)

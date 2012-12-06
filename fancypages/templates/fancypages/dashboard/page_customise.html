@@ -8,6 +8,11 @@
 {% blocktrans with title=page.title %}Customise page "{{ title }}" {% endblocktrans %} | {{ block.super }}
 {% endblock %}
 
+{% block extrahead %}
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css" />
+    {{ block.super }}
+{% endblock %}
+
 {% block breadcrumbs %}{% endblock %}
 
 {% block header %}
@@ -22,7 +27,7 @@
 
         <div class="sidebar-content">
             <div id="page-settings">
-                <h3><i class="icon-file"></i> <span>Page Settings</span></h3>
+                <h3><i class="icon-file"></i> <span>{% trans "Page Settings" %}</span></h3>
                 <form method="post" action="." class="form-stacked">
                     {% csrf_token %}
                     {% include "oscar/partials/form_fields.html" %}

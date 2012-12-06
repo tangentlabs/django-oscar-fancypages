@@ -17,31 +17,25 @@ class TestAWidget(test.FancyPagesWebTest):
 
     def setUp(self):
         super(TestAWidget, self).setUp()
-        self.page_type = PageType.objects.create(name='Article', code='article',
-                                                 template=self.template)
         self.prepare_template_file(
             "{% load fp_container_tags%}"
-            "{% fancypages-container main-container %}"
+            "{% fancypages_container page-container %}"
         )
 
-        self.page = Page.add_root(
-            title="A new page",
-            slug='a-new-page',
-            page_type=self.page_type,
-        )
+        self.page = Page.add_root(title="A new page", slug='a-new-page')
 
         self.text_widget = TextWidget.objects.create(
-            container=self.page.get_container_from_name('main-container'),
+            container=self.page.get_container_from_name('page-container'),
             text="some text",
         )
 
         self.other_text_widget = TextWidget.objects.create(
-            container=self.page.get_container_from_name('main-container'),
+            container=self.page.get_container_from_name('page-container'),
             text="some text",
         )
 
         self.third_text_widget = TextWidget.objects.create(
-            container=self.page.get_container_from_name('main-container'),
+            container=self.page.get_container_from_name('page-container'),
             text="second text",
         )
         self.assertEquals(self.text_widget.display_order, 0)
@@ -89,7 +83,7 @@ class TestAWidget(test.FancyPagesWebTest):
         self.assertEquals(widget.display_order, 1)
 
     def test_can_be_added_to_a_container(self):
-        container = self.page.get_container_from_name('main-container')
+        container = self.page.get_container_from_name('page-container')
         num_widgets = container.widgets.count()
         response = self.get(reverse(
             'fp-dashboard:container-add-widget',
@@ -101,7 +95,7 @@ class TestAWidget(test.FancyPagesWebTest):
         self.assertEquals(container.widgets.count(), num_widgets + 1)
 
     def test_a_widget_without_template_is_ignored(self):
-        container = self.page.get_container_from_name('main-container')
+        container = self.page.get_container_from_name('page-container')
         Widget.objects.create(container=container)
         self.get(reverse('fancypages:page-detail', args=(self.page.slug,)))
 
@@ -112,18 +106,15 @@ class TestAMovableWidget(test.FancyPagesWebTest):
 
     def setUp(self):
         super(TestAMovableWidget, self).setUp()
-
-        template = PageTemplate.objects.get(title="Article Template")
-        self.page_type = PageType.objects.create(name='Article', code='article',
-                                                 template=template)
-
-        self.page = Page.add_root(
-            title="A new page",
-            slug='a-new-page',
-            page_type=self.page_type,
+        self.prepare_template_file(
+            "{% load fp_container_tags%}"
+            "{% fancypages_container main-container %}"
+            "{% fancypages_container left-container %}"
         )
 
-        self.left_container = self.page.get_container_from_name('left-column')
+        self.page = Page.add_root(title="A new page", slug='a-new-page',
+                                  template_name=self.template_name)
+        self.left_container = self.page.get_container_from_name('left-container')
         self.main_container = self.page.get_container_from_name('main-container')
 
         self.left_widgets = []
@@ -151,7 +142,7 @@ class TestAMovableWidget(test.FancyPagesWebTest):
                 pos
             )
 
-        page = self.get(
+        self.get(
             reverse(
                 'fp-dashboard:widget-move',
                 kwargs={
@@ -165,7 +156,7 @@ class TestAMovableWidget(test.FancyPagesWebTest):
         moved_widget = TextWidget.objects.get(id=self.main_widgets[1].id)
         self.assertEquals(
             moved_widget.container,
-            self.page.get_container_from_name('left-column')
+            self.page.get_container_from_name('left-container')
         )
         self.assertEquals(moved_widget.display_order, 1)
 

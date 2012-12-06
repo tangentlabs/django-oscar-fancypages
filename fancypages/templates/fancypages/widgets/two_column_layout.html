@@ -1,0 +1,15 @@
+{% load fp_container_tags %}
+
+<div class="row-fluid">
+    <div class="{{ object.left_span }} column-left pull-left">
+        {% block column_left %}
+            {% fancypages_container left-container %}
+        {% endblock %}
+    </div>
+
+    <div class="{{ object.right_span }} column-right pull-right">
+        {% block column_right %}
+            {% fancypages_container right-container %}
+        {% endblock %}
+    </div>
+</div>

@@ -10,8 +10,25 @@
             {% endif %}
         </div>
     </div>
-    <div class="control-group">
-        {{ form }}
+
+    {% for hidden in form.hidden_fields %}
+        {{ hidden }}
+    {% endfor %}
+    {# Include the visible fields #}
+    {% for field in form.visible_fields %}
+        {{ field.errors }}
+        {{ field.label_tag }}
+        {% if 'link' in field.id_for_label %}
+            <a data-behaviours="load-modal"
+               data-toggle="modal"
+               data-target="#pagelist_modal"
+               href="{% url fp-dashboard:page-select %}">
+               <i class="icon-plus"></i>Existing Content
+            </a>
+        {% endif %}
+        {{ field }}
+    {% endfor %}
+    <a href="#asset-modal" role="button" class="btn btn-large btn-danger btn-block" data-toggle="modal">{% trans "Libary" %}</a>
+    <div id="pagelist_modal" class="modal hide fade" tabindex="-1" aria-labelledby="existing-content-modal-label" role="dialog">
     </div>
-    <a href="#asset-modal" role="button" class="btn btn-large btn-danger btn-block" data-toggle="modal">{% trans "Libary" %}</a> 
 </div>

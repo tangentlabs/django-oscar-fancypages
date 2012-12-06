@@ -5,7 +5,7 @@ install:
 	pip install -r requirements.txt > /dev/null
 
 sandbox: install
-	[ -f sandbox/sandbox/db.sqlite ] && rm sandbox/sandbox/db.sqlite || echo
+	[ -f sandbox/sandbox/db.sqlite3 ] && rm sandbox/sandbox/db.sqlite3 || true
 	sandbox/manage.py syncdb --noinput > /dev/null
 	sandbox/manage.py migrate > /dev/null
 	#sandbox/manage.py loaddata sandbox/fixtures/auth.json sandbox/fixtures/fancypages.json > /dev/null

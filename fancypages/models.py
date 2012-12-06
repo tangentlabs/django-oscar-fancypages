@@ -3,49 +3,17 @@ import os
 from django.db import models
 from django.utils import timezone
 from django.forms import ValidationError
+from django.contrib.contenttypes import generic
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
-from django.template import loader, RequestContext, Context
 from django.core.exceptions import ImproperlyConfigured
+from django.contrib.contenttypes.models import ContentType
+from django.template import loader, RequestContext, Context
 
-from treebeard.mp_tree import MP_Node, MP_NodeQuerySet
 from model_utils.managers import InheritanceManager
+from treebeard.mp_tree import MP_Node, MP_NodeQuerySet
 
 from fancypages.utils import get_container_names_from_template
-
-
-Product = models.get_model('catalogue', 'Product')
-
-
-class PageTemplate(models.Model):
-    title = models.CharField(_("Title"), max_length=100)
-    description = models.CharField(_("Description"), max_length=500)
-    icon = models.ImageField(_("Icon"), upload_to="fancypages/icons",
-                             null=True, blank=True)
-
-    template_name = models.CharField(_("Template name"), max_length=255)
-
-    def __unicode__(self):
-        return self.title
-
-
-class PageType(models.Model):
-    name = models.CharField(_("Name"), max_length=100)
-    code = models.SlugField(_("Code"), max_length=100, unique=True)
-
-    template = models.ForeignKey(
-        "fancypages.PageTemplate",
-        verbose_name=_("Page template"),
-        related_name="page_types"
-    )
-
-    def save(self, *args, **kwargs):
-        if not self.code:
-            self.code = slugify(self.name)
-        super(PageType, self).save(*args, **kwargs)
-
-    def __unicode__(self):
-        return self.name
 
 
 class PageQuerySet(MP_NodeQuerySet):
@@ -74,17 +42,21 @@ class PageManager(models.Manager):
 
 class Page(MP_Node):
     title = models.CharField(_("Title"), max_length=100)
-    description = models.TextField(_("Description"), null=True, blank=True, default=None)
-    keywords = models.CharField(_("Keywords"), max_length=255, null=True, blank=True)
     slug = models.SlugField(_("Code"), max_length=100, unique=True)
 
-    page_type = models.ForeignKey('fancypages.PageType',
-                                  verbose_name=_("Page type"),
-                                  related_name="pages")
+    template_name = models.CharField(_("Template name"), max_length=255,
+                                     default="fancypages/pages/page.html")
+
+    description = models.TextField(_("Description"), null=True, blank=True,
+                                   default=None)
+    keywords = models.CharField(_("Keywords"), max_length=255, null=True,
+                                blank=True)
 
     # this is the *cached* relative URL for this page taking parent
     # slugs into account. This is updated on save
     relative_url = models.CharField(max_length=500, null=True, blank=True)
+
+    containers = generic.GenericRelation('fancypages.Container')
 
     PUBLISHED, DRAFT, ARCHIVED = (u'published', u'draft', u'archived')
     STATUS_CHOICES = (
@@ -142,7 +114,7 @@ class Page(MP_Node):
                 'slug': self.slug})
 
     def __unicode__(self):
-        return u"%s with title '%s'" % (self.page_type.name, self.title)
+        return u"Page '%s'" % self.title
 
     def save(self, update_slugs=True, *args, **kwargs):
         if update_slugs:
@@ -173,12 +145,9 @@ class Page(MP_Node):
         super(Page, self).save(*args, **kwargs)
 
         existing_containers = [c.variable_name for c in self.containers.all()]
-        for cname in get_container_names_from_template(self.page_type.template):
+        for cname in get_container_names_from_template(self.template_name):
             if cname not in existing_containers:
-                self.containers.create(
-                    page=self,
-                    variable_name=cname,
-                )
+                self.containers.create(page_object=self, variable_name=cname)
 
     def move(self, target, pos=None):
         super(Page, self).move(target, pos)
@@ -230,12 +199,17 @@ class Page(MP_Node):
 
 class Container(models.Model):
     template_name = 'fancypages/base/container.html'
+
     # this is the name of the variable used in the template tag
     # e.g. {% fancypages-container var-name %}
-    variable_name = models.SlugField(_("Variable name"), max_length=50)
+    title = models.CharField(max_length=100, null=True, blank=True)
+    variable_name = models.SlugField(_("Variable name"), max_length=50,
+                                     null=True, blank=True)
 
-    page = models.ForeignKey('fancypages.Page', verbose_name=_("Page"),
-                             related_name='containers', null=True)
+    # this makes the fancypages available to any type of object
+    content_type = models.ForeignKey(ContentType, null=True)
+    object_id = models.PositiveIntegerField(null=True)
+    page_object = generic.GenericForeignKey('content_type', 'object_id')
 
     def render(self, request=None, **kwargs):
         """
@@ -264,10 +238,40 @@ class Container(models.Model):
         ctx.update(kwargs)
         return tmpl.render(ctx)
 
+    @classmethod
+    def get_container_by_name(cls, obj, name):
+        """
+        Get container of *obj* with the specified variable *name*. It
+        assumes that *obj* has a ``containers`` attribute and returns
+        the container with *name* or ``None`` if it cannot be found.
+        """
+        obj_type = ContentType.objects.get_for_model(obj)
+        if obj_type is None:
+            return None
+
+        ctn, __ = cls.objects.get_or_create(content_type=obj_type,
+                                            variable_name=name,
+                                            object_id=obj.id)
+        return ctn
+
+    @classmethod
+    def get_containers(cls, obj):
+        obj_type = ContentType.objects.get_for_model(obj)
+        return cls.objects.filter(content_type__id=obj_type.id, object_id=obj.id)
+
     def __unicode__(self):
-        if self.page:
-            return u"Container '%s' in '%s'" % (self.variable_name, self.page.title)
-        return u"Container '%s'" % (self.variable_name)
+        return u"Container '%s' in '%s'" % (self.variable_name, self.content_type)
+
+
+class OrderedContainer(Container):
+    display_order = models.PositiveIntegerField()
+
+    def __unicode__(self):
+        return u"Container #%d '%s' in '%s'" % (
+            self.display_order,
+            self.variable_name,
+            self.content_type
+        )
 
 
 class Widget(models.Model):
@@ -276,7 +280,7 @@ class Widget(models.Model):
     template_name = None
     context_object_name = 'object'
 
-    container = models.ForeignKey('fancypages.Container', verbose_name=_("Container"),
+    container = models.ForeignKey(Container, verbose_name=_("Container"),
                                   related_name="widgets")
 
     display_order = models.PositiveIntegerField()
@@ -329,7 +333,6 @@ class Widget(models.Model):
                 "a template name is required for a widget to be rendered"
             )
 
-        tmpl = loader.get_template(self.template_name)
 
         if request:
             ctx = RequestContext(request)
@@ -338,6 +341,8 @@ class Widget(models.Model):
 
         ctx[self.context_object_name] = self
         ctx.update(kwargs)
+
+        tmpl = loader.get_template(self.template_name)
         return tmpl.render(ctx)
 
     def save(self, **kwargs):
@@ -352,13 +357,21 @@ class Widget(models.Model):
         ordering = ['display_order']
 
 
+#class ContainerWidget(Widget):
+#    """
+#    A widget that provides another container instead of an actual
+#    widget. It provides a way of nesting containers.
+#    """
+#    class Meta:
+#        abstract = True
+
+
 class TextWidget(Widget):
     name = _("Text")
     code = 'text'
     template_name = "fancypages/widgets/textwidget.html"
 
-    text = models.CharField(_("Text"), max_length=2000,
-                            default="Your text goes here.")
+    text = models.TextField(_("Text"), default="Your text goes here.")
 
     def __unicode__(self):
         return self.text[:20]
@@ -371,8 +384,7 @@ class TitleTextWidget(Widget):
 
     title = models.CharField(_("Title"), max_length=100,
                              default="Your title goes here.")
-    text = models.CharField(_("Text"), max_length=2000,
-                            default="Your text goes here.")
+    text = models.TextField(_("Text"), default="Your text goes here.")
 
     def __unicode__(self):
         return self.title
@@ -488,49 +500,19 @@ class ImageAndTextWidget(Widget, ImageMetaMixin):
         return u"Image with text #%s" % self.id
 
 
-class TabbedBlockWidget(Widget):
+class TabWidget(Widget):
     name = _("Tabbed block")
     code = 'tabbed-block'
     context_object_name = "widget"
     template_name = "fancypages/widgets/tabbedblockwidget.html"
 
+    tabs = generic.GenericRelation('fancypages.OrderedContainer')
+
     def save(self, *args, **kwargs):
-        super(TabbedBlockWidget, self).save(*args, **kwargs)
+        super(TabWidget, self).save(*args, **kwargs)
         if not self.tabs.count():
-            TabContainer.objects.create(
-                tab_block=self,
-                display_order=0
-            )
-
-
-class ProductPageContainer(Container):
-    product = models.ForeignKey(
-        'catalogue.Product',
-        verbose_name=_("Product page container"),
-        related_name="containers"
-    )
-
-    def __unicode__(self):
-        return "Container %s for %s" % (self.variable_name, self.product)
-
-
-class TabContainer(Container):
-    title = models.CharField(max_length=100, default=_('New tab'))
-
-    tab_block = models.ForeignKey(
-        TabbedBlockWidget,
-        verbose_name=_("Tab block"),
-        related_name="tabs"
-    )
-
-    display_order = models.PositiveIntegerField()
-
-    def __unicode__(self):
-        return self.title
-
-    def save(self, *args, **kwargs):
-        self.variable_name = slugify(self.title)
-        return super(TabContainer, self).save(*args, **kwargs)
+            OrderedContainer.objects.create(page_object=self, display_order=0,
+                                            title=_("New Tab"))
 
 
 class VideoWidget(Widget):
@@ -564,3 +546,43 @@ class TwitterWidget(Widget):
         if self.username:
             return u"Twitter user '@%s'" % self.username
         return u"Twitter: %s" % self.id
+
+
+class LayoutWidget(Widget):
+    BOOTSTRAP_MAX_WIDTH = 12
+
+    containers = generic.GenericRelation('fancypages.Container')
+    class Meta:
+        abstract = True
+
+
+class TwoColumnLayoutWidget(LayoutWidget):
+    name = _("Two column layout")
+    code = 'two-column-layout'
+    template_name = "fancypages/widgets/two_column_layout.html"
+
+    LEFT_WIDTH_CHOICES = [(x, x) for x in range(1, 12)]
+    left_width = models.PositiveIntegerField(_("Left Width"), max_length=3,
+                                             choices=LEFT_WIDTH_CHOICES, default=6)
+
+    @property
+    def left_span(self):
+        """ Returns the bootstrap span class for the left container. """
+        return u'span%d' % self.left_width
+
+    @property
+    def right_span(self):
+        """ Returns the bootstrap span class for the left container. """
+        return u'span%d' % (self.BOOTSTRAP_MAX_WIDTH - self.left_width)
+
+
+class ThreeColumnLayoutWidget(LayoutWidget):
+    name = _("Three column layout")
+    code = 'three-column-layout'
+    template_name = "fancypages/widgets/three_column_layout.html"
+
+
+class FourColumnLayoutWidget(LayoutWidget):
+    name = _("Four column layout")
+    code = 'four-column-layout'
+    template_name = "fancypages/widgets/four_column_layout.html"

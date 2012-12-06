@@ -1,4 +1,8 @@
 from django import template
+from django.db.models import get_model
+from django.core.urlresolvers import reverse, NoReverseMatch
+from django.contrib.contenttypes.models import ContentType
+
 
 register = template.Library()
 
@@ -21,7 +25,7 @@ class FancyContainerNode(template.Node):
             container = self.container_name.resolve(context)
         except template.VariableDoesNotExist:
             try:
-                container = self.get_container_by_name(
+                container = get_model('fancypages', 'Container').get_container_by_name(
                     context['object'],
                     self.container_name.var,
                 )
@@ -45,20 +49,8 @@ class FancyContainerNode(template.Node):
             **extra_ctx
         )
 
-    def get_container_by_name(self, obj, name):
-        """
-        Get container of *obj* with the specified variable *name*. It
-        assumes that *obj* has a ``containers`` attribute and returns
-        the container with *name* or ``None`` if it cannot be found.
-        """
-        for ctn in obj.containers.all():
-            if ctn.variable_name == name:
-                return ctn
 
-        return None
-
-
-@register.tag(name='fancypages-container')
+@register.tag
 def fancypages_container(parser, token):
     # split_contents() knows not to split quoted strings.
     args = token.split_contents()
@@ -72,3 +64,47 @@ def fancypages_container(parser, token):
     tag_name, args = args[:1], args[1:]
     container_name = args.pop(0)
     return FancyContainerNode(container_name)
+
+
+@register.simple_tag(takes_context=True)
+def get_customise_url(context, instance=None):
+    if not instance:
+        instance = context.get('object', None)
+
+    if instance is None:
+        return u''
+
+    try:
+        content_type = ContentType.objects.get_for_model(instance)
+    except AttributeError:
+        return u''
+
+    try:
+        return reverse('fp-dashboard:content-customise', kwargs={
+            'content_type_pk': content_type.id,
+            'pk': instance.id,
+        })
+    except NoReverseMatch:
+        return u''
+
+
+@register.simple_tag(takes_context=True)
+def get_preview_url(context, instance=None):
+    if not instance:
+        instance = context.get('object', None)
+
+    if instance is None:
+        return u''
+
+    try:
+        content_type = ContentType.objects.get_for_model(instance)
+    except AttributeError:
+        return u''
+
+    try:
+        return reverse('fp-dashboard:content-preview', kwargs={
+            'content_type_pk': content_type.id,
+            'pk': instance.id,
+        })
+    except NoReverseMatch:
+        return u''

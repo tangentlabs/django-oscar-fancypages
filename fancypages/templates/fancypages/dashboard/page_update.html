@@ -2,7 +2,7 @@
 {% load i18n %}
 
 {% block title %}
-{% blocktrans with name=page_type.name %}Create new '{{ name }}' page{% endblocktrans %} | {{ block.super }}
+{% trans "Create new page" %} | {{ block.super }}
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -25,9 +25,7 @@
 
 {% block header %}
 <div class="page-header">
-    <h1>
-    {% blocktrans with name=page_type.name %}Create new '{{ name }}' page{% endblocktrans %}
-    </h1>
+    <h1>{% trans "Create new page" %} </h1>
 </div>
 {% endblock header %}
 
@@ -41,21 +39,8 @@
         {{ form }}
     </div>
 
-    {% comment %}
-    {% for name in page_type.get_container_names %}
-    <div class="well well-blank">
-        <div class="subheader">
-            <h2>
-                {% blocktrans with name=name %}
-                Container <tt style="font-weight: normal;">"{{ name }}"</tt>
-                {% endblocktrans %}
-            </h2>
-        </div>
-    </div>
-    {% endfor %}
-    {% endcomment %}
-
     <hr />
+
     <div class="control-group pull-right">
         <div class="controls">
             <button type='submit' class="btn btn-primary btn-large">{% trans "Save" %}</button>

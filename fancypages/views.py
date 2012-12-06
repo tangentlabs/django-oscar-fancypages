@@ -1,7 +1,9 @@
 from django.http import Http404
+from django.db.models import get_model
 from django.views.generic import DetailView
 
-from fancypages import models
+Page = get_model('fancypages', 'Page')
+Container = get_model('fancypages', 'Container')
 
 
 class PageEditorMixin(object):
@@ -11,14 +13,14 @@ class PageEditorMixin(object):
         kwargs.update({
             'edit_mode': self.edit_mode,
         })
-        if self.object and hasattr(self.object, 'containers'):
-            for container in self.object.containers.all():
+        if self.object:
+            for container in Container.get_containers(self.object):
                 kwargs[container.variable_name] = container
         return super(PageEditorMixin, self).get_context_data(**kwargs)
 
 
 class PageDetailView(PageEditorMixin, DetailView):
-    model = models.Page
+    model = Page
     context_object_name = "page"
 
     def get(self, request, *args, **kwargs):
@@ -33,6 +35,4 @@ class PageDetailView(PageEditorMixin, DetailView):
         return response
 
     def get_template_names(self):
-        return [
-            self.object.page_type.template.template_name,
-        ]
+        return [self.object.template_name]

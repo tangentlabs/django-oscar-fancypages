@@ -34,24 +34,8 @@ fancypages.dashboard = {
 
             //load the form to select a new widget to add to the container
             //and display it in a modal
-            $("a[data-behaviours~=load-add-widget]").click(function (ev) {
-                var addButton = $(this);
-                $.ajax({
-                    type: "GET",
-                    url: addButton.data('action'),
-                    success: function (data) {
-                        addButton.after(data);
-
-                        $(data).load(function () {
-                            $(this).modal('show');
-                        });
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        parent.oscar.messages.error(
-                            "Could not get availabe widget for this container. Please try it again."
-                        );
-                    }
-                });
+            $("a[data-behaviours~=load-modal]").click(function (ev) {
+                return fancypages.dashboard.loadModal(this);
             });
 
             // Listen on modal cancel buttons and hide and remove the modal
@@ -60,6 +44,13 @@ fancypages.dashboard = {
                 ev.preventDefault();
                 fancypages.dashboard.removeModal(this);
                 $(this).parents('div[id$=_modal]').remove();
+            });
+
+            $("a[data-behaviours~=update-editor-field]").click(function (ev) {
+                ev.preventDefault();
+                var target = $(this).data('target');
+                var src = $(this).data('src');
+                $(target).val(src);
             });
 
             // initialise modal for adding widget
@@ -102,10 +93,18 @@ fancypages.dashboard = {
                     );
                 });
             });
+        },
+
+        getPreviewField: function (elem) {
+            previewDoc = fancypages.dashboard.getPreviewDocument();
+            var widgetId = elem.parents('form').data('widget-id');
+            return $('#widget-' + widgetId, previewDoc);
         }
     },
+
     editor: {
         init: function () {
+
             var wrapperElement = $('div[id=widget_input_wrapper]') || document;
 
             // initialise wysihtml5 rich-text for editor
@@ -139,6 +138,12 @@ fancypages.dashboard = {
                     fancypages.dashboard.editor.updatePreview(editor);
                 });
             });
+
+            //load the content of a modal via ajax
+            //and display it in a modal
+            $("a[data-behaviours~=load-modal]").click(function (ev) {
+                return fancypages.dashboard.loadModal(this);
+            });
         },
 
         /*
@@ -158,7 +163,6 @@ fancypages.dashboard = {
 
             var previewField = $('#widget-' + widgetId + '-' + fieldName, previewDoc);
             previewField.html($(editor.composer.element).html());
-
         }
     },
 
@@ -185,13 +189,15 @@ fancypages.dashboard = {
             ev.preventDefault();
 
             var fieldElem = $('input', this);
+            if (!fieldElem) { 
+                return false;
+            }
             var widgetId = $(this).parents('form').data('widget-id');
             var fieldName = $(fieldElem).attr('id').replace('id_', '');
 
             var previewDoc = fancypages.dashboard.getPreviewDocument();
             var previewField = $('#widget-' + widgetId + '-' + fieldName, previewDoc);
             previewField.html($(fieldElem).val());
-
         });
 
         fancypages.dashboard.UpdateSize();
@@ -221,9 +227,33 @@ fancypages.dashboard = {
         });
     },
 
+    loadModal: function (elem) {
+        var target = $(elem).data('target');
+        var url = $(elem).attr('href');
+
+        return $(target).load(url, function (response, status, xhr) {
+            if (status == "error") {
+                parent.oscar.messages.error(
+                    "Unable to load contents of url: " + url
+                );
+            }
+            fancypages.dashboard.preview.init();
+        });
+    },
+
     removeModal: function (elem) {
         var modalElem = $(elem).parents('#delete-modal');
         modalElem.remove();
+    },
+
+    scrollToWidget: function (widget) {
+        // Scrolls IFrame to the top of editing areas
+        if (widget.offset()) {
+            var destination = widget.offset().top - 20;
+            var previewDoc = fancypages.dashboard.getPreviewDocument();
+
+            $('html:not(:animated),body:not(:animated)', previewDoc).animate({ scrollTop: destination}, 500, 'swing');
+        }
     },
 
     addPreviewListeners: function () {
@@ -248,15 +278,44 @@ fancypages.dashboard = {
             var widget = $(this).parents('.widget');
             var widgetUrl = "/dashboard/fancypages/widget/update/" + $(widget).data('widget-id') + "/";
 
-            // Scrolls IFrame to the top of editing areas
-            var destination = widget.offset().top - 20;
-            $('html:not(:animated),body:not(:animated)', previewDoc).animate({ scrollTop: destination}, 500, 'swing');
+            fancypages.dashboard.scrollToWidget(widget);
 
             // Add Class to widget editing
             $('.widget', previewDoc).removeClass('editing');
             widget.addClass('editing');
 
-            fancypages.dashboard.loadWidgetForm(widgetUrl, $(widget).data('container-name'));
+            fancypages.dashboard.loadWidgetForm(widgetUrl, $(widget).data('container-name'), {
+                success: function () {
+                    // attach slider to column width slider
+                    var sliderSelection = $('#id_left_width');
+                    sliderSelection.after('<div id="left-width-slider"></div>');
+                    sliderSelection.css('display', 'none');
+                    var slider = $('#left-width-slider');
+
+                    var maxValue = sliderSelection.data('max');
+                    var minValue = sliderSelection.data('min');
+
+                    slider.slider({
+                        range: "min",
+                        value: sliderSelection.val(),
+                        min: minValue,
+                        max: (maxValue - 1),
+                        slide: function (ev, ui) {
+                            var previewField = fancypages.dashboard.preview.getPreviewField($(this));
+
+                            var leftColumn = $('.column-left', previewField);
+                            leftColumn[0].className = leftColumn[0].className.replace(/span\d+/g, '');
+                            leftColumn.addClass('span' + ui.value);
+
+                            var rightColumn = $('.column-right', previewField);
+                            rightColumn[0].className = rightColumn[0].className.replace(/span\d+/g, '');
+                            rightColumn.addClass('span' + (maxValue - ui.value));
+
+                            sliderSelection.attr('value', ui.value);
+                        }
+                    });
+                }
+            });
         });
 
 
@@ -294,32 +353,36 @@ fancypages.dashboard = {
 
         // Show Page previews
         $('button[data-behaviours~=page-settings]').on('click', function () {
-          $('div[id=widget_input_wrapper]').html("");
-          $('#page-settings').show();
-          $( '.editor' ).animate({ backgroundColor: "#444" }, 500 );
-          fancypages.dashboard.UpdateSize();
+            $('div[id=widget_input_wrapper]').html("");
+            $('#page-settings').show();
+            $('.editor').animate({backgroundColor: "#444"}, 500);
+            fancypages.dashboard.UpdateSize();
         });
 
         $('body', previewDoc).css('margin-bottom', '600px').addClass('edit-page');
 
         fancypages.dashboard.carouselPosition();
-
-
     },
 
     /**
      * Load the the widget form for the specified url
      */
-    loadWidgetForm: function (url, containerName) {
+    loadWidgetForm: function (url, containerName, options) {
         $.ajax(url).done(function (data) {
             var widgetWrapper = $('div[id=widget_input_wrapper]');
             widgetWrapper.html(data);
             $('#page-settings').hide();
 
             fancypages.dashboard.editor.init();
-            $('.editor').animate({backgroundColor: "#555"}, 500).delay(500).animate({backgroundColor: "#444"}, 500);
+            $('.editor').animate({backgroundColor: "#555"}, 500)
+                        .delay(500)
+                        .animate({backgroundColor: "#444"}, 500);
 
             fancypages.dashboard.UpdateSize();
+
+            if (options && 'success' in options) {
+                options.success();
+            }
         });
     },
 
@@ -364,8 +427,6 @@ fancypages.dashboard = {
 
     setSelectedAsset: function (assetType, assetId, assetUrl) {
         $('#asset-modal').modal('hide');
-        console.log('setting the new image');
-
         var assetInput = $("#asset-input");
         $("#id_asset_id", assetInput).attr('value', assetId);
         $("#id_asset_type", assetInput).attr('value', assetType);
@@ -385,47 +446,15 @@ fancypages.dashboard = {
     },
 
     editingWidget: function () {
-        var widgetId = $('div[id=widget_input_wrapper]').find('form').data('widget-id');
-        if (widgetId === undefined) {
-            return false;
-        }
-        var previewDoc = fancypages.dashboard.getPreviewDocument(),
+        var widgetId = $('div[id=widget_input_wrapper]').find('form').data('widget-id'),
+            previewDoc = fancypages.dashboard.getPreviewDocument(),
             editingWidget = $('body', previewDoc).find('#widget-' + widgetId);
+
         // Add Class to widget editing by removing others first
         $('.widget', previewDoc).removeClass('editing');
         editingWidget.addClass('editing');
 
-        // Scrolls IFrame to the top of editing areas
-        var destination = editingWidget.offset().top - 20;
-        $('html:not(:animated),body:not(:animated)', previewDoc)
-            .animate({scrollTop: destination}, 500, 'swing');
-    },
-
-    /*
-     * Checks for carousels, initiates viewable items based on where the
-     * carousel is
-     */
-    carouselPosition: function () {
-        var previewDoc = fancypages.dashboard.getPreviewDocument(),
-            es_carousel = $('.es-carousel-wrapper', previewDoc);
-
-        $('.sidebar .es-carousel-wrapper', previewDoc).each(function () {
-            var es_carouselHeight = $(this).find('.products li:first').height();
-            $(this).find('.products').css('height', es_carouselHeight);
-            $(this).elastislide({
-                minItems: 1,
-                onClick:  true
-            });
-        });
-
-        $('.tab-pane .es-carousel-wrapper', previewDoc).each(function () {
-            var es_carouselHeight = $(this).find('.products li:first').height();
-            $(this).find('.products').css('height', es_carouselHeight);
-            $(this).elastislide({
-                minItems: 4,
-                onClick:  true
-            });
-        });
+        fancypages.dashboard.scrollToWidget(editingWidget);
     },
     
     /**
@@ -456,5 +485,31 @@ fancypages.dashboard = {
         $('#page-preview').css('height', sumHeight);
         $('.sidebar-content').css('height', sumHeight - buttonsTop - buttonsBottom);
         $('.sidebar-content').jScrollPane();
+    },
+    /*
+    * Checks for carousels, initiates viewable items based on where the
+    * carousel is
+    */
+    carouselPosition: function () {
+        var previewDoc = fancypages.dashboard.getPreviewDocument(),
+            es_carousel = $('.es-carousel-wrapper', previewDoc);
+
+        $('.sidebar .es-carousel-wrapper', previewDoc).each(function () {
+            var es_carouselHeight = $(this).find('.products li:first').height();
+            $(this).find('.products').css('height', es_carouselHeight);
+            $(this).elastislide({
+                minItems: 1,
+                onClick: true
+            });
+        });
+
+        $('.tab-pane .es-carousel-wrapper', previewDoc).each(function () {
+            var es_carouselHeight = $(this).find('.products li:first').height();
+            $(this).find('.products').css('height', es_carouselHeight);
+            $(this).elastislide({
+                minItems: 4,
+                onClick: true
+            });
+        });
     }
 };
