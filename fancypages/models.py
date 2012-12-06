@@ -257,7 +257,7 @@ class Container(models.Model):
     @classmethod
     def get_containers(cls, obj):
         obj_type = ContentType.objects.get_for_model(obj)
-        return cls.objects.filter(content_type__id=obj_type.id)
+        return cls.objects.filter(content_type__id=obj_type.id, object_id=obj.id)
 
     def __unicode__(self):
         return u"Container '%s' in '%s'" % (self.variable_name, self.content_type)
