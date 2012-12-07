@@ -275,7 +275,7 @@ fancypages.dashboard = {
 
 
         $('.edit-button', previewDoc).click(function (ev) {
-            var widget = $(this).parents('.widget');
+            var widget = $(this).closest('.widget');
             var widgetUrl = "/dashboard/fancypages/widget/update/" + $(widget).data('widget-id') + "/";
 
             fancypages.dashboard.scrollToWidget(widget);
@@ -362,6 +362,12 @@ fancypages.dashboard = {
         $('body', previewDoc).css('margin-bottom', '600px').addClass('edit-page');
 
         fancypages.dashboard.carouselPosition();
+        
+        fancypages.dashboard.mouseWidgetHover();
+        
+        fancypages.dashboard.moveWidgetHover();
+        
+        
     },
 
     /**
@@ -456,6 +462,25 @@ fancypages.dashboard = {
 
         fancypages.dashboard.scrollToWidget(editingWidget);
     },
+    
+    mouseWidgetHover: function () {
+        var previewDoc = fancypages.dashboard.getPreviewDocument();
+        $('.widget', previewDoc).on('mouseenter', function(e){
+          $(e.target).parents('.widget').removeClass('widget-hover');
+          $(this).addClass('widget-hover');
+        });
+        $('.widget', previewDoc).on('mouseleave', function(){
+          $(this).removeClass('widget-hover');
+        });
+    },
+    
+    moveWidgetHover: function() {
+      var previewDoc = fancypages.dashboard.getPreviewDocument();
+      $('.icon-move', previewDoc).on('hover', function(){
+        $('body').addClass('widget-move');
+      });
+    },
+    
     
     /**
      * Reload the preview displayed in the iframe of the customise page.
