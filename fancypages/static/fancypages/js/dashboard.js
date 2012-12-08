@@ -6,9 +6,23 @@ fancypages.dashboard = {
             $('.sortable').sortable({
                 cursor: 'move',
                 handle: '.move',
-                placeholder: "ui-state-highlight",
-                forcePlaceholderSize: true,
                 connectWith: ".connectedSortable",
+                cursorAt: { top:13, left: 13 },
+                tolerance: "pointer",
+                activate: function( event, ui ) {
+                  $('.sortable').css({
+                    border: '1px solid red',
+                    minHeight: '100px'
+                  });
+                  $('.widget').css('border', '1px solid lightblue');
+                },
+                deactivate: function( event, ui ) {
+                  $('.sortable').css({
+                    borderWidth: 0,
+                    minHeight: 'auto'
+                  });
+                  $('.widget').css('border-color', 'transparent');
+                },
                 update: function (ev, ui) {
                     var dropIndex = ui.item.index();
                     var widgetId = ui.item.data('widget-id');
@@ -30,7 +44,7 @@ fancypages.dashboard = {
                         );
                     });
                 }
-            });
+            }).disableSelection();
 
             //load the form to select a new widget to add to the container
             //and display it in a modal
@@ -365,9 +379,6 @@ fancypages.dashboard = {
         
         fancypages.dashboard.mouseWidgetHover();
         
-        fancypages.dashboard.moveWidgetHover();
-        
-        
     },
 
     /**
@@ -464,21 +475,15 @@ fancypages.dashboard = {
     },
     
     mouseWidgetHover: function () {
-        var previewDoc = fancypages.dashboard.getPreviewDocument();
-        $('.widget', previewDoc).on('mouseenter', function(e){
+        var previewDoc = fancypages.dashboard.getPreviewDocument(),
+            widgetHover = $('.widget', previewDoc);
+        widgetHover.on('mouseenter', function(e){
           $(e.target).parents('.widget').removeClass('widget-hover');
           $(this).addClass('widget-hover');
         });
-        $('.widget', previewDoc).on('mouseleave', function(){
+        widgetHover.on('mouseleave', function(){
           $(this).removeClass('widget-hover');
         });
-    },
-    
-    moveWidgetHover: function() {
-      var previewDoc = fancypages.dashboard.getPreviewDocument();
-      $('.icon-move', previewDoc).on('hover', function(){
-        $('body').addClass('widget-move');
-      });
     },
     
     
