@@ -6,9 +6,23 @@ fancypages.dashboard = {
             $('.sortable').sortable({
                 cursor: 'move',
                 handle: '.move',
-                placeholder: "ui-state-highlight",
-                forcePlaceholderSize: true,
                 connectWith: ".connectedSortable",
+                cursorAt: { top:13, left: 13 },
+                tolerance: "pointer",
+                activate: function( event, ui ) {
+                  $('.sortable').css({
+                    border: '1px solid red',
+                    minHeight: '100px'
+                  });
+                  $('.widget').css('border', '1px solid lightblue');
+                },
+                deactivate: function( event, ui ) {
+                  $('.sortable').css({
+                    borderWidth: 0,
+                    minHeight: 'auto'
+                  });
+                  $('.widget').css('border-color', 'transparent');
+                },
                 update: function (ev, ui) {
                     var dropIndex = ui.item.index();
                     var widgetId = ui.item.data('widget-id');
@@ -30,7 +44,7 @@ fancypages.dashboard = {
                         );
                     });
                 }
-            });
+            }).disableSelection();
 
             //load the form to select a new widget to add to the container
             //and display it in a modal
@@ -275,7 +289,7 @@ fancypages.dashboard = {
 
 
         $('.edit-button', previewDoc).click(function (ev) {
-            var widget = $(this).parents('.widget');
+            var widget = $(this).closest('.widget');
             var widgetUrl = "/dashboard/fancypages/widget/update/" + $(widget).data('widget-id') + "/";
 
             fancypages.dashboard.scrollToWidget(widget);
@@ -362,6 +376,9 @@ fancypages.dashboard = {
         $('body', previewDoc).css('margin-bottom', '600px').addClass('edit-page');
 
         fancypages.dashboard.carouselPosition();
+        
+        fancypages.dashboard.mouseWidgetHover();
+        
     },
 
     /**
@@ -456,7 +473,20 @@ fancypages.dashboard = {
 
         fancypages.dashboard.scrollToWidget(editingWidget);
     },
-
+    
+    mouseWidgetHover: function () {
+        var previewDoc = fancypages.dashboard.getPreviewDocument(),
+            widgetHover = $('.widget', previewDoc);
+        widgetHover.on('mouseenter', function(e){
+          $(e.target).parents('.widget').removeClass('widget-hover');
+          $(this).addClass('widget-hover');
+        });
+        widgetHover.on('mouseleave', function(){
+          $(this).removeClass('widget-hover');
+        });
+    },
+    
+    
     /**
      * Reload the preview displayed in the iframe of the customise page.
      * A preview reload is necessary (or advised) whenever the content of

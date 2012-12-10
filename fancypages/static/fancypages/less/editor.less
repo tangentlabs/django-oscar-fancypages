@@ -3,11 +3,11 @@
 
 @font-face {
 	font-family: 'icomoon';
-	src:url('/static/fancypages/fonts/icomoon/icomoon.eot');
-	src:url('/static/fancypages/fonts/icomoon/icomoon.eot?#iefix') format('embedded-opentype'),
-		url('/static/fancypages/fonts/icomoon/icomoon.svg#icomoon') format('svg'),
-		url('/static/fancypages/fonts/icomoon/icomoon.woff') format('woff'),
-		url('/static/fancypages/fonts/icomoon/icomoon.ttf') format('truetype');
+	src:url('../fonts/icomoon/icomoon.eot');
+	src:url('../fonts/icomoon/icomoon.eot?#iefix') format('embedded-opentype'),
+		url('../fonts/icomoon/icomoon.svg#icomoon') format('svg'),
+		url('../fonts/icomoon/icomoon.woff') format('woff'),
+		url('../fonts/icomoon/icomoon.ttf') format('truetype');
 	font-weight: normal;
 	font-style: normal;
 }
@@ -31,14 +31,41 @@ body.preview {
 .widget {
   position: relative;
   border:1px dashed transparent;
+}
+
+.widget-wrapper {
   margin-bottom:@baseLineHeight;
 }
-.edit-page .widget:hover,
-.widget.editing {
+
+.widget.editing,
+.widget.widget-hover {
   border:1px dashed #ccc;
-  .widget-move-delete,
-  .edit-button {
+  > .widget-move-delete,
+  > .edit-button {
     .opacity(100);
+  }
+}
+
+.ui-sortable-placeholder { background:#efefef; visibility: visible !important; height: 50px !important; }
+.ui-sortable-placeholder * { visibility: hidden; }
+
+.ui-sortable-helper {
+  width:25px!important;
+  height:25px!important;
+  background:#bbb;
+  border-right:1px solid #555!important;
+  border-bottom:1px solid #333!important;
+  > div {
+    display:none;
+  }
+}
+
+
+.widget-move .widget-hover {
+  border-color:transparent;
+  > .widget-move-delete,
+  > .edit-button {
+    .opacity(0);
   }
 }
 /*.fp-page .widget:hover,
@@ -46,7 +73,7 @@ body.preview {
   border:none; 
 }*/
 .widget.editing {
-  border-color:#333;
+  border-color:#333!important;
 }
 
 .widget-move-delete {
@@ -198,6 +225,7 @@ label#tabbed-block {
     content: "\22";
   }
 }
+
 label#video {
   &:before {
     font-family: FontAwesome;
@@ -210,7 +238,6 @@ label#twitter {
     content: "\f099";
   }
 }
-
 
 
 .icon-title-and-text:before {
