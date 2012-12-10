@@ -8,9 +8,6 @@ fancypages.dashboard = {
                 cursor: 'move',
                 handle: '.move',
                 connectWith: ".connectedSortable",
-                // placeholder: "ui-state-highlight",
-                // forcePlaceholderSize: true,
-                // tolerance: 'pointer',
                 cursorAt: { top:0, left: 0 },
                 activate: function( event, ui ) {
                   $('body').addClass('widget-move');
