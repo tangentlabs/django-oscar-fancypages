@@ -3,25 +3,21 @@ var fancypages = fancypages || {};
 fancypages.dashboard = {
     preview: {
         init: function () {
+            var tooltip = '<div class="tool-tip top">Insert here</div>';
             $('.sortable').sortable({
                 cursor: 'move',
                 handle: '.move',
                 connectWith: ".connectedSortable",
-                cursorAt: { top:13, left: 13 },
-                tolerance: "pointer",
+                // placeholder: "ui-state-highlight",
+                // forcePlaceholderSize: true,
+                // tolerance: 'pointer',
+                cursorAt: { top:0, left: 0 },
                 activate: function( event, ui ) {
-                  $('.sortable').css({
-                    border: '1px solid red',
-                    minHeight: '100px'
-                  });
-                  $('.widget').css('border', '1px solid lightblue');
+                  $('body').addClass('widget-move');
+                  $('.ui-sortable-placeholder').prepend(tooltip);
                 },
                 deactivate: function( event, ui ) {
-                  $('.sortable').css({
-                    borderWidth: 0,
-                    minHeight: 'auto'
-                  });
-                  $('.widget').css('border-color', 'transparent');
+                  $('body').removeClass('widget-move');
                 },
                 update: function (ev, ui) {
                     var dropIndex = ui.item.index();

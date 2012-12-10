@@ -46,32 +46,43 @@ body.preview {
   }
 }
 
-.ui-sortable-placeholder { background:#efefef; visibility: visible !important; height: 50px !important; }
+.ui-sortable-placeholder { background:#0088cc; visibility: visible !important; height: 3px !important;border:none!important; }
 .ui-sortable-placeholder * { visibility: hidden; }
 
 .ui-sortable-helper {
-  width:25px!important;
-  height:25px!important;
-  background:#bbb;
-  border-right:1px solid #555!important;
-  border-bottom:1px solid #333!important;
-  > div {
-    display:none;
+  display:none;
+}
+
+.widget-move {
+  .widget-hover {
+    border-color:transparent;
+    > .widget-move-delete,
+    > .edit-button {
+      .opacity(0);
+    }
+  }
+  .widget, .sortable {
+    border: 1px solid lightblue;
+  }
+  .sortable {
+    min-height: 100px;
   }
 }
 
-
-.widget-move .widget-hover {
-  border-color:transparent;
-  > .widget-move-delete,
-  > .edit-button {
-    .opacity(0);
-  }
+// Base class
+.tool-tip {
+  display: inline-block;
+  visibility: visible;
+  padding: 2px 5px;
+  font-size: 11px;
+  background:#0088cc;
+  color:#fff;
+  position:absolute;
+  left:46%;
+  top:5px;
+  .border-radius(4px);
 }
-/*.fp-page .widget:hover,
-.fp-page .widget {
-  border:none; 
-}*/
+
 .widget.editing {
   border-color:#333!important;
 }
@@ -85,16 +96,7 @@ body.preview {
 
 .ui-state-highlight { 
   background-color:darken(@grayLighter, 1%);
-/*  border:1px solid lighten(@grayLighter, 2%); */
 }
-
-/*body:hover .widget-move-delete {
-  opacity: 0.5;
-}*/
-
-/*body:hover .widget-move-delete:hover {
-  opacity: 1.0;
-}*/
 
 .widget-add-control {
   position: relative;
@@ -111,9 +113,6 @@ body.preview {
   }
   button {
     margin-left: 5px;
-/*    i {
-      color: white;
-    }*/
   }
 }
 
