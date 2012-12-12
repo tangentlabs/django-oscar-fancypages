@@ -1,5 +1,6 @@
 from django import forms
 from django.db.models import get_model
+from django.contrib.sites.models import Site
 from django.utils.translation import ugettext_lazy as _
 
 from treebeard.forms import MoveNodeForm
@@ -10,6 +11,15 @@ Page = get_model('fancypages', 'Page')
 
 
 class PageForm(MoveNodeForm):
+
+    def save(self):
+        sites = self.cleaned_data.pop('display_on_sites')
+        instance = super(PageForm, self).save(commit=True)
+
+        if sites:
+            instance.display_on_sites = sites
+
+        return instance
 
     class Meta:
         model = Page
@@ -48,6 +58,14 @@ class WidgetUpdateSelectForm(forms.Form):
 
 
 class WidgetForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(WidgetForm, self).__init__(*args, **kwargs)
+
+        order = self.fields.keyOrder
+        order.pop(order.index('display_on_sites'))
+        self.fields.keyOrder += ['display_on_sites']
+
     class Meta:
         exclude = ('container',)
         widgets = {

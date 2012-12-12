@@ -1,8 +1,10 @@
 import os
 
 from django.db import models
+from django.db.models import Q
 from django.utils import timezone
 from django.forms import ValidationError
+from django.contrib.sites.models import Site
 from django.contrib.contenttypes import generic
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
@@ -73,6 +75,13 @@ class Page(MP_Node):
     # overrides the visibility date range when set to false making the
     # page invisible
     is_active = models.BooleanField(_("Is active"), default=True)
+
+    display_on_sites = models.ManyToManyField(
+        'sites.Site', default=None,
+        verbose_name=_("Display on sites"),
+        related_name="pages",
+        null=True, blank=True,
+    )
 
     objects = PageManager()
 
@@ -216,6 +225,15 @@ class Container(models.Model):
         Render the container and all its contained widgets.
         """
         ordered_widgets = self.widgets.select_subclasses()
+        current_site = Site.objects.get_current()
+
+        ordered_widgets = self.widgets.all()
+        if not kwargs.get('edit_mode', False):
+            ordered_widgets = ordered_widgets.filter(
+                Q(display_on_sites__isnull=True) |
+                Q(display_on_sites=current_site),
+            )
+        ordered_widgets = ordered_widgets.select_subclasses()
 
         tmpl = loader.get_template(self.template_name)
 
@@ -284,6 +302,13 @@ class Widget(models.Model):
                                   related_name="widgets")
 
     display_order = models.PositiveIntegerField()
+
+    display_on_sites = models.ManyToManyField(
+        'sites.Site', default=None,
+        null=True, blank=True,
+        verbose_name=_("Display on sites"),
+        related_name="%(class)s_widget"
+    )
 
     objects = InheritanceManager()
 

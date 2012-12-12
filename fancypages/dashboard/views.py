@@ -77,6 +77,15 @@ class PagePreviewView(PageDetailView):
     form_class = forms.PageForm
     edit_mode = True
 
+    def get_object(self, queryset=None):
+        """
+        Overwrite the parent view to prevent page from not displaying.
+        """
+        page = self.model.objects.get(
+            slug=self.kwargs.get('slug', None),
+        )
+        return page
+
     def get_context_data(self, **kwargs):
         ctx = super(PagePreviewView, self).get_context_data(**kwargs)
         ctx['widget_create_form'] = forms.WidgetCreateSelectForm()
