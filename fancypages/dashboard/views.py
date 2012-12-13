@@ -302,10 +302,12 @@ class WidgetAddTabView(JSONResponseMixin, generic.edit.BaseDetailView,
 
     def get_context_data(self, **kwargs):
         super(WidgetAddTabView, self).get_context_data(**kwargs)
+        tab_count = self.object.tabs.count()
         OrderedContainer.objects.create(
             title=_("New Tab"),
+            variable_name="tab-%d" % tab_count,
             page_object=self.object,
-            display_order=self.object.tabs.count(),
+            display_order=tab_count,
         )
         return {
             'success': True,
