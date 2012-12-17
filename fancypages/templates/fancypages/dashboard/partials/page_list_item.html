@@ -15,12 +15,6 @@
             {{ page.title }}
         </a>
     </td>
-    <td>{{ page.page_type }}</td>
-    <td>
-        {% for container in page.containers.all %}
-            {{ container.variable_name }}{% if not forloop.last %}<br />{% endif %}
-        {% endfor %}
-    </td>
     <td>
     {% if page.is_visible %}
         <span class="label label-success">{% trans "visible" %}</span> 
