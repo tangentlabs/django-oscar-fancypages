@@ -8,13 +8,16 @@ fancypages.dashboard = {
                 cursor: 'move',
                 handle: '.move',
                 connectWith: ".connectedSortable",
-                cursorAt: { top:0, left: 0 },
-                activate: function( event, ui ) {
-                  $('body').addClass('widget-move');
-                  $('.ui-sortable-placeholder').prepend(tooltip);
+                cursorAt: {
+                    top: 0,
+                    left: 0
                 },
-                deactivate: function( event, ui ) {
-                  $('body').removeClass('widget-move');
+                activate: function (event, ui) {
+                    $('body').addClass('widget-move');
+                    $('.ui-sortable-placeholder').prepend(tooltip);
+                },
+                deactivate: function (event, ui) {
+                    $('body').removeClass('widget-move');
                 },
                 update: function (ev, ui) {
                     var dropIndex = ui.item.index();
@@ -71,10 +74,10 @@ fancypages.dashboard = {
                 $.getJSON(addUrl, function (data) {
                     if (data.success) {
                         parent.fancypages.dashboard.reloadPreview();
-                        parent.fancypages.dashboard.loadWidgetForm(data.update_url, containerName);
                     } else {
                         parent.oscar.messages.error(data.reason);
                     }
+                    return false;
                 }).error(function () {
                     parent.oscar.messages.error(
                         "An error occured trying to add a new widget. Please try it again."
@@ -196,7 +199,7 @@ fancypages.dashboard = {
             ev.preventDefault();
 
             var fieldElem = $('input', this);
-            if (!fieldElem) { 
+            if (!fieldElem) {
                 return false;
             }
             var widgetId = $(this).parents('form').data('widget-id');
@@ -207,10 +210,10 @@ fancypages.dashboard = {
             previewField.html($(fieldElem).val());
         });
 
-        fancypages.dashboard.UpdateSize();
+        fancypages.dashboard.updateSize();
 
         // Function setting the height if window resizes
-        $(window).resize(fancypages.dashboard.UpdateSize);
+        $(window).resize(fancypages.dashboard.updateSize);
 
         // Initialise all the asset related stuff
         $("#asset-modal").live('shown', function () {
@@ -244,7 +247,6 @@ fancypages.dashboard = {
                     "Unable to load contents of url: " + url
                 );
             }
-            fancypages.dashboard.preview.init();
         });
     },
 
@@ -363,15 +365,15 @@ fancypages.dashboard = {
             $('div[id=widget_input_wrapper]').html("");
             $('#page-settings').show();
             $('.editor').animate({backgroundColor: "#444"}, 500);
-            fancypages.dashboard.UpdateSize();
+            fancypages.dashboard.updateSize();
         });
 
         $('body', previewDoc).css('margin-bottom', '600px').addClass('edit-page');
 
         fancypages.dashboard.carouselPosition();
-        
+
         fancypages.dashboard.mouseWidgetHover();
-        
+
     },
 
     /**
@@ -388,11 +390,12 @@ fancypages.dashboard = {
                         .delay(500)
                         .animate({backgroundColor: "#444"}, 500);
 
-            fancypages.dashboard.UpdateSize();
+            fancypages.dashboard.updateSize();
 
             if (options && 'success' in options) {
                 options.success();
             }
+            return false;
         });
     },
 
@@ -431,7 +434,7 @@ fancypages.dashboard = {
             submitButton.attr('disabled', false);
             submitButton.text(submitButton.data('original-text'));
             form.data('locked', false);
-            fancypages.dashboard.UpdateSize();
+            fancypages.dashboard.updateSize();
         });
     },
 
@@ -466,20 +469,19 @@ fancypages.dashboard = {
 
         fancypages.dashboard.scrollToWidget(editingWidget);
     },
-    
+
     mouseWidgetHover: function () {
         var previewDoc = fancypages.dashboard.getPreviewDocument(),
             widgetHover = $('.widget', previewDoc);
-        widgetHover.on('mouseenter', function(e){
-          $(e.target).parents('.widget').removeClass('widget-hover');
-          $(this).addClass('widget-hover');
+        widgetHover.on('mouseenter', function (e) {
+            $(e.target).parents('.widget').removeClass('widget-hover');
+            $(this).addClass('widget-hover');
         });
-        widgetHover.on('mouseleave', function(){
-          $(this).removeClass('widget-hover');
+        widgetHover.on('mouseleave', function () {
+            $(this).removeClass('widget-hover');
         });
     },
-    
-    
+
     /**
      * Reload the preview displayed in the iframe of the customise page.
      * A preview reload is necessary (or advised) whenever the content of
@@ -497,7 +499,7 @@ fancypages.dashboard = {
     },
 
     // Function setting the height of the IFrame and the Sidebar
-    UpdateSize: function () {
+    updateSize: function () {
         var pageHeight = $(window).height(),
             navBarTop = $('.navbar-accounts').outerHeight(),
             subBarTop = $('.navbar-primary').outerHeight(),
