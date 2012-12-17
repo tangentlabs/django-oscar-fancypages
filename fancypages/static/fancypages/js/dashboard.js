@@ -56,13 +56,6 @@ fancypages.dashboard = {
                 $(this).parents('div[id$=_modal]').remove();
             });
 
-            $("a[data-behaviours~=update-editor-field]").click(function (ev) {
-                ev.preventDefault();
-                var target = $(this).data('target');
-                var src = $(this).data('src');
-                $(target).val(src);
-            });
-
             // initialise modal for adding widget
             $('form[id$=add_widget_form] input[type=radio]').live('click', function (ev) {
                 ev.preventDefault();
@@ -192,6 +185,13 @@ fancypages.dashboard = {
         $("button[data-behaviours~=remove-modal]").live('click', function (ev) {
             ev.preventDefault();
             fancypages.dashboard.removeModal(this);
+        });
+
+        $("a[data-behaviours~=update-editor-field]").live('click', function (ev) {
+            ev.preventDefault();
+            var target = $(this).data('target');
+            var src = $(this).data('src');
+            $(target).val(src);
         });
 
         // attach live update listener to all regular input field
