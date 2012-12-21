@@ -1,5 +1,3 @@
-import os
-
 from django.db import models
 from django.utils import timezone
 from django.forms import ValidationError
@@ -9,6 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ImproperlyConfigured
 from django.contrib.contenttypes.models import ContentType
 from django.template import loader, RequestContext, Context
+from django.contrib.contenttypes.generic import GenericRelation
 
 from model_utils.managers import InheritanceManager
 from treebeard.mp_tree import MP_Node, MP_NodeQuerySet
@@ -196,6 +195,9 @@ class Page(MP_Node):
             curr_depth
         )
 
+    class Meta:
+        app_label = 'fancypages'
+
 
 class Container(models.Model):
     template_name = 'fancypages/base/container.html'
@@ -262,16 +264,8 @@ class Container(models.Model):
     def __unicode__(self):
         return u"Container '%s' in '%s'" % (self.variable_name, self.content_type)
 
-
-class OrderedContainer(Container):
-    display_order = models.PositiveIntegerField()
-
-    def __unicode__(self):
-        return u"Container #%d '%s' in '%s'" % (
-            self.display_order,
-            self.variable_name,
-            self.content_type
-        )
+    class Meta:
+        app_label = 'fancypages'
 
 
 class Widget(models.Model):
@@ -355,42 +349,20 @@ class Widget(models.Model):
 
     class Meta:
         ordering = ['display_order']
+        app_label = 'fancypages'
 
 
-#class ContainerWidget(Widget):
-#    """
-#    A widget that provides another container instead of an actual
-#    widget. It provides a way of nesting containers.
-#    """
-#    class Meta:
-#        abstract = True
+class LayoutWidget(Widget):
+    BOOTSTRAP_MAX_WIDTH = 12
+
+    containers = GenericRelation('fancypages.Container')
+
+    class Meta:
+        abstract = True
+        app_label = 'fancypages'
 
 
-class TextWidget(Widget):
-    name = _("Text")
-    code = 'text'
-    template_name = "fancypages/widgets/textwidget.html"
-
-    text = models.TextField(_("Text"), default="Your text goes here.")
-
-    def __unicode__(self):
-        return self.text[:20]
-
-
-class TitleTextWidget(Widget):
-    name = _("Title and text")
-    code = 'title-text'
-    template_name = "fancypages/widgets/titletextwidget.html"
-
-    title = models.CharField(_("Title"), max_length=100,
-                             default="Your title goes here.")
-    text = models.TextField(_("Text"), default="Your text goes here.")
-
-    def __unicode__(self):
-        return self.title
-
-
-class ImageMetaMixin(models.Model):
+class ImageMetadataMixin(models.Model):
     """
     Mixin for meta data for image widgets
     """
@@ -400,189 +372,7 @@ class ImageMetaMixin(models.Model):
 
     class Meta:
         abstract = True
+        app_label = 'fancypages'
 
-
-class ImageWidget(Widget, ImageMetaMixin):
-    name = _("Image")
-    code = 'image'
-    template_name = "fancypages/widgets/imagewidget.html"
-
-    image_asset = models.ForeignKey('assets.ImageAsset', verbose_name=_("Image asset"),
-                                    related_name="image_widgets", blank=True, null=True)
-
-    def __unicode__(self):
-        if self.image_asset:
-            return u"Image '%s'" % os.path.basename(self.image_asset.image.path)
-        return u"Image #%s" % self.id
-
-
-class SingleProductWidget(Widget):
-    name = _("Single Product")
-    code = 'single-product'
-    template_name = "fancypages/widgets/productwidget.html"
-
-    product = models.ForeignKey(
-        'catalogue.Product',
-        verbose_name=_("Single Product"), null=True, blank=False)
-
-    def __unicode__(self):
-        if self.product:
-            return u"Product '%s'" % self.product.upc
-        return u"Product '%s'" % self.id
-
-
-class HandPickedProductsPromotionWidget(Widget):
-    name = _("Hand Picked Products Promotion")
-    code = 'promotion-hand-picked-products'
-    template_name = "fancypages/widgets/promotionwidget.html"
-
-    promotion = models.ForeignKey(
-        'promotions.HandPickedProductList',
-        verbose_name=_("Hand Picked Products Promotion"), null=True, blank=False)
-
-    def __unicode__(self):
-        if self.promotion:
-            return u"Promotion '%s'" % self.promotion.pk
-        return u"Promotion '%s'" % self.id
-
-
-class AutomaticProductsPromotionWidget(Widget):
-    name = _("Automatic Products Promotion")
-    code = 'promotion-ordered-products'
-    template_name = "fancypages/widgets/promotionwidget.html"
-
-    promotion = models.ForeignKey(
-        'promotions.AutomaticProductList',
-        verbose_name=_("Automatic Products Promotion"), null=True, blank=False)
-
-    def __unicode__(self):
-        if self.promotion:
-            return u"Promotion '%s'" % self.promotion.pk
-        return u"Promotion '%s'" % self.id
-
-
-class OfferWidget(Widget):
-    name = _("Offer Products")
-    code = 'products-range'
-    template_name = "fancypages/widgets/offerwidget.html"
-
-    offer = models.ForeignKey(
-        'offer.ConditionalOffer',
-        verbose_name=_("Offer"), null=True, blank=False)
-
-    @property
-    def products(self):
-        range = self.offer.condition.range
-        if range.includes_all_products:
-            return Product.browsable.filter(is_discountable=True)
-        return range.included_products.filter(is_discountable=True)
-
-    def __unicode__(self):
-        if self.offer:
-            return u"Offer '%s'" % self.offer.pk
-        return u"Offer '%s'" % self.id
-
-
-class ImageAndTextWidget(Widget, ImageMetaMixin):
-    name = _("Image and text")
-    code = 'image-text'
-    template_name = "fancypages/widgets/imageandtextwidget.html"
-
-    image_asset = models.ForeignKey('assets.ImageAsset', verbose_name=_("Image asset"),
-                                    related_name="image_text_widgets", blank=True, null=True)
-
-    text = models.CharField(_("Text"), max_length=2000,
-                                   default="Your text goes here.")
-
-    def __unicode__(self):
-        if self.image_asset:
-            return u"Image with text '%s'" % os.path.basename(self.image_asset.image.path)
-        return u"Image with text #%s" % self.id
-
-
-class TabWidget(Widget):
-    name = _("Tabbed block")
-    code = 'tabbed-block'
-    context_object_name = "widget"
-    template_name = "fancypages/widgets/tabbedblockwidget.html"
-
-    tabs = generic.GenericRelation('fancypages.OrderedContainer')
-
-    def save(self, *args, **kwargs):
-        super(TabWidget, self).save(*args, **kwargs)
-        if not self.tabs.count():
-            OrderedContainer.objects.create(page_object=self, display_order=0,
-                                            title=_("New Tab"))
-
-
-class VideoWidget(Widget):
-    name = _("Video")
-    code = 'video'
-    template_name = "fancypages/widgets/video.html"
-
-    SOURCE_YOUTUBE = 'youtube'
-    SOURCES = (
-        (SOURCE_YOUTUBE, _('YouTube video')),
-    )
-
-    source = models.CharField(_('Video Type'), choices=SOURCES, max_length=50)
-    video_code = models.CharField(_('Video Code'), max_length=50)
-
-    def __unicode__(self):
-        if self.source:
-            return "Video '%s'" % self.video_code
-        return "Video #%s" % self.id
-
-
-class TwitterWidget(Widget):
-    name = _("Twitter")
-    code = 'twitter'
-    template_name = "fancypages/widgets/twitter.html"
-
-    username = models.CharField(_('Twitter username'), max_length=50)
-    max_tweets = models.PositiveIntegerField(_('Maximum tweets'), default=5)
-
-    def __unicode__(self):
-        if self.username:
-            return u"Twitter user '@%s'" % self.username
-        return u"Twitter: %s" % self.id
-
-
-class LayoutWidget(Widget):
-    BOOTSTRAP_MAX_WIDTH = 12
-
-    containers = generic.GenericRelation('fancypages.Container')
     class Meta:
-        abstract = True
-
-
-class TwoColumnLayoutWidget(LayoutWidget):
-    name = _("Two column layout")
-    code = 'two-column-layout'
-    template_name = "fancypages/widgets/two_column_layout.html"
-
-    LEFT_WIDTH_CHOICES = [(x, x) for x in range(1, 12)]
-    left_width = models.PositiveIntegerField(_("Left Width"), max_length=3,
-                                             choices=LEFT_WIDTH_CHOICES, default=6)
-
-    @property
-    def left_span(self):
-        """ Returns the bootstrap span class for the left container. """
-        return u'span%d' % self.left_width
-
-    @property
-    def right_span(self):
-        """ Returns the bootstrap span class for the left container. """
-        return u'span%d' % (self.BOOTSTRAP_MAX_WIDTH - self.left_width)
-
-
-class ThreeColumnLayoutWidget(LayoutWidget):
-    name = _("Three column layout")
-    code = 'three-column-layout'
-    template_name = "fancypages/widgets/three_column_layout.html"
-
-
-class FourColumnLayoutWidget(LayoutWidget):
-    name = _("Four column layout")
-    code = 'four-column-layout'
-    template_name = "fancypages/widgets/four_column_layout.html"
+        app_label = 'fancypages'
