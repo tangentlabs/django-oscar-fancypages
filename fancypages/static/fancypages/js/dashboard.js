@@ -1,4 +1,5 @@
 var fancypages = fancypages || {};
+fancypages.apiBaseUrl = "/api/v1/";
 
 fancypages.dashboard = {
     preview: {
@@ -272,28 +273,23 @@ fancypages.dashboard = {
         $('form[id$=update_widget_form]').each(function (idx, form) {
             var selection = $("select", form);
             var containerName = $(form).attr('id').replace('_update_widget_form', '');
-
-            var widgetUrl = "/dashboard/fancypages/widget/update/" + selection.val() + "/";
-            fancypages.dashboard.loadWidgetForm(widgetUrl, containerName);
+            fancypages.dashboard.loadWidgetForm(selection.val(), containerName);
 
             selection.change(function (ev) {
-                var widgetUrl = "/dashboard/fancypages/widget/update/" + $(this).val() + "/";
-                fancypages.dashboard.loadWidgetForm(widgetUrl, containerName);
+                fancypages.dashboard.loadWidgetForm($(this).val(), containerName);
             });
         });
 
 
         $('.edit-button', previewDoc).click(function (ev) {
             var widget = $(this).closest('.widget');
-            var widgetUrl = "/dashboard/fancypages/widget/update/" + $(widget).data('widget-id') + "/";
-
             fancypages.dashboard.scrollToWidget(widget);
 
             // Add Class to widget editing
             $('.widget', previewDoc).removeClass('editing');
             widget.addClass('editing');
 
-            fancypages.dashboard.loadWidgetForm(widgetUrl, $(widget).data('container-name'), {
+            fancypages.dashboard.loadWidgetForm($(widget).data('widget-id'), $(widget).data('container-name'), {
                 success: function () {
                     // attach slider to column width slider
                     var sliderSelection = $('#id_left_width');
@@ -379,7 +375,8 @@ fancypages.dashboard = {
     /**
      * Load the the widget form for the specified url
      */
-    loadWidgetForm: function (url, containerName, options) {
+    loadWidgetForm: function (widgetId, containerName, options) {
+        var url = fancypages.apiBaseUrl + 'widget/' + widgetId;
         $.ajax(url).done(function (data) {
             var widgetWrapper = $('div[id=widget_input_wrapper]');
             widgetWrapper.html(data);

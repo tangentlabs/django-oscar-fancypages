@@ -5,6 +5,7 @@ from django.conf.urls import patterns, include, url
 from oscar.app import shop
 
 import fancypages.urls
+
 admin.autodiscover()
 
 urlpatterns = patterns('',
