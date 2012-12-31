@@ -1,5 +1,3 @@
-import re
-
 from django.db.models import get_model
 from django.forms.models import modelform_factory
 from django.template import loader, RequestContext
@@ -11,12 +9,44 @@ from fancypages.dashboard import forms
 Widget = get_model('fancypages', 'Widget')
 
 
-class WidgetSerializer(serializers.ModelSerializer):
-    update_form_template = "fancypages/dashboard/widget_update.html"
+class RenderFormFieldMixin(object):
+    form_template_name = None
+    context_object_name = 'object'
+
+    def get_rendered_form(self, obj):
+        request = self.context.get('request')
+        if not request or 'includeForm' not in request.GET:
+            return u''
+
+        form_class = self.get_form_class(obj)
+        form_kwargs = self.get_form_kwargs(obj)
+
+        tmpl = loader.get_template(self.form_template_name)
+        ctx = RequestContext(
+            self.context['request'],
+            {
+                self.context_object_name: obj,
+                'form': form_class(**form_kwargs),
+            }
+        )
+        return tmpl.render(ctx)
+
+    def get_form_kwargs(self, obj):
+        return {
+            'instance': obj,
+        }
+
+    def get_form_class(self, obj):
+        return modelform_factory(obj.__class__)
+
+
+class WidgetSerializer(RenderFormFieldMixin, serializers.ModelSerializer):
+    form_template_name = "fancypages/dashboard/widget_update.html"
+    context_object_name = 'widget'
 
     display_order = serializers.IntegerField(required=False, default=0)
-    form_markup = serializers.SerializerMethodField('get_widget_form')
     code = serializers.CharField(required=True)
+    rendered_form = serializers.SerializerMethodField('get_rendered_form')
 
     def restore_object(self, attrs, instance=None):
         code = attrs.pop('code')
@@ -47,22 +77,6 @@ class WidgetSerializer(serializers.ModelSerializer):
             forms.WidgetForm
         )
         return modelform_factory(model, form=form_class)
-
-    def get_widget_form(self, obj):
-        request = self.context.get('request')
-        if not request or 'includeForm' not in request.GET:
-            return u''
-
-        tmpl = loader.get_template(self.update_form_template)
-        ctx = RequestContext(
-            self.context['request'],
-            {
-                'object': obj,
-                'widget': obj,
-                'form': self.get_form_class(obj)(instance=obj)
-            }
-        )
-        return tmpl.render(ctx)
 
     class Meta:
         model = Widget

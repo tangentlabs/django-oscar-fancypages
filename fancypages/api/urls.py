@@ -11,4 +11,9 @@ urlpatterns = patterns('',
         views.WidgetRetrieveUpdateDestroyView.as_view(),
         name='widget-retrieve-update-destroy'
     ),
+    url(
+        r'^widget-types$',
+        views.WidgetTypesView.as_view(),
+        name='widget-type-list'
+    ),
 )

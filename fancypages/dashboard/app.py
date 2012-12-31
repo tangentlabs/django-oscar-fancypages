@@ -29,7 +29,6 @@ class FancypagesDashboardApplication(Application):
     page_preview_view = views.PagePreviewView
     page_select_view = views.PageSelectView
 
-    widget_select_view = views.WidgetSelectView
     widget_update_view = views.WidgetUpdateView
     widget_delete_view = views.WidgetDeleteView
     widget_move_view = views.WidgetMoveView
@@ -80,10 +79,6 @@ class FancypagesDashboardApplication(Application):
                 name='page-select'
             ),
 
-            url(
-                r'^widget/(?P<container_id>\d+)/select/$',
-                self.widget_select_view.as_view(),
-                name='widget-select'),
             url(
                 r'^widget/update/(?P<pk>\d+)/$',
                 self.widget_update_view.as_view(),

@@ -113,27 +113,6 @@ class FancypagesMixin(object):
             raise http.Http404
 
 
-class WidgetSelectView(generic.ListView):
-    model = Widget
-    template_name = "fancypages/dashboard/widget_select.html"
-
-    def get(self, request, *args, **kwargs):
-        container_id = self.kwargs.get('container_id')
-        self.container = Container.objects.get(id=container_id)
-        return super(WidgetSelectView, self).get(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        container_id = self.kwargs.get('container_id')
-        self.container = Container.objects.get(id=container_id)
-        return super(WidgetSelectView, self).post(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        ctx = super(WidgetSelectView, self).get_context_data(**kwargs)
-        ctx['container'] = self.container
-        ctx['add_widget_form'] = forms.WidgetCreateSelectForm()
-        return ctx
-
-
 class WidgetUpdateView(generic.UpdateView, FancypagesMixin):
     model = Widget
     context_object_name = 'widget'

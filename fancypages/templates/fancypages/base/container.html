@@ -25,7 +25,8 @@
        data-behaviours="load-modal"
        class="btn btn-large"
        data-target="#{{ container.variable_name }}_modal"
-       href="{% url fp-dashboard:widget-select container.id %}">
+       href="{% url fp-api:widget-type-list %}"
+       data-container-id="{{ container.id }}">
        <i class="icon-plus"></i> Add content
     </a>
 </div>

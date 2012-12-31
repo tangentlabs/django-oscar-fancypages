@@ -64,23 +64,27 @@ fancypages.dashboard = {
                 var form = $(this).parents('form');
                 var containerName = $(form).attr('id').replace('_add_widget_form', '');
 
-                $.ajax($(form).attr('action'), {
+                //FIXME: this requires proper CSRF token handling when authentication
+                //is switched on in DRF
+                console.log('container id', $(form).data('container-id'));
+                $.ajax({
+                    url: $(form).attr('action'),
                     type: 'POST',
                     dataType: 'json',
                     data: {
                         container: $(form).data('container-id'),
                         code: $(this).val()
-                    }
-                    //FIXME: this requires proper CSRF token handling when authentication
-                    //is switched on in DRF
-                }).done(function (data) {
-                    parent.fancypages.dashboard.reloadPreview();
-                }).fail(function (data) {
-                    parent.oscar.messages.error(
-                        "An error occured trying to add a new widget. Please try it again."
-                    );
-                });
 
+                    },
+                    success: function (data) {
+                        parent.fancypages.dashboard.reloadPreview();
+                    },
+                    error: function () {
+                        parent.oscar.messages.error(
+                            "An error occured trying to add a new widget. Please try it again."
+                        );
+                    }
+                });
                 $(this).parents('div[id$=_modal]').remove();
             });
 
@@ -111,7 +115,6 @@ fancypages.dashboard = {
 
     editor: {
         init: function () {
-
             var wrapperElement = $('div[id=widget_input_wrapper]') || document;
 
             // initialise wysihtml5 rich-text for editor
@@ -242,14 +245,18 @@ fancypages.dashboard = {
     },
 
     loadModal: function (elem) {
-        var target = $(elem).data('target');
-        var url = $(elem).attr('href');
-
-        return $(target).load(url, function (response, status, xhr) {
-            if (status == "error") {
-                parent.oscar.messages.error(
-                    "Unable to load contents of url: " + url
-                );
+        $.ajax({
+            url: $(elem).attr('href'),
+            type: 'GET',
+            data: {
+                container: $(elem).data('container-id')
+            },
+            success: function (data) {
+                var target = $(elem).data('target');
+                $(target).html(data.rendered_form);
+            },
+            error: function () {
+                parent.oscar.messages.error("Unable to load list of available widgets.");
             }
         });
     },
@@ -330,22 +337,23 @@ fancypages.dashboard = {
         $('div.delete', previewDoc).click(function (ev) {
             var widget = $(this).parents('.widget');
 
-            var deleteUrl = '/dashboard/fancypages/widget/delete/' + $(widget).data('widget-id') + "/";
-
-            $.ajax(deleteUrl)
-                .done(function (data) {
+            $.ajax({
+                url: 'api/v1/widget/' + $(widget).data('widget-id'),
+                type: 'DELETE',
+                success: function (data) {
                     var widgetWrapper = $('div[id=widget_input_wrapper]');
                     widgetWrapper.after(data);
 
                     $(data).load(function () {
                         $(this).modal('show');
                     });
-                })
-                .error(function () {
+                },
+                error: function () {
                     parent.oscar.messages.error(
                         "An error occured trying to delete a widget. Please try it again."
                     );
-                });
+                }
+            });
         });
 
         // Add / removed page elements for page preview
@@ -387,7 +395,7 @@ fancypages.dashboard = {
             },
             function (data) {
                 var widgetWrapper = $('div[id=widget_input_wrapper]');
-                widgetWrapper.html(data.form_markup);
+                widgetWrapper.html(data.rendered_form);
                 $('#page-settings').hide();
 
                 fancypages.dashboard.editor.init();
@@ -422,8 +430,8 @@ fancypages.dashboard = {
         }
         form.data('locked', true);
         $.ajax({
-            type: "POST",
             url: form.attr('action'),
+            type: "POST",
             data: form.serialize(),
             success: function (data) {
                 $('div[id=widget_input_wrapper]').html("");

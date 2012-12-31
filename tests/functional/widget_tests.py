@@ -86,7 +86,7 @@ class TestAWidget(test.FancyPagesWebTest):
         container = self.page.get_container_from_name('page-container')
         num_widgets = container.widgets.count()
         response = self.post(
-            reverse('widget-list'),
+            reverse('fp-api:widget-list'),
             params={
                 'container': container.id,
                 'code': self.text_widget.code,
