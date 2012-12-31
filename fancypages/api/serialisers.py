@@ -16,6 +16,28 @@ class WidgetSerializer(serializers.ModelSerializer):
 
     display_order = serializers.IntegerField(required=False, default=0)
     form_markup = serializers.SerializerMethodField('get_widget_form')
+    code = serializers.CharField(required=True)
+
+    def restore_object(self, attrs, instance=None):
+        code = attrs.pop('code')
+
+        if instance is None and code is not None:
+            widget_class = self.get_widget_class(code)
+            if widget_class:
+                self.opts.model = widget_class
+
+        return super(WidgetSerializer, self).restore_object(attrs, instance)
+
+    def get_widget_class(self, code):
+        model = None
+        for widget_class in Widget.itersubclasses():
+            if widget_class._meta.abstract:
+                continue
+
+            if widget_class.code == code:
+                model = widget_class
+                break
+        return model
 
     def get_form_class(self, obj):
         model = obj.__class__

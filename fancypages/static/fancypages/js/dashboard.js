@@ -63,16 +63,19 @@ fancypages.dashboard = {
 
                 var form = $(this).parents('form');
                 var containerName = $(form).attr('id').replace('_add_widget_form', '');
-                var addUrl = $(form).attr('action') + $(this).val() + '/';
 
-                $.getJSON(addUrl, function (data) {
-                    if (data.success) {
-                        parent.fancypages.dashboard.reloadPreview();
-                    } else {
-                        parent.oscar.messages.error(data.reason);
+                $.ajax($(form).attr('action'), {
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        container: $(form).data('container-id'),
+                        code: $(this).val()
                     }
-                    return false;
-                }).error(function () {
+                    //FIXME: this requires proper CSRF token handling when authentication
+                    //is switched on in DRF
+                }).done(function (data) {
+                    parent.fancypages.dashboard.reloadPreview();
+                }).fail(function (data) {
                     parent.oscar.messages.error(
                         "An error occured trying to add a new widget. Please try it again."
                     );

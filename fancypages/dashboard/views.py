@@ -254,39 +254,6 @@ class WidgetMoveView(JSONResponseMixin, generic.edit.BaseDetailView,
         }
 
 
-class ContainerAddWidgetView(JSONResponseMixin, generic.edit.BaseDetailView,
-                             FancypagesMixin):
-    model = Container
-
-    def get_context_data(self, **kwargs):
-        widget_code = self.kwargs.get('code', None)
-        if widget_code is None:
-            return {
-                'success': False,
-                'reason': "could not find valid widget code"
-            }
-
-        model = self.get_widget_class()
-        if model is None:
-            return {
-                'success': False,
-                'reason': "could not find widget with code %s" % widget_code
-            }
-
-        # create a new widget and add it to the given container
-        widget = model.objects.create(
-            container=self.object,
-            display_order=self.object.widgets.count(),
-        )
-        return {
-            'success': True,
-            'update_url': reverse(
-                'fp-dashboard:widget-update',
-                args=(widget.id,)
-            )
-        }
-
-
 class WidgetAddTabView(JSONResponseMixin, generic.edit.BaseDetailView,
                  FancypagesMixin):
     model = TabWidget
