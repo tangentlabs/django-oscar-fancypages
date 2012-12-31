@@ -18,7 +18,6 @@ class ApiV1View(APIView):
         """
         return Response({
             'widgets': reverse('widget-list', request=request),
-            #'groups': reverse('group-list', request=request),
         })
 
 

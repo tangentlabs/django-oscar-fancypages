@@ -376,24 +376,30 @@ fancypages.dashboard = {
      * Load the the widget form for the specified url
      */
     loadWidgetForm: function (widgetId, containerName, options) {
-        var url = fancypages.apiBaseUrl + 'widget/' + widgetId;
-        $.ajax(url).done(function (data) {
-            var widgetWrapper = $('div[id=widget_input_wrapper]');
-            widgetWrapper.html(data);
-            $('#page-settings').hide();
+        var widgetUrl = fancypages.apiBaseUrl + 'widget/' + widgetId;
+        $.getJSON(
+            widgetUrl,
+            {
+                includeForm: true
+            },
+            function (data) {
+                var widgetWrapper = $('div[id=widget_input_wrapper]');
+                widgetWrapper.html(data.form_markup);
+                $('#page-settings').hide();
 
-            fancypages.dashboard.editor.init();
-            $('.editor').animate({backgroundColor: "#555"}, 500)
-                        .delay(500)
-                        .animate({backgroundColor: "#444"}, 500);
+                fancypages.dashboard.editor.init();
+                $('.editor').animate({backgroundColor: "#555"}, 500)
+                            .delay(500)
+                            .animate({backgroundColor: "#444"}, 500);
 
-            fancypages.dashboard.updateSize();
+                fancypages.dashboard.updateSize();
 
-            if (options && 'success' in options) {
-                options.success();
+                if (options && 'success' in options) {
+                    options.success();
+                }
+                return false;
             }
-            return false;
-        });
+        );
     },
 
     /**
