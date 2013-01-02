@@ -1,4 +1,4 @@
-from django.db.models import get_model
+from django.db.models import get_model, Q
 from django.forms.models import modelform_factory
 from django.template import loader, RequestContext
 
@@ -44,14 +44,14 @@ class WidgetSerializer(RenderFormFieldMixin, serializers.ModelSerializer):
     form_template_name = "fancypages/dashboard/widget_update.html"
     context_object_name = 'widget'
 
-    display_order = serializers.IntegerField(required=False, default=0)
+    display_order = serializers.IntegerField(required=False, default=-1)
     code = serializers.CharField(required=True)
     rendered_form = serializers.SerializerMethodField('get_rendered_form')
 
     def restore_object(self, attrs, instance=None):
         code = attrs.pop('code')
 
-        if instance is None and code is not None:
+        if instance is None:
             widget_class = self.get_widget_class(code)
             if widget_class:
                 self.opts.model = widget_class
@@ -80,3 +80,12 @@ class WidgetSerializer(RenderFormFieldMixin, serializers.ModelSerializer):
 
     class Meta:
         model = Widget
+
+
+class WidgetMoveSerializer(serializers.ModelSerializer):
+    container = serializers.PrimaryKeyRelatedField()
+    index = serializers.IntegerField(source='display_order')
+
+    class Meta:
+        model = Widget
+        read_only_fields = ['display_order']

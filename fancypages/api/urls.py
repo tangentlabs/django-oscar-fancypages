@@ -12,6 +12,11 @@ urlpatterns = patterns('',
         name='widget-retrieve-update-destroy'
     ),
     url(
+        r'^widget/(?P<pk>\d+)/move$',
+        views.WidgetMoveView.as_view(),
+        name='widget-move'
+    ),
+    url(
         r'^widget-types$',
         views.WidgetTypesView.as_view(),
         name='widget-type-list'

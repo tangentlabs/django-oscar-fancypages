@@ -45,15 +45,6 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('fancypages', ['Widget'])
 
-        # Adding model 'ImageMetadataMixin'
-        db.create_table('fancypages_imagemetadatamixin', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('title', self.gf('django.db.models.fields.CharField')(max_length=100, null=True, blank=True)),
-            ('alt_text', self.gf('django.db.models.fields.CharField')(max_length=100, null=True, blank=True)),
-            ('link', self.gf('django.db.models.fields.CharField')(max_length=500, null=True, blank=True)),
-        ))
-        db.send_create_signal('fancypages', ['ImageMetadataMixin'])
-
         # Adding model 'OrderedContainer'
         db.create_table('fancypages_orderedcontainer', (
             ('container_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Container'], unique=True, primary_key=True)),
@@ -103,16 +94,20 @@ class Migration(SchemaMigration):
 
         # Adding model 'ImageWidget'
         db.create_table('fancypages_imagewidget', (
-            ('imagemetadatamixin_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.ImageMetadataMixin'], unique=True)),
             ('widget_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Widget'], unique=True, primary_key=True)),
+            ('title', self.gf('django.db.models.fields.CharField')(max_length=100, null=True, blank=True)),
+            ('alt_text', self.gf('django.db.models.fields.CharField')(max_length=100, null=True, blank=True)),
+            ('link', self.gf('django.db.models.fields.CharField')(max_length=500, null=True, blank=True)),
             ('image_asset', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='image_widgets', null=True, to=orm['assets.ImageAsset'])),
         ))
         db.send_create_signal('fancypages', ['ImageWidget'])
 
         # Adding model 'ImageAndTextWidget'
         db.create_table('fancypages_imageandtextwidget', (
-            ('imagemetadatamixin_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.ImageMetadataMixin'], unique=True)),
             ('widget_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Widget'], unique=True, primary_key=True)),
+            ('title', self.gf('django.db.models.fields.CharField')(max_length=100, null=True, blank=True)),
+            ('alt_text', self.gf('django.db.models.fields.CharField')(max_length=100, null=True, blank=True)),
+            ('link', self.gf('django.db.models.fields.CharField')(max_length=500, null=True, blank=True)),
             ('image_asset', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='image_text_widgets', null=True, to=orm['assets.ImageAsset'])),
             ('text', self.gf('django.db.models.fields.CharField')(default='Your text goes here.', max_length=2000)),
         ))
@@ -172,9 +167,6 @@ class Migration(SchemaMigration):
 
         # Deleting model 'Widget'
         db.delete_table('fancypages_widget')
-
-        # Deleting model 'ImageMetadataMixin'
-        db.delete_table('fancypages_imagemetadatamixin')
 
         # Deleting model 'OrderedContainer'
         db.delete_table('fancypages_orderedcontainer')
@@ -406,23 +398,20 @@ class Migration(SchemaMigration):
             'widget_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['fancypages.Widget']", 'unique': 'True', 'primary_key': 'True'})
         },
         'fancypages.imageandtextwidget': {
-            'Meta': {'ordering': "['display_order']", 'object_name': 'ImageAndTextWidget', '_ormbases': ['fancypages.Widget', 'fancypages.ImageMetadataMixin']},
+            'Meta': {'object_name': 'ImageAndTextWidget', '_ormbases': ['fancypages.Widget']},
+            'alt_text': ('django.db.models.fields.CharField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
             'image_asset': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'image_text_widgets'", 'null': 'True', 'to': "orm['assets.ImageAsset']"}),
-            'imagemetadatamixin_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['fancypages.ImageMetadataMixin']", 'unique': 'True'}),
+            'link': ('django.db.models.fields.CharField', [], {'max_length': '500', 'null': 'True', 'blank': 'True'}),
             'text': ('django.db.models.fields.CharField', [], {'default': "'Your text goes here.'", 'max_length': '2000'}),
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
             'widget_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['fancypages.Widget']", 'unique': 'True', 'primary_key': 'True'})
         },
-        'fancypages.imagemetadatamixin': {
-            'Meta': {'object_name': 'ImageMetadataMixin'},
-            'alt_text': ('django.db.models.fields.CharField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'link': ('django.db.models.fields.CharField', [], {'max_length': '500', 'null': 'True', 'blank': 'True'}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'})
-        },
         'fancypages.imagewidget': {
-            'Meta': {'ordering': "['display_order']", 'object_name': 'ImageWidget', '_ormbases': ['fancypages.Widget', 'fancypages.ImageMetadataMixin']},
+            'Meta': {'object_name': 'ImageWidget', '_ormbases': ['fancypages.Widget']},
+            'alt_text': ('django.db.models.fields.CharField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
             'image_asset': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'image_widgets'", 'null': 'True', 'to': "orm['assets.ImageAsset']"}),
-            'imagemetadatamixin_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['fancypages.ImageMetadataMixin']", 'unique': 'True'}),
+            'link': ('django.db.models.fields.CharField', [], {'max_length': '500', 'null': 'True', 'blank': 'True'}),
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
             'widget_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['fancypages.Widget']", 'unique': 'True', 'primary_key': 'True'})
         },
         'fancypages.offerwidget': {

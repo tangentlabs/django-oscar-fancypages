@@ -1,5 +1,4 @@
 from django.db.models import get_model
-from django.db.models import get_model
 from django.template import loader, RequestContext
 
 from rest_framework import status
@@ -34,6 +33,11 @@ class WidgetListView(generics.ListCreateAPIView):
     authentication_classes = (SessionAuthentication,)
     permission_classes = (IsAdminUser,)
 
+    def pre_save(self, obj):
+        if obj.display_order < 0:
+            obj.display_order = None
+        return obj
+
     def get_queryset(self):
         return super(WidgetListView, self).get_queryset().select_subclasses()
 
@@ -49,6 +53,21 @@ class WidgetRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         return self.model.objects.get_subclass(
             id=self.kwargs.get(self.pk_url_kwarg)
         )
+
+
+class WidgetMoveView(generics.UpdateAPIView):
+    model = Widget
+    serializer_class = serialisers.WidgetMoveSerializer
+
+    authentication_classes = (SessionAuthentication,)
+    permission_classes = (IsAdminUser,)
+
+    def get_object(self):
+        widget = self.model.objects.get_subclass(
+            id=self.kwargs.get(self.pk_url_kwarg)
+        )
+        widget.prev_container = widget.container
+        return widget
 
 
 class WidgetTypesView(APIView):

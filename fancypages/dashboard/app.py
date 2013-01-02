@@ -31,7 +31,6 @@ class FancypagesDashboardApplication(Application):
 
     widget_update_view = views.WidgetUpdateView
     widget_delete_view = views.WidgetDeleteView
-    widget_move_view = views.WidgetMoveView
     widget_add_tab_view = views.WidgetAddTabView
 
     content_customise_view = views.ContentCustomiseView
@@ -82,20 +81,18 @@ class FancypagesDashboardApplication(Application):
             url(
                 r'^widget/update/(?P<pk>\d+)/$',
                 self.widget_update_view.as_view(),
-                name='widget-update'),
+                name='widget-update'
+            ),
             url(
                 r'^widget/delete/(?P<pk>\d+)/$',
                 self.widget_delete_view.as_view(),
-                name='widget-delete'),
-            url(
-                r'^widget/move/(?P<pk>\d+)/to/(?P<container_pk>\d+)/(?P<index>\d+)/$',
-                self.widget_move_view.as_view(),
-                name='widget-move'),
+                name='widget-delete'
+            ),
             url(
                 r'^widget/(?P<pk>\d+)/add-tab/$',
                 self.widget_add_tab_view.as_view(),
-                name='widget-add-tab'),
-
+                name='widget-add-tab'
+            ),
             url(
                 r'^content/(?P<content_type_pk>\d+)/customise/(?P<pk>\d+)/$',
                 self.content_customise_view.as_view(),

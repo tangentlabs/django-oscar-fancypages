@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q
 from django.utils import timezone
 from django.forms import ValidationError
 from django.contrib.contenttypes import generic
@@ -342,7 +343,45 @@ class Widget(models.Model):
     def save(self, **kwargs):
         if self.display_order is None:
             self.display_order = self.container.widgets.count()
+
+        try:
+            db_widget = Widget.objects.get(pk=self.pk)
+        except Widget.DoesNotExist:
+            db_widget = self
+
+        db_container = db_widget.container
+        db_display_order = db_widget.display_order
+
         super(Widget, self).save(**kwargs)
+
+        if db_display_order != self.display_order \
+           or self.container != db_container:
+            self.fix_widget_positions(db_display_order, db_container)
+
+    def fix_widget_positions(self, old_position, old_container):
+        if self.container != old_container:
+            for idx, widget in enumerate(old_container.widgets.all()):
+                widget.display_order = idx
+                widget.save()
+
+        if self.display_order > old_position:
+            widgets = self.container.widgets.filter(
+                ~Q(id=self.id) &
+                Q(display_order__lte=self.display_order)
+            )
+            for idx, widget in enumerate(widgets):
+                widget.display_order = idx
+                widget.save()
+
+        else:
+            widgets = self.container.widgets.filter(
+                ~Q(id=self.id) &
+                Q(display_order__gte=self.display_order)
+            )
+            for idx, widget in enumerate(widgets):
+                widget.display_order = self.display_order + idx + 1
+                widget.save()
+
 
     def __unicode__(self):
         return "Widget #%s" % self.id
@@ -372,7 +411,4 @@ class ImageMetadataMixin(models.Model):
 
     class Meta:
         abstract = True
-        app_label = 'fancypages'
-
-    class Meta:
         app_label = 'fancypages'

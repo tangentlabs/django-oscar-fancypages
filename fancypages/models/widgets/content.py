@@ -36,7 +36,7 @@ class TitleTextWidget(Widget):
         app_label = 'fancypages'
 
 
-class ImageWidget(Widget, ImageMetadataMixin):
+class ImageWidget(ImageMetadataMixin, Widget):
     name = _("Image")
     code = 'image'
     template_name = "fancypages/widgets/imagewidget.html"
@@ -53,16 +53,24 @@ class ImageWidget(Widget, ImageMetadataMixin):
         app_label = 'fancypages'
 
 
-class ImageAndTextWidget(Widget, ImageMetadataMixin):
+class ImageAndTextWidget(ImageMetadataMixin, Widget):
     name = _("Image and text")
     code = 'image-text'
     template_name = "fancypages/widgets/imageandtextwidget.html"
 
-    image_asset = models.ForeignKey('assets.ImageAsset', verbose_name=_("Image asset"),
-                                    related_name="image_text_widgets", blank=True, null=True)
+    image_asset = models.ForeignKey(
+        'assets.ImageAsset',
+        verbose_name=_("Image asset"),
+        related_name="image_text_widgets",
+        blank=True,
+        null=True,
+    )
 
-    text = models.CharField(_("Text"), max_length=2000,
-                                   default="Your text goes here.")
+    text = models.CharField(
+        _("Text"),
+        max_length=2000,
+        default="Your text goes here."
+    )
 
     def __unicode__(self):
         if self.image_asset:

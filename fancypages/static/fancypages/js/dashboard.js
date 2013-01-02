@@ -1,5 +1,18 @@
-var fancypages = fancypages || {};
-fancypages.apiBaseUrl = "/api/v1/";
+var fancypages = fancypages || {
+    apiBaseUrl: "/api/v1/",
+    getCsrfToken: function () {
+        // Extract CSRF token from cookies
+        var cookies = document.cookie.split(';');
+        var csrf_token = null;
+        $.each(cookies, function (index, cookie) {
+            cookieParts = $.trim(cookie).split('=');
+            if (cookieParts[0] == 'csrftoken') {
+                csrfToken = cookieParts[1];
+            }
+        });
+        return csrfToken;
+    }
+};
 
 fancypages.dashboard = {
     preview: {
@@ -23,22 +36,27 @@ fancypages.dashboard = {
                 update: function (ev, ui) {
                     var dropIndex = ui.item.index();
                     var widgetId = ui.item.data('widget-id');
-
                     var containerId = ui.item.parents('.sortable').data('container-id');
+                    var moveUrl = fancypages.apiBaseUrl + 'widget/' + widgetId + '/move';
 
-                    var moveUrl = '/dashboard/fancypages/widget/move/' + widgetId + '/to/';
-                    moveUrl += containerId + '/' + dropIndex + '/';
-
-                    $.getJSON(moveUrl, function (data) {
-                        if (data.success) {
+                    $.ajax({
+                        url: moveUrl,
+                        type: 'PUT',
+                        data: {
+                            container: containerId,
+                            index: dropIndex
+                        },
+                        beforeSend: function (xhr, settings) {
+                            xhr.setRequestHeader("X-CSRFToken", fancypages.getCsrfToken());
+                        },
+                        success: function (data) {
                             parent.fancypages.dashboard.reloadPreview();
-                        } else {
-                            parent.oscar.messages.error(data.reason);
+                        },
+                        error: function () {
+                            parent.oscar.messages.error(
+                                "An error occured trying to move the widget. Please try it again."
+                            );
                         }
-                    }).error(function () {
-                        parent.oscar.messages.error(
-                            "An error occured trying to move the widget. Please try it again."
-                        );
                     });
                 }
             }).disableSelection();
@@ -64,9 +82,6 @@ fancypages.dashboard = {
                 var form = $(this).parents('form');
                 var containerName = $(form).attr('id').replace('_add_widget_form', '');
 
-                //FIXME: this requires proper CSRF token handling when authentication
-                //is switched on in DRF
-                console.log('container id', $(form).data('container-id'));
                 $.ajax({
                     url: $(form).attr('action'),
                     type: 'POST',
@@ -75,6 +90,9 @@ fancypages.dashboard = {
                         container: $(form).data('container-id'),
                         code: $(this).val()
 
+                    },
+                    beforeSend: function (xhr, settings) {
+                        xhr.setRequestHeader("X-CSRFToken", fancypages.getCsrfToken());
                     },
                     success: function (data) {
                         parent.fancypages.dashboard.reloadPreview();
@@ -378,9 +396,7 @@ fancypages.dashboard = {
         $('body', previewDoc).css('margin-bottom', '600px').addClass('edit-page');
 
         fancypages.dashboard.carouselPosition();
-
         fancypages.dashboard.mouseWidgetHover();
-
     },
 
     /**
