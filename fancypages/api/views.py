@@ -7,6 +7,8 @@ from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.reverse import reverse
 from rest_framework.response import Response
+from rest_framework.permissions import IsAdminUser
+from rest_framework.authentication import SessionAuthentication
 
 from fancypages.dashboard import forms
 from fancypages.api import serialisers
@@ -16,6 +18,8 @@ Container = get_model('fancypages', 'Container')
 
 
 class ApiV1View(APIView):
+    authentication_classes = (SessionAuthentication,)
+    permission_classes = (IsAdminUser,)
 
     def get(self, request):
         return Response({
@@ -27,6 +31,9 @@ class WidgetListView(generics.ListCreateAPIView):
     model = Widget
     serializer_class = serialisers.WidgetSerializer
 
+    authentication_classes = (SessionAuthentication,)
+    permission_classes = (IsAdminUser,)
+
     def get_queryset(self):
         return super(WidgetListView, self).get_queryset().select_subclasses()
 
@@ -34,6 +41,9 @@ class WidgetListView(generics.ListCreateAPIView):
 class WidgetRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     model = Widget
     serializer_class = serialisers.WidgetSerializer
+
+    authentication_classes = (SessionAuthentication,)
+    permission_classes = (IsAdminUser,)
 
     def get_object(self):
         return self.model.objects.get_subclass(
@@ -44,11 +54,14 @@ class WidgetRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 class WidgetTypesView(APIView):
     form_template_name = "fancypages/dashboard/widget_select.html"
 
+    authentication_classes = (SessionAuthentication,)
+    permission_classes = (IsAdminUser,)
+
     def get(self, request):
         container_id = request.QUERY_PARAMS.get('container')
         if container_id is None:
             return Response({
-                    'reason': u'container ID is required for widget list',
+                    'detail': u'container ID is required for widget list',
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
@@ -57,7 +70,7 @@ class WidgetTypesView(APIView):
             container = Container.objects.get(pk=container_id)
         except Container.DoesNotExist:
             return Response({
-                    'reason': u'invalid container ID',
+                    'detail': u'container ID is invalid',
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
