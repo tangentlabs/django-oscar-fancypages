@@ -1,4 +1,5 @@
-from django.db.models import get_model, Q
+from django.db.models import get_model
+from django.utils.translation import ugettext as _
 from django.forms.models import modelform_factory
 from django.template import loader, RequestContext
 
@@ -7,6 +8,7 @@ from rest_framework import serializers
 from fancypages.dashboard import forms
 
 Widget = get_model('fancypages', 'Widget')
+OrderedContainer = get_model('fancypages', 'OrderedContainer')
 
 
 class RenderFormFieldMixin(object):
@@ -89,3 +91,20 @@ class WidgetMoveSerializer(serializers.ModelSerializer):
     class Meta:
         model = Widget
         read_only_fields = ['display_order']
+
+
+class OrderedContainerSerializer(serializers.ModelSerializer):
+    content_type = serializers.PrimaryKeyRelatedField()
+    title = serializers.CharField(required=False, default=_("New Tab"))
+
+    def restore_object(self, attrs, instance=None):
+        instance = super(OrderedContainerSerializer, self).restore_object(attrs, instance)
+
+        if instance is not None:
+            instance.display_order = instance.page_object.tabs.count()
+
+        return instance
+
+    class Meta:
+        model = OrderedContainer
+        exclude = ['display_order']

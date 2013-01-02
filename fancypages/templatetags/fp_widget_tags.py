@@ -1,8 +1,11 @@
 from django import template
 from django.conf import settings
+from django.db.models import get_model
 from django.template import defaultfilters, loader
 
 from fancypages.dashboard import forms
+
+ContentType = get_model('contenttypes', 'ContentType')
 
 register = template.Library()
 
@@ -70,3 +73,8 @@ def render_widget_form(context, form):
 def depth_as_range(depth):
     # reduce depth by 1 as treebeard root depth is 1
     return range(depth-1)
+
+
+@register.assignment_tag
+def get_content_type(obj):
+    return ContentType.objects.get_for_model(obj.__class__)

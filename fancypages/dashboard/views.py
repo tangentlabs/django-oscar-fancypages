@@ -1,6 +1,6 @@
 from django import http
 from django.views import generic
-from django.db.models import get_model, Q
+from django.db.models import get_model
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 from django.forms.models import modelform_factory
@@ -157,22 +157,6 @@ class WidgetDeleteView(generic.DeleteView, FancypagesMixin):
 
     def get_success_url(self):
         return reverse('fp-dashboard:page-list')
-
-
-class WidgetAddTabView(JSONResponseMixin, generic.edit.BaseDetailView,
-                 FancypagesMixin):
-    model = TabWidget
-
-    def get_context_data(self, **kwargs):
-        super(WidgetAddTabView, self).get_context_data(**kwargs)
-        OrderedContainer.objects.create(
-            title=_("New Tab"),
-            page_object=self.object,
-            display_order=self.object.tabs.count(),
-        )
-        return {
-            'success': True,
-        }
 
 
 class ContentTypeMixin(object):

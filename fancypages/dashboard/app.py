@@ -31,7 +31,6 @@ class FancypagesDashboardApplication(Application):
 
     widget_update_view = views.WidgetUpdateView
     widget_delete_view = views.WidgetDeleteView
-    widget_add_tab_view = views.WidgetAddTabView
 
     content_customise_view = views.ContentCustomiseView
     content_preview_view = views.ContentPreviewView
@@ -87,11 +86,6 @@ class FancypagesDashboardApplication(Application):
                 r'^widget/delete/(?P<pk>\d+)/$',
                 self.widget_delete_view.as_view(),
                 name='widget-delete'
-            ),
-            url(
-                r'^widget/(?P<pk>\d+)/add-tab/$',
-                self.widget_add_tab_view.as_view(),
-                name='widget-add-tab'
             ),
             url(
                 r'^content/(?P<content_type_pk>\d+)/customise/(?P<pk>\d+)/$',

@@ -110,16 +110,24 @@ fancypages.dashboard = {
             $('[data-behaviours~=add-tab]').live('click', function (ev) {
                 ev.preventDefault();
 
-                $.getJSON($(this).data('action'), function (data) {
-                    if (data.success) {
+                $.ajax({
+                    url: $(this).data('action'),
+                    type: 'POST',
+                    data: {
+                        content_type: $(this).data('content-type-id'),
+                        object_id: $(this).parents('.widget').data('widget-id')
+                    },
+                    beforeSend: function (xhr, settings) {
+                        xhr.setRequestHeader("X-CSRFToken", fancypages.getCsrfToken());
+                    },
+                    success: function (data) {
                         parent.fancypages.dashboard.reloadPreview();
-                    } else {
-                        parent.oscar.messages.error(data.reason);
+                    },
+                    error: function () {
+                        parent.oscar.messages.error(
+                            "An error occured trying to add a new tab. Please try it again."
+                        );
                     }
-                }).error(function () {
-                    parent.oscar.messages.error(
-                        "An error occured trying to add a new tab. Please try it again."
-                    );
                 });
             });
         },

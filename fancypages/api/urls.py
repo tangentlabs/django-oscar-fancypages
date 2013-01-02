@@ -17,6 +17,11 @@ urlpatterns = patterns('',
         name='widget-move'
     ),
     url(
+        r'^ordered-containers$',
+        views.OrderedContainerListView.as_view(),
+        name='ordered-container-list'
+    ),
+    url(
         r'^widget-types$',
         views.WidgetTypesView.as_view(),
         name='widget-type-list'

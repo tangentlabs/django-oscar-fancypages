@@ -14,6 +14,7 @@ from fancypages.api import serialisers
 
 Widget = get_model('fancypages', 'Widget')
 Container = get_model('fancypages', 'Container')
+OrderedContainer = get_model('fancypages', 'OrderedContainer')
 
 
 class ApiV1View(APIView):
@@ -68,6 +69,14 @@ class WidgetMoveView(generics.UpdateAPIView):
         )
         widget.prev_container = widget.container
         return widget
+
+
+class OrderedContainerListView(generics.ListCreateAPIView):
+    model = OrderedContainer
+    serializer_class = serialisers.OrderedContainerSerializer
+
+    authentication_classes = (SessionAuthentication,)
+    permission_classes = (IsAdminUser,)
 
 
 class WidgetTypesView(APIView):
