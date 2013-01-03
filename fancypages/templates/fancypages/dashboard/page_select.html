@@ -10,7 +10,7 @@
         <li>
             <a data-target="#id_link"
                data-behaviours="update-editor-field"
-               data-src="{% url fancypages:page-detail page.slug %}"
+               data-src="{{ page.get_absolute_url }}"
                data-dismiss="modal"
                href="#">
                {{ page.title }}

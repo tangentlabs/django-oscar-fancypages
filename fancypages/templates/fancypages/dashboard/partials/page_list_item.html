@@ -11,7 +11,7 @@
         <i class="icon-chevron-right"></i>
         {% endif %}
 
-        <a href="{% url fancypages:page-detail page.slug %}">
+        <a href="{{ page.get_absolute_url }}">
             {{ page.title }}
         </a>
     </td>

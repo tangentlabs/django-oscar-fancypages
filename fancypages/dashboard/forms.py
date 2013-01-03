@@ -2,21 +2,23 @@ from django import forms
 from django.db.models import get_model
 from django.utils.translation import ugettext_lazy as _
 
-from treebeard.forms import MoveNodeForm
-
 from fancypages.widgets import SelectWidgetRadioFieldRenderer
 
 Page = get_model('fancypages', 'Page')
+Category = get_model('catalogue', 'Category')
 
 
-class PageForm(MoveNodeForm):
+class PageForm(forms.ModelForm):
+    name = forms.CharField(max_length=128)
+
+    def save(self, commit=True):
+        page_name = self.cleaned_data['name']
+        self.instance.category = Category.add_root(name=page_name)
+        return super(PageForm, self).save(commit=True)
 
     class Meta:
         model = Page
-        # the fields in the MP_Node model have to be added here because
-        # we change the meta class which overwrites all settings for
-        # the form in django-treebeard
-        exclude = ('path', 'depth', 'numchild', 'slug', 'relative_url')
+        fields = ['name', 'template_name']
 
 
 class WidgetCreateSelectForm(forms.Form):

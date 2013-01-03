@@ -24,7 +24,7 @@ class TestAnAnonymousUser(FancyPagesWebTest):
             "{% fancypages_container left-column %}"
         )
         self.page = Page.add_root(
-            title="A new page",
+            name="A new page",
             slug='a-new-page',
             template_name=self.template_name,
         )
@@ -48,14 +48,14 @@ class TestAnAnonymousUser(FancyPagesWebTest):
         self.assertRaises(
             AppError,
             self.get,
-            reverse('fancypages:page-detail', args=(self.page.slug,))
+            reverse('fancypages:page-detail', args=(self.page.category.slug,))
         )
 
     def test_can_view_a_published_page(self):
         self.page.status = Page.PUBLISHED
         self.page.save()
 
-        page = self.get(reverse('fancypages:page-detail', args=(self.page.slug,)))
+        page = self.get(reverse('fancypages:page-detail', args=(self.page.category.slug,)))
         self.assertContains(page, self.left_widget.title)
         self.assertContains(page, self.main_widget.title)
 
@@ -71,7 +71,7 @@ class TestAStaffUser(FancyPagesWebTest):
         #    "{% fancypages_container main-container %}"
         #    "{% fancypages_container left-column %}"
         #)
-        self.page = Page.add_root(title="A new page", slug='a-new-page')
+        self.page = Page.add_root(name="A new page", slug='a-new-page')
         self.page_container = self.page.get_container_from_name('page-container')
 
         self.main_widget = TitleTextWidget.objects.create(
@@ -81,7 +81,7 @@ class TestAStaffUser(FancyPagesWebTest):
         )
 
     def test_can_view_a_draft_page(self):
-        url = reverse('fancypages:page-detail', args=(self.page.slug,))
+        url = reverse('fancypages:page-detail', args=(self.page.category.slug,))
         page = self.get(url)
 
         self.assertContains(page, self.main_widget.title)
@@ -96,7 +96,7 @@ class TestAStaffUser(FancyPagesWebTest):
         self.page.status = Page.PUBLISHED
         self.page.save()
 
-        page = self.get(reverse('fancypages:page-detail', args=(self.page.slug,)))
+        page = self.get(reverse('fancypages:page-detail', args=(self.page.category.slug,)))
         self.assertContains(page, self.main_widget.title)
 
         self.assertNotContains(

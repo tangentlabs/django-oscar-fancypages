@@ -4,12 +4,10 @@ from django.db.models import get_model
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 from django.forms.models import modelform_factory
-from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 
 from fancypages.dashboard import forms
 from fancypages.views import PageDetailView
-from fancypages.mixins import JSONResponseMixin
 from fancypages.utils import get_container_names_from_template
 
 
@@ -26,7 +24,7 @@ class PageListView(generic.ListView):
     template_name = "fancypages/dashboard/page_list.html"
 
     def get_queryset(self, queryset=None):
-        return self.model.objects.filter(depth=1)
+        return self.model.objects.filter(category__depth=1)
 
 
 class PageCreateView(generic.CreateView):
@@ -88,7 +86,7 @@ class PageSelectView(generic.ListView):
     template_name = "fancypages/dashboard/page_select.html"
 
     def get_queryset(self, queryset=None):
-        return self.model.objects.filter(depth=1)
+        return self.model.objects.filter(category__depth=1)
 
 
 class FancypagesMixin(object):

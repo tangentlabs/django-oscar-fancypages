@@ -1,60 +1,52 @@
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
-from django.forms import ValidationError
 from django.contrib.contenttypes import generic
-from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ImproperlyConfigured
 from django.contrib.contenttypes.models import ContentType
 from django.template import loader, RequestContext, Context
 from django.contrib.contenttypes.generic import GenericRelation
 
+from treebeard.mp_tree import MP_NodeQuerySet
 from model_utils.managers import InheritanceManager
-from treebeard.mp_tree import MP_Node, MP_NodeQuerySet
 
 from fancypages.utils import get_container_names_from_template
 
-
-class PageQuerySet(MP_NodeQuerySet):
-
-    def visible(self):
-        now = timezone.now()
-        return self.filter(
-            status=Page.PUBLISHED,
-            is_active=True,
-        ).filter(
-            models.Q(date_visible_start=None) |
-            models.Q(date_visible_start__lt=now),
-            models.Q(date_visible_end=None) |
-            models.Q(date_visible_end__gt=now)
-        )
+Category = models.get_model('catalogue', 'Category')
 
 
-class PageManager(models.Manager):
-    """
-    This manager is required to provide access to ``treebeard``'s custom
-    manager and queryset. Otherwise it breaks the category handling.
-    """
-    def get_query_set(self):
-        return PageQuerySet(self.model).order_by('path')
+#class PageQuerySet(QuerySet):
+#
+#    def visible(self):
+#        now = timezone.now()
+#        return self.filter(
+#            status=Page.PUBLISHED,
+#            is_active=True,
+#        ).filter(
+#            models.Q(date_visible_start=None) |
+#            models.Q(date_visible_start__lt=now),
+#            models.Q(date_visible_end=None) |
+#            models.Q(date_visible_end__gt=now)
+#        )
+#
+#
+#class PageManager(models.Manager):
+#    def get_query_set(self):
+#        return PageQuerySet(self.model)
 
 
-class Page(MP_Node):
-    title = models.CharField(_("Title"), max_length=100)
-    slug = models.SlugField(_("Code"), max_length=100, unique=True)
-
+class Page(models.Model):
+    category = models.OneToOneField(
+        'catalogue.Category',
+        verbose_name=_("Category"),
+        related_name="page",
+    )
     template_name = models.CharField(_("Template name"), max_length=255,
                                      default="fancypages/pages/page.html")
 
-    description = models.TextField(_("Description"), null=True, blank=True,
-                                   default=None)
     keywords = models.CharField(_("Keywords"), max_length=255, null=True,
                                 blank=True)
-
-    # this is the *cached* relative URL for this page taking parent
-    # slugs into account. This is updated on save
-    relative_url = models.CharField(max_length=500, null=True, blank=True)
 
     containers = generic.GenericRelation('fancypages.Container')
 
@@ -74,9 +66,48 @@ class Page(MP_Node):
     # page invisible
     is_active = models.BooleanField(_("Is active"), default=True)
 
-    objects = PageManager()
+    #objects = PageManager()
 
-    _slug_separator = '/'
+    @classmethod
+    def add_root(cls, name, slug=None, template_name=None):
+        category = Category.add_root(name=name, slug=slug)
+        kwargs = {'category': category}
+        if template_name:
+            kwargs['template_name'] = template_name
+        return cls.objects.create(**kwargs)
+
+    def add_child(self, name, slug=None, template_name=None):
+        category = self.category.add_child(name=name, slug=slug)
+        kwargs = {'category': category}
+        if template_name:
+            kwargs['template_name'] = template_name
+        return self.__class__.objects.create(**kwargs)
+
+    def delete(self, keep_category=False):
+        super(Page, self).delete()
+        if not keep_category:
+            self.category.delete()
+
+    def get_children(self):
+        if self.category.is_leaf():
+            return self.__class__.objects.none()
+        path = self.category.path
+        return self.__class__.objects.filter(
+            category__depth=self.depth + 1,
+            category__path__range=self.category._get_children_path_interval(path)
+        )
+
+    @property
+    def title(self):
+        return self.category.name
+
+    @property
+    def depth(self):
+        return self.category.depth
+
+    @property
+    def numchild(self):
+        return self.category.numchild
 
     @property
     def is_visible(self):
@@ -111,90 +142,18 @@ class Page(MP_Node):
     @models.permalink
     def get_absolute_url(self):
         return ('fancypages:page-detail', (), {
-                'slug': self.slug})
+                'slug': self.category.slug})
 
     def __unicode__(self):
-        return u"Page '%s'" % self.title
+        return u"Page '%s'" % self.category.name
 
     def save(self, update_slugs=True, *args, **kwargs):
-        if update_slugs:
-            parent = self.get_parent()
-            slug = slugify(self.title)
-            if parent:
-                self.slug = '%s%s%s' % (
-                    parent.slug,
-                    self._slug_separator,
-                    slug
-                )
-            else:
-                self.slug = slug
-
-        # Enforce slug uniqueness here as MySQL can't handle a unique index on
-        # the slug field
-        try:
-            match = self.__class__.objects.get(slug=self.slug)
-        except self.__class__.DoesNotExist:
-            pass
-        else:
-            if match.id != self.id:
-                raise ValidationError(
-                    _("A category with slug '%(slug)s' already exists") % {
-                        'slug': self.slug
-                    })
-
         super(Page, self).save(*args, **kwargs)
 
         existing_containers = [c.variable_name for c in self.containers.all()]
         for cname in get_container_names_from_template(self.template_name):
             if cname not in existing_containers:
                 self.containers.create(page_object=self, variable_name=cname)
-
-    def move(self, target, pos=None):
-        super(Page, self).move(target, pos)
-
-        reloaded_self = self.__class__.objects.get(pk=self.pk)
-        subtree = self.__class__.get_tree(parent=reloaded_self)
-        if subtree:
-            slug_parts = []
-            curr_depth = 0
-            parent = reloaded_self.get_parent()
-            if parent:
-                slug_parts = [parent.slug]
-                curr_depth = parent.depth
-            self.__class__.update_subtree_properties(
-                list(subtree),
-                slug_parts,
-                curr_depth=curr_depth
-            )
-
-    @classmethod
-    def update_subtree_properties(cls, nodes, slug_parts, curr_depth):
-        """
-        Update slugs and full_names of children in a subtree.
-        Assumes nodes were originally in DFS order.
-        """
-        if nodes == []:
-            return
-
-        node = nodes[0]
-        if node.depth > curr_depth:
-            slug = slugify(node.title)
-            slug_parts.append(slug)
-
-            node.slug = cls._slug_separator.join(slug_parts)
-            node.save(update_slugs=False)
-            curr_depth += 1
-            nodes = nodes[1:]
-
-        else:
-            slug_parts = slug_parts[:-1]
-            curr_depth -= 1
-
-        cls.update_subtree_properties(
-            nodes,
-            slug_parts,
-            curr_depth
-        )
 
     class Meta:
         app_label = 'fancypages'

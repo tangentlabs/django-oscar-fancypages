@@ -76,7 +76,7 @@ class TestTheWidgetApi(test.FancyPagesWebTest):
             "{% fancypages_container page-container %}"
         )
 
-        self.page = Page.add_root(title="A new page", slug='a-new-page')
+        self.page = Page.add_root(name="A new page", slug='a-new-page')
 
         self.text_widget = TextWidget.objects.create(
             container=self.page.get_container_from_name('page-container'),
@@ -151,7 +151,7 @@ class TestTheWidgetMoveApi(test.FancyPagesWebTest):
             "{% fancypages_container left-container %}"
         )
 
-        self.page = Page.add_root(title="A new page", slug='a-new-page',
+        self.page = Page.add_root(name="A new page", slug='a-new-page',
                                   template_name=self.template_name)
         self.left_container = self.page.get_container_from_name('left-container')
         self.main_container = self.page.get_container_from_name('main-container')
