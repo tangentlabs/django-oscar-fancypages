@@ -1,6 +1,6 @@
 from django import http
 from django.views import generic
-from django.db.models import get_model, Q
+from django.db.models import get_model
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 from django.forms.models import modelform_factory
@@ -113,27 +113,6 @@ class FancypagesMixin(object):
             raise http.Http404
 
 
-class WidgetSelectView(generic.ListView):
-    model = Widget
-    template_name = "fancypages/dashboard/widget_select.html"
-
-    def get(self, request, *args, **kwargs):
-        container_id = self.kwargs.get('container_id')
-        self.container = Container.objects.get(id=container_id)
-        return super(WidgetSelectView, self).get(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        container_id = self.kwargs.get('container_id')
-        self.container = Container.objects.get(id=container_id)
-        return super(WidgetSelectView, self).post(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        ctx = super(WidgetSelectView, self).get_context_data(**kwargs)
-        ctx['container'] = self.container
-        ctx['add_widget_form'] = forms.WidgetCreateSelectForm()
-        return ctx
-
-
 class WidgetUpdateView(generic.UpdateView, FancypagesMixin):
     model = Widget
     context_object_name = 'widget'
@@ -178,129 +157,6 @@ class WidgetDeleteView(generic.DeleteView, FancypagesMixin):
 
     def get_success_url(self):
         return reverse('fp-dashboard:page-list')
-
-
-class WidgetMoveView(JSONResponseMixin, generic.edit.BaseDetailView,
-                     FancypagesMixin):
-    model = Widget
-
-    def get_object(self, queryset=None):
-        return self.get_widget_object()
-
-    def get_container(self):
-        container_id = self.kwargs.get('container_pk', None)
-        try:
-            new_container = Container.objects.get(id=container_id)
-        except Container.DoesNotExist:
-            new_container = None
-        return new_container
-
-    def get_context_data(self, **kwargs):
-        moved_widget = self.get_object()
-
-        if not moved_widget:
-            return {
-                'success': False,
-                'reason': "widget does not exist"
-            }
-
-        new_pos = int(self.kwargs.get('index'))
-        new_container = self.get_container()
-
-        if new_container is None:
-            return {
-                'success': False,
-                'reason': "container does not exist",
-            }
-
-        if new_pos == moved_widget.display_order \
-           and new_container == moved_widget.container:
-            return {
-                'success': True
-            }
-
-        old_container = moved_widget.container
-        old_pos = moved_widget.display_order
-
-        moved_widget.display_order = new_pos
-        moved_widget.container = new_container
-        moved_widget.save()
-
-        if new_container != old_container:
-            for idx, widget in enumerate(old_container.widgets.all()):
-                widget.display_order = idx
-                widget.save()
-
-        if moved_widget.display_order > old_pos:
-            widgets = moved_widget.container.widgets.filter(
-                ~Q(id=moved_widget.id) &
-                Q(display_order__lte=new_pos)
-            )
-            for idx, widget in enumerate(widgets):
-                widget.display_order = idx
-                widget.save()
-
-        else:
-            widgets = moved_widget.container.widgets.filter(
-                ~Q(id=moved_widget.id) &
-                Q(display_order__gte=new_pos)
-            )
-            for idx, widget in enumerate(widgets):
-                widget.display_order = new_pos + idx + 1
-                widget.save()
-
-        return {
-            'success': True,
-        }
-
-
-class ContainerAddWidgetView(JSONResponseMixin, generic.edit.BaseDetailView,
-                             FancypagesMixin):
-    model = Container
-
-    def get_context_data(self, **kwargs):
-        widget_code = self.kwargs.get('code', None)
-        if widget_code is None:
-            return {
-                'success': False,
-                'reason': "could not find valid widget code"
-            }
-
-        model = self.get_widget_class()
-        if model is None:
-            return {
-                'success': False,
-                'reason': "could not find widget with code %s" % widget_code
-            }
-
-        # create a new widget and add it to the given container
-        widget = model.objects.create(
-            container=self.object,
-            display_order=self.object.widgets.count(),
-        )
-        return {
-            'success': True,
-            'update_url': reverse(
-                'fp-dashboard:widget-update',
-                args=(widget.id,)
-            )
-        }
-
-
-class WidgetAddTabView(JSONResponseMixin, generic.edit.BaseDetailView,
-                 FancypagesMixin):
-    model = TabWidget
-
-    def get_context_data(self, **kwargs):
-        super(WidgetAddTabView, self).get_context_data(**kwargs)
-        OrderedContainer.objects.create(
-            title=_("New Tab"),
-            page_object=self.object,
-            display_order=self.object.tabs.count(),
-        )
-        return {
-            'success': True,
-        }
 
 
 class ContentTypeMixin(object):

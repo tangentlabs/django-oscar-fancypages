@@ -12,8 +12,10 @@
 
         {% if edit_mode %}
         <li>
-            <a data-action="{% url fp-dashboard:widget-add-tab widget.id %}"
-               data-behaviours="add-tab">
+            {% get_content_type widget as content_type %}
+            <a data-action="{% url fp-api:ordered-container-list %}"
+               data-behaviours="add-tab"
+               data-content-type-id="{{ content_type.id }}">
                 <i class="icon-plus"></i>{% trans "Add tab" %}
             </a>
         </li>

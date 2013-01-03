@@ -140,6 +140,7 @@ INSTALLED_APPS = [
 
     'django_extensions',
     'sorl.thumbnail',
+    'rest_framework',
     'debug_toolbar',
     'model_utils',
     'compressor',

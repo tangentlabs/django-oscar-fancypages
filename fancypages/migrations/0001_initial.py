@@ -7,10 +7,6 @@ from django.db import models
 
 class Migration(SchemaMigration):
 
-    depends_on = (
-        ("assets", "0001_initial"),
-    )
-
     def forwards(self, orm):
         # Adding model 'Page'
         db.create_table('fancypages_page', (
@@ -41,13 +37,6 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('fancypages', ['Container'])
 
-        # Adding model 'OrderedContainer'
-        db.create_table('fancypages_orderedcontainer', (
-            ('container_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Container'], unique=True, primary_key=True)),
-            ('display_order', self.gf('django.db.models.fields.PositiveIntegerField')()),
-        ))
-        db.send_create_signal('fancypages', ['OrderedContainer'])
-
         # Adding model 'Widget'
         db.create_table('fancypages_widget', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -56,10 +45,42 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('fancypages', ['Widget'])
 
+        # Adding model 'OrderedContainer'
+        db.create_table('fancypages_orderedcontainer', (
+            ('container_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Container'], unique=True, primary_key=True)),
+            ('display_order', self.gf('django.db.models.fields.PositiveIntegerField')()),
+        ))
+        db.send_create_signal('fancypages', ['OrderedContainer'])
+
+        # Adding model 'TabWidget'
+        db.create_table('fancypages_tabwidget', (
+            ('widget_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Widget'], unique=True, primary_key=True)),
+        ))
+        db.send_create_signal('fancypages', ['TabWidget'])
+
+        # Adding model 'TwoColumnLayoutWidget'
+        db.create_table('fancypages_twocolumnlayoutwidget', (
+            ('widget_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Widget'], unique=True, primary_key=True)),
+            ('left_width', self.gf('django.db.models.fields.PositiveIntegerField')(default=6, max_length=3)),
+        ))
+        db.send_create_signal('fancypages', ['TwoColumnLayoutWidget'])
+
+        # Adding model 'ThreeColumnLayoutWidget'
+        db.create_table('fancypages_threecolumnlayoutwidget', (
+            ('widget_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Widget'], unique=True, primary_key=True)),
+        ))
+        db.send_create_signal('fancypages', ['ThreeColumnLayoutWidget'])
+
+        # Adding model 'FourColumnLayoutWidget'
+        db.create_table('fancypages_fourcolumnlayoutwidget', (
+            ('widget_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Widget'], unique=True, primary_key=True)),
+        ))
+        db.send_create_signal('fancypages', ['FourColumnLayoutWidget'])
+
         # Adding model 'TextWidget'
         db.create_table('fancypages_textwidget', (
             ('widget_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Widget'], unique=True, primary_key=True)),
-            ('text', self.gf('django.db.models.fields.CharField')(default='Your text goes here.', max_length=2000)),
+            ('text', self.gf('django.db.models.fields.TextField')(default='Your text goes here.')),
         ))
         db.send_create_signal('fancypages', ['TextWidget'])
 
@@ -67,7 +88,7 @@ class Migration(SchemaMigration):
         db.create_table('fancypages_titletextwidget', (
             ('widget_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Widget'], unique=True, primary_key=True)),
             ('title', self.gf('django.db.models.fields.CharField')(default='Your title goes here.', max_length=100)),
-            ('text', self.gf('django.db.models.fields.CharField')(default='Your text goes here.', max_length=2000)),
+            ('text', self.gf('django.db.models.fields.TextField')(default='Your text goes here.')),
         ))
         db.send_create_signal('fancypages', ['TitleTextWidget'])
 
@@ -80,6 +101,17 @@ class Migration(SchemaMigration):
             ('image_asset', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='image_widgets', null=True, to=orm['assets.ImageAsset'])),
         ))
         db.send_create_signal('fancypages', ['ImageWidget'])
+
+        # Adding model 'ImageAndTextWidget'
+        db.create_table('fancypages_imageandtextwidget', (
+            ('widget_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Widget'], unique=True, primary_key=True)),
+            ('title', self.gf('django.db.models.fields.CharField')(max_length=100, null=True, blank=True)),
+            ('alt_text', self.gf('django.db.models.fields.CharField')(max_length=100, null=True, blank=True)),
+            ('link', self.gf('django.db.models.fields.CharField')(max_length=500, null=True, blank=True)),
+            ('image_asset', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='image_text_widgets', null=True, to=orm['assets.ImageAsset'])),
+            ('text', self.gf('django.db.models.fields.CharField')(default='Your text goes here.', max_length=2000)),
+        ))
+        db.send_create_signal('fancypages', ['ImageAndTextWidget'])
 
         # Adding model 'SingleProductWidget'
         db.create_table('fancypages_singleproductwidget', (
@@ -109,23 +141,6 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('fancypages', ['OfferWidget'])
 
-        # Adding model 'ImageAndTextWidget'
-        db.create_table('fancypages_imageandtextwidget', (
-            ('widget_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Widget'], unique=True, primary_key=True)),
-            ('title', self.gf('django.db.models.fields.CharField')(max_length=100, null=True, blank=True)),
-            ('alt_text', self.gf('django.db.models.fields.CharField')(max_length=100, null=True, blank=True)),
-            ('link', self.gf('django.db.models.fields.CharField')(max_length=500, null=True, blank=True)),
-            ('image_asset', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='image_text_widgets', null=True, to=orm['assets.ImageAsset'])),
-            ('text', self.gf('django.db.models.fields.CharField')(default='Your text goes here.', max_length=2000)),
-        ))
-        db.send_create_signal('fancypages', ['ImageAndTextWidget'])
-
-        # Adding model 'TabWidget'
-        db.create_table('fancypages_tabwidget', (
-            ('widget_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Widget'], unique=True, primary_key=True)),
-        ))
-        db.send_create_signal('fancypages', ['TabWidget'])
-
         # Adding model 'VideoWidget'
         db.create_table('fancypages_videowidget', (
             ('widget_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Widget'], unique=True, primary_key=True)),
@@ -142,25 +157,6 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('fancypages', ['TwitterWidget'])
 
-        # Adding model 'TwoColumnLayoutWidget'
-        db.create_table('fancypages_twocolumnlayoutwidget', (
-            ('widget_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Widget'], unique=True, primary_key=True)),
-            ('left_width', self.gf('django.db.models.fields.PositiveIntegerField')(default=6, max_length=3)),
-        ))
-        db.send_create_signal('fancypages', ['TwoColumnLayoutWidget'])
-
-        # Adding model 'ThreeColumnLayoutWidget'
-        db.create_table('fancypages_threecolumnlayoutwidget', (
-            ('widget_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Widget'], unique=True, primary_key=True)),
-        ))
-        db.send_create_signal('fancypages', ['ThreeColumnLayoutWidget'])
-
-        # Adding model 'FourColumnLayoutWidget'
-        db.create_table('fancypages_fourcolumnlayoutwidget', (
-            ('widget_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Widget'], unique=True, primary_key=True)),
-        ))
-        db.send_create_signal('fancypages', ['FourColumnLayoutWidget'])
-
 
     def backwards(self, orm):
         # Deleting model 'Page'
@@ -169,11 +165,23 @@ class Migration(SchemaMigration):
         # Deleting model 'Container'
         db.delete_table('fancypages_container')
 
+        # Deleting model 'Widget'
+        db.delete_table('fancypages_widget')
+
         # Deleting model 'OrderedContainer'
         db.delete_table('fancypages_orderedcontainer')
 
-        # Deleting model 'Widget'
-        db.delete_table('fancypages_widget')
+        # Deleting model 'TabWidget'
+        db.delete_table('fancypages_tabwidget')
+
+        # Deleting model 'TwoColumnLayoutWidget'
+        db.delete_table('fancypages_twocolumnlayoutwidget')
+
+        # Deleting model 'ThreeColumnLayoutWidget'
+        db.delete_table('fancypages_threecolumnlayoutwidget')
+
+        # Deleting model 'FourColumnLayoutWidget'
+        db.delete_table('fancypages_fourcolumnlayoutwidget')
 
         # Deleting model 'TextWidget'
         db.delete_table('fancypages_textwidget')
@@ -183,6 +191,9 @@ class Migration(SchemaMigration):
 
         # Deleting model 'ImageWidget'
         db.delete_table('fancypages_imagewidget')
+
+        # Deleting model 'ImageAndTextWidget'
+        db.delete_table('fancypages_imageandtextwidget')
 
         # Deleting model 'SingleProductWidget'
         db.delete_table('fancypages_singleproductwidget')
@@ -196,26 +207,11 @@ class Migration(SchemaMigration):
         # Deleting model 'OfferWidget'
         db.delete_table('fancypages_offerwidget')
 
-        # Deleting model 'ImageAndTextWidget'
-        db.delete_table('fancypages_imageandtextwidget')
-
-        # Deleting model 'TabWidget'
-        db.delete_table('fancypages_tabwidget')
-
         # Deleting model 'VideoWidget'
         db.delete_table('fancypages_videowidget')
 
         # Deleting model 'TwitterWidget'
         db.delete_table('fancypages_twitterwidget')
-
-        # Deleting model 'TwoColumnLayoutWidget'
-        db.delete_table('fancypages_twocolumnlayoutwidget')
-
-        # Deleting model 'ThreeColumnLayoutWidget'
-        db.delete_table('fancypages_threecolumnlayoutwidget')
-
-        # Deleting model 'FourColumnLayoutWidget'
-        db.delete_table('fancypages_fourcolumnlayoutwidget')
 
 
     models = {
@@ -289,13 +285,13 @@ class Migration(SchemaMigration):
             'Meta': {'ordering': "['full_name']", 'object_name': 'Category'},
             'depth': ('django.db.models.fields.PositiveIntegerField', [], {}),
             'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
-            'full_name': ('django.db.models.fields.CharField', [], {'max_length': '1024', 'db_index': 'True'}),
+            'full_name': ('django.db.models.fields.CharField', [], {'max_length': '255', 'db_index': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'image': ('django.db.models.fields.files.ImageField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255', 'db_index': 'True'}),
             'numchild': ('django.db.models.fields.PositiveIntegerField', [], {'default': '0'}),
             'path': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '255'}),
-            'slug': ('django.db.models.fields.SlugField', [], {'max_length': '1024'})
+            'slug': ('django.db.models.fields.SlugField', [], {'max_length': '255'})
         },
         'catalogue.option': {
             'Meta': {'object_name': 'Option'},
@@ -402,7 +398,7 @@ class Migration(SchemaMigration):
             'widget_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['fancypages.Widget']", 'unique': 'True', 'primary_key': 'True'})
         },
         'fancypages.imageandtextwidget': {
-            'Meta': {'ordering': "['display_order']", 'object_name': 'ImageAndTextWidget', '_ormbases': ['fancypages.Widget']},
+            'Meta': {'object_name': 'ImageAndTextWidget', '_ormbases': ['fancypages.Widget']},
             'alt_text': ('django.db.models.fields.CharField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
             'image_asset': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'image_text_widgets'", 'null': 'True', 'to': "orm['assets.ImageAsset']"}),
             'link': ('django.db.models.fields.CharField', [], {'max_length': '500', 'null': 'True', 'blank': 'True'}),
@@ -411,7 +407,7 @@ class Migration(SchemaMigration):
             'widget_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['fancypages.Widget']", 'unique': 'True', 'primary_key': 'True'})
         },
         'fancypages.imagewidget': {
-            'Meta': {'ordering': "['display_order']", 'object_name': 'ImageWidget', '_ormbases': ['fancypages.Widget']},
+            'Meta': {'object_name': 'ImageWidget', '_ormbases': ['fancypages.Widget']},
             'alt_text': ('django.db.models.fields.CharField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
             'image_asset': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'image_widgets'", 'null': 'True', 'to': "orm['assets.ImageAsset']"}),
             'link': ('django.db.models.fields.CharField', [], {'max_length': '500', 'null': 'True', 'blank': 'True'}),
@@ -456,7 +452,7 @@ class Migration(SchemaMigration):
         },
         'fancypages.textwidget': {
             'Meta': {'ordering': "['display_order']", 'object_name': 'TextWidget', '_ormbases': ['fancypages.Widget']},
-            'text': ('django.db.models.fields.CharField', [], {'default': "'Your text goes here.'", 'max_length': '2000'}),
+            'text': ('django.db.models.fields.TextField', [], {'default': "'Your text goes here.'"}),
             'widget_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['fancypages.Widget']", 'unique': 'True', 'primary_key': 'True'})
         },
         'fancypages.threecolumnlayoutwidget': {
@@ -465,7 +461,7 @@ class Migration(SchemaMigration):
         },
         'fancypages.titletextwidget': {
             'Meta': {'ordering': "['display_order']", 'object_name': 'TitleTextWidget', '_ormbases': ['fancypages.Widget']},
-            'text': ('django.db.models.fields.CharField', [], {'default': "'Your text goes here.'", 'max_length': '2000'}),
+            'text': ('django.db.models.fields.TextField', [], {'default': "'Your text goes here.'"}),
             'title': ('django.db.models.fields.CharField', [], {'default': "'Your title goes here.'", 'max_length': '100'}),
             'widget_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['fancypages.Widget']", 'unique': 'True', 'primary_key': 'True'})
         },
@@ -503,9 +499,10 @@ class Migration(SchemaMigration):
         'offer.condition': {
             'Meta': {'object_name': 'Condition'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'range': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['offer.Range']"}),
-            'type': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
-            'value': ('oscar.models.fields.PositiveDecimalField', [], {'max_digits': '12', 'decimal_places': '2'})
+            'proxy_class': ('django.db.models.fields.CharField', [], {'default': 'None', 'max_length': '255', 'unique': 'True', 'null': 'True', 'blank': 'True'}),
+            'range': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['offer.Range']", 'null': 'True', 'blank': 'True'}),
+            'type': ('django.db.models.fields.CharField', [], {'max_length': '128', 'null': 'True', 'blank': 'True'}),
+            'value': ('oscar.models.fields.PositiveDecimalField', [], {'null': 'True', 'max_digits': '12', 'decimal_places': '2', 'blank': 'True'})
         },
         'offer.conditionaloffer': {
             'Meta': {'ordering': "['-priority']", 'object_name': 'ConditionalOffer'},
@@ -515,14 +512,19 @@ class Migration(SchemaMigration):
             'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'end_date': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'max_applications': ('django.db.models.fields.PositiveIntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'max_basket_applications': ('django.db.models.fields.PositiveIntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'max_discount': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '12', 'decimal_places': '2', 'blank': 'True'}),
+            'max_global_applications': ('django.db.models.fields.PositiveIntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'max_user_applications': ('django.db.models.fields.PositiveIntegerField', [], {'null': 'True', 'blank': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '128'}),
+            'num_applications': ('django.db.models.fields.PositiveIntegerField', [], {'default': '0'}),
             'num_orders': ('django.db.models.fields.PositiveIntegerField', [], {'default': '0'}),
             'offer_type': ('django.db.models.fields.CharField', [], {'default': "'Site'", 'max_length': '128'}),
             'priority': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'redirect_url': ('oscar.models.fields.ExtendedURLField', [], {'max_length': '200', 'blank': 'True'}),
             'slug': ('django.db.models.fields.SlugField', [], {'max_length': '128', 'unique': 'True', 'null': 'True'}),
             'start_date': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
+            'status': ('django.db.models.fields.CharField', [], {'default': "'Open'", 'max_length': '64'}),
             'total_discount': ('django.db.models.fields.DecimalField', [], {'default': "'0.00'", 'max_digits': '12', 'decimal_places': '2'})
         },
         'offer.range': {
@@ -534,7 +536,8 @@ class Migration(SchemaMigration):
             'included_categories': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'includes'", 'blank': 'True', 'to': "orm['catalogue.Category']"}),
             'included_products': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'includes'", 'blank': 'True', 'to': "orm['catalogue.Product']"}),
             'includes_all_products': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '128'})
+            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '128'}),
+            'proxy_class': ('django.db.models.fields.CharField', [], {'default': 'None', 'max_length': '255', 'unique': 'True', 'null': 'True', 'blank': 'True'})
         },
         'promotions.automaticproductlist': {
             'Meta': {'object_name': 'AutomaticProductList'},

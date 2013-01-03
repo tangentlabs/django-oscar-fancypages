@@ -2,7 +2,7 @@ from webtest import AppError
 
 from django.db.models import get_model
 from django.core.urlresolvers import reverse
-from oscar.test.helpers import create_product
+from oscar_testsupport.factories import create_product
 
 from fancypages.test import FancyPagesWebTest
 

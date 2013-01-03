@@ -23,6 +23,7 @@ setup(
         'django-compressor>=1.2',
         'South>=0.7.6',
         'django-twitter-tag>=0.4.0',
+        'djangorestframework>=2.1.12',
     ],
     # See http://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[

@@ -4,8 +4,8 @@
 </div>
 
 <form id="{{ container.variable_name }}_add_widget_form"
-      data-behaviours='submit-widget-form' data-container-name="{{ container.variable_name }}"
-      method="get" action="/dashboard/fancypages/container/{{ container.id }}/add/" class="add-content">
+      data-behaviours='submit-widget-form' data-container-id="{{ container.id }}"
+      method="post" action="{% url fp-api:widget-list %}" class="add-content">
     <div class="modal-body">
         {% include "fancypages/partials/editor_form_fields.html" with form=add_widget_form %}
     </div>

@@ -1,4 +1,18 @@
-var fancypages = fancypages || {};
+var fancypages = fancypages || {
+    apiBaseUrl: "/api/v1/",
+    getCsrfToken: function () {
+        // Extract CSRF token from cookies
+        var cookies = document.cookie.split(';');
+        var csrf_token = null;
+        $.each(cookies, function (index, cookie) {
+            cookieParts = $.trim(cookie).split('=');
+            if (cookieParts[0] == 'csrftoken') {
+                csrfToken = cookieParts[1];
+            }
+        });
+        return csrfToken;
+    }
+};
 
 fancypages.dashboard = {
     preview: {
@@ -22,22 +36,27 @@ fancypages.dashboard = {
                 update: function (ev, ui) {
                     var dropIndex = ui.item.index();
                     var widgetId = ui.item.data('widget-id');
-
                     var containerId = ui.item.parents('.sortable').data('container-id');
+                    var moveUrl = fancypages.apiBaseUrl + 'widget/' + widgetId + '/move';
 
-                    var moveUrl = '/dashboard/fancypages/widget/move/' + widgetId + '/to/';
-                    moveUrl += containerId + '/' + dropIndex + '/';
-
-                    $.getJSON(moveUrl, function (data) {
-                        if (data.success) {
+                    $.ajax({
+                        url: moveUrl,
+                        type: 'PUT',
+                        data: {
+                            container: containerId,
+                            index: dropIndex
+                        },
+                        beforeSend: function (xhr, settings) {
+                            xhr.setRequestHeader("X-CSRFToken", fancypages.getCsrfToken());
+                        },
+                        success: function (data) {
                             parent.fancypages.dashboard.reloadPreview();
-                        } else {
-                            parent.oscar.messages.error(data.reason);
+                        },
+                        error: function () {
+                            parent.oscar.messages.error(
+                                "An error occured trying to move the widget. Please try it again."
+                            );
                         }
-                    }).error(function () {
-                        parent.oscar.messages.error(
-                            "An error occured trying to move the widget. Please try it again."
-                        );
                     });
                 }
             }).disableSelection();
@@ -62,21 +81,28 @@ fancypages.dashboard = {
 
                 var form = $(this).parents('form');
                 var containerName = $(form).attr('id').replace('_add_widget_form', '');
-                var addUrl = $(form).attr('action') + $(this).val() + '/';
 
-                $.getJSON(addUrl, function (data) {
-                    if (data.success) {
+                $.ajax({
+                    url: $(form).attr('action'),
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        container: $(form).data('container-id'),
+                        code: $(this).val()
+
+                    },
+                    beforeSend: function (xhr, settings) {
+                        xhr.setRequestHeader("X-CSRFToken", fancypages.getCsrfToken());
+                    },
+                    success: function (data) {
                         parent.fancypages.dashboard.reloadPreview();
-                    } else {
-                        parent.oscar.messages.error(data.reason);
+                    },
+                    error: function () {
+                        parent.oscar.messages.error(
+                            "An error occured trying to add a new widget. Please try it again."
+                        );
                     }
-                    return false;
-                }).error(function () {
-                    parent.oscar.messages.error(
-                        "An error occured trying to add a new widget. Please try it again."
-                    );
                 });
-
                 $(this).parents('div[id$=_modal]').remove();
             });
 
@@ -84,16 +110,24 @@ fancypages.dashboard = {
             $('[data-behaviours~=add-tab]').live('click', function (ev) {
                 ev.preventDefault();
 
-                $.getJSON($(this).data('action'), function (data) {
-                    if (data.success) {
+                $.ajax({
+                    url: $(this).data('action'),
+                    type: 'POST',
+                    data: {
+                        content_type: $(this).data('content-type-id'),
+                        object_id: $(this).parents('.widget').data('widget-id')
+                    },
+                    beforeSend: function (xhr, settings) {
+                        xhr.setRequestHeader("X-CSRFToken", fancypages.getCsrfToken());
+                    },
+                    success: function (data) {
                         parent.fancypages.dashboard.reloadPreview();
-                    } else {
-                        parent.oscar.messages.error(data.reason);
+                    },
+                    error: function () {
+                        parent.oscar.messages.error(
+                            "An error occured trying to add a new tab. Please try it again."
+                        );
                     }
-                }).error(function () {
-                    parent.oscar.messages.error(
-                        "An error occured trying to add a new tab. Please try it again."
-                    );
                 });
             });
         },
@@ -107,7 +141,6 @@ fancypages.dashboard = {
 
     editor: {
         init: function () {
-
             var wrapperElement = $('div[id=widget_input_wrapper]') || document;
 
             // initialise wysihtml5 rich-text for editor
@@ -238,14 +271,18 @@ fancypages.dashboard = {
     },
 
     loadModal: function (elem) {
-        var target = $(elem).data('target');
-        var url = $(elem).attr('href');
-
-        return $(target).load(url, function (response, status, xhr) {
-            if (status == "error") {
-                parent.oscar.messages.error(
-                    "Unable to load contents of url: " + url
-                );
+        $.ajax({
+            url: $(elem).attr('href'),
+            type: 'GET',
+            data: {
+                container: $(elem).data('container-id')
+            },
+            success: function (data) {
+                var target = $(elem).data('target');
+                $(target).html(data.rendered_form);
+            },
+            error: function () {
+                parent.oscar.messages.error("Unable to load list of available widgets.");
             }
         });
     },
@@ -272,28 +309,23 @@ fancypages.dashboard = {
         $('form[id$=update_widget_form]').each(function (idx, form) {
             var selection = $("select", form);
             var containerName = $(form).attr('id').replace('_update_widget_form', '');
-
-            var widgetUrl = "/dashboard/fancypages/widget/update/" + selection.val() + "/";
-            fancypages.dashboard.loadWidgetForm(widgetUrl, containerName);
+            fancypages.dashboard.loadWidgetForm(selection.val(), containerName);
 
             selection.change(function (ev) {
-                var widgetUrl = "/dashboard/fancypages/widget/update/" + $(this).val() + "/";
-                fancypages.dashboard.loadWidgetForm(widgetUrl, containerName);
+                fancypages.dashboard.loadWidgetForm($(this).val(), containerName);
             });
         });
 
 
         $('.edit-button', previewDoc).click(function (ev) {
             var widget = $(this).closest('.widget');
-            var widgetUrl = "/dashboard/fancypages/widget/update/" + $(widget).data('widget-id') + "/";
-
             fancypages.dashboard.scrollToWidget(widget);
 
             // Add Class to widget editing
             $('.widget', previewDoc).removeClass('editing');
             widget.addClass('editing');
 
-            fancypages.dashboard.loadWidgetForm(widgetUrl, $(widget).data('container-name'), {
+            fancypages.dashboard.loadWidgetForm($(widget).data('widget-id'), $(widget).data('container-name'), {
                 success: function () {
                     // attach slider to column width slider
                     var sliderSelection = $('#id_left_width');
@@ -331,22 +363,23 @@ fancypages.dashboard = {
         $('div.delete', previewDoc).click(function (ev) {
             var widget = $(this).parents('.widget');
 
-            var deleteUrl = '/dashboard/fancypages/widget/delete/' + $(widget).data('widget-id') + "/";
-
-            $.ajax(deleteUrl)
-                .done(function (data) {
+            $.ajax({
+                url: 'api/v1/widget/' + $(widget).data('widget-id'),
+                type: 'DELETE',
+                success: function (data) {
                     var widgetWrapper = $('div[id=widget_input_wrapper]');
                     widgetWrapper.after(data);
 
                     $(data).load(function () {
                         $(this).modal('show');
                     });
-                })
-                .error(function () {
+                },
+                error: function () {
                     parent.oscar.messages.error(
                         "An error occured trying to delete a widget. Please try it again."
                     );
-                });
+                }
+            });
         });
 
         // Add / removed page elements for page preview
@@ -371,32 +404,37 @@ fancypages.dashboard = {
         $('body', previewDoc).css('margin-bottom', '600px').addClass('edit-page');
 
         fancypages.dashboard.carouselPosition();
-
         fancypages.dashboard.mouseWidgetHover();
-
     },
 
     /**
      * Load the the widget form for the specified url
      */
-    loadWidgetForm: function (url, containerName, options) {
-        $.ajax(url).done(function (data) {
-            var widgetWrapper = $('div[id=widget_input_wrapper]');
-            widgetWrapper.html(data);
-            $('#page-settings').hide();
+    loadWidgetForm: function (widgetId, containerName, options) {
+        var widgetUrl = fancypages.apiBaseUrl + 'widget/' + widgetId;
+        $.getJSON(
+            widgetUrl,
+            {
+                includeForm: true
+            },
+            function (data) {
+                var widgetWrapper = $('div[id=widget_input_wrapper]');
+                widgetWrapper.html(data.rendered_form);
+                $('#page-settings').hide();
 
-            fancypages.dashboard.editor.init();
-            $('.editor').animate({backgroundColor: "#555"}, 500)
-                        .delay(500)
-                        .animate({backgroundColor: "#444"}, 500);
+                fancypages.dashboard.editor.init();
+                $('.editor').animate({backgroundColor: "#555"}, 500)
+                            .delay(500)
+                            .animate({backgroundColor: "#444"}, 500);
 
-            fancypages.dashboard.updateSize();
+                fancypages.dashboard.updateSize();
 
-            if (options && 'success' in options) {
-                options.success();
+                if (options && 'success' in options) {
+                    options.success();
+                }
+                return false;
             }
-            return false;
-        });
+        );
     },
 
     /**
@@ -416,8 +454,8 @@ fancypages.dashboard = {
         }
         form.data('locked', true);
         $.ajax({
-            type: "POST",
             url: form.attr('action'),
+            type: "POST",
             data: form.serialize(),
             success: function (data) {
                 $('div[id=widget_input_wrapper]').html("");
