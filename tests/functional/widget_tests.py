@@ -21,7 +21,7 @@ class TestAWidget(test.FancyPagesWebTest):
             "{% fancypages_container page-container %}"
         )
 
-        self.page = Page.add_root(title="A new page", slug='a-new-page')
+        self.page = Page.add_root(name="A new page", slug='a-new-page')
 
         self.text_widget = TextWidget.objects.create(
             container=self.page.get_container_from_name('page-container'),
@@ -84,4 +84,4 @@ class TestAWidget(test.FancyPagesWebTest):
     def test_a_widget_without_template_is_ignored(self):
         container = self.page.get_container_from_name('page-container')
         Widget.objects.create(container=container)
-        self.get(reverse('fancypages:page-detail', args=(self.page.slug,)))
+        self.get(reverse('fancypages:page-detail', args=(self.page.category.slug,)))

@@ -1,212 +1,21 @@
 # -*- coding: utf-8 -*-
 import datetime
 from south.db import db
-from south.v2 import SchemaMigration
+from south.v2 import DataMigration
 from django.db import models
 
-
-class Migration(SchemaMigration):
+class Migration(DataMigration):
 
     def forwards(self, orm):
-        # Adding model 'Page'
-        db.create_table('fancypages_page', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('category', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['catalogue.Category'], unique=True)),
-            ('template_name', self.gf('django.db.models.fields.CharField')(default='fancypages/pages/page.html', max_length=255)),
-            ('keywords', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
-            ('status', self.gf('django.db.models.fields.CharField')(default=u'draft', max_length=15)),
-            ('date_visible_start', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
-            ('date_visible_end', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
-            ('is_active', self.gf('django.db.models.fields.BooleanField')(default=True)),
-        ))
-        db.send_create_signal('fancypages', ['Page'])
-
-        # Adding model 'Container'
-        db.create_table('fancypages_container', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('title', self.gf('django.db.models.fields.CharField')(max_length=100, null=True, blank=True)),
-            ('variable_name', self.gf('django.db.models.fields.SlugField')(max_length=50, null=True, blank=True)),
-            ('content_type', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['contenttypes.ContentType'], null=True)),
-            ('object_id', self.gf('django.db.models.fields.PositiveIntegerField')(null=True)),
-        ))
-        db.send_create_signal('fancypages', ['Container'])
-
-        # Adding model 'Widget'
-        db.create_table('fancypages_widget', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('container', self.gf('django.db.models.fields.related.ForeignKey')(related_name='widgets', to=orm['fancypages.Container'])),
-            ('display_order', self.gf('django.db.models.fields.PositiveIntegerField')()),
-        ))
-        db.send_create_signal('fancypages', ['Widget'])
-
-        # Adding model 'OrderedContainer'
-        db.create_table('fancypages_orderedcontainer', (
-            ('container_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Container'], unique=True, primary_key=True)),
-            ('display_order', self.gf('django.db.models.fields.PositiveIntegerField')()),
-        ))
-        db.send_create_signal('fancypages', ['OrderedContainer'])
-
-        # Adding model 'TabWidget'
-        db.create_table('fancypages_tabwidget', (
-            ('widget_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Widget'], unique=True, primary_key=True)),
-        ))
-        db.send_create_signal('fancypages', ['TabWidget'])
-
-        # Adding model 'TwoColumnLayoutWidget'
-        db.create_table('fancypages_twocolumnlayoutwidget', (
-            ('widget_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Widget'], unique=True, primary_key=True)),
-            ('left_width', self.gf('django.db.models.fields.PositiveIntegerField')(default=6, max_length=3)),
-        ))
-        db.send_create_signal('fancypages', ['TwoColumnLayoutWidget'])
-
-        # Adding model 'ThreeColumnLayoutWidget'
-        db.create_table('fancypages_threecolumnlayoutwidget', (
-            ('widget_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Widget'], unique=True, primary_key=True)),
-        ))
-        db.send_create_signal('fancypages', ['ThreeColumnLayoutWidget'])
-
-        # Adding model 'FourColumnLayoutWidget'
-        db.create_table('fancypages_fourcolumnlayoutwidget', (
-            ('widget_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Widget'], unique=True, primary_key=True)),
-        ))
-        db.send_create_signal('fancypages', ['FourColumnLayoutWidget'])
-
-        # Adding model 'TextWidget'
-        db.create_table('fancypages_textwidget', (
-            ('widget_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Widget'], unique=True, primary_key=True)),
-            ('text', self.gf('django.db.models.fields.TextField')(default='Your text goes here.')),
-        ))
-        db.send_create_signal('fancypages', ['TextWidget'])
-
-        # Adding model 'TitleTextWidget'
-        db.create_table('fancypages_titletextwidget', (
-            ('widget_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Widget'], unique=True, primary_key=True)),
-            ('title', self.gf('django.db.models.fields.CharField')(default='Your title goes here.', max_length=100)),
-            ('text', self.gf('django.db.models.fields.TextField')(default='Your text goes here.')),
-        ))
-        db.send_create_signal('fancypages', ['TitleTextWidget'])
-
-        # Adding model 'ImageWidget'
-        db.create_table('fancypages_imagewidget', (
-            ('widget_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Widget'], unique=True, primary_key=True)),
-            ('title', self.gf('django.db.models.fields.CharField')(max_length=100, null=True, blank=True)),
-            ('alt_text', self.gf('django.db.models.fields.CharField')(max_length=100, null=True, blank=True)),
-            ('link', self.gf('django.db.models.fields.CharField')(max_length=500, null=True, blank=True)),
-            ('image_asset', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='image_widgets', null=True, to=orm['assets.ImageAsset'])),
-        ))
-        db.send_create_signal('fancypages', ['ImageWidget'])
-
-        # Adding model 'ImageAndTextWidget'
-        db.create_table('fancypages_imageandtextwidget', (
-            ('widget_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Widget'], unique=True, primary_key=True)),
-            ('title', self.gf('django.db.models.fields.CharField')(max_length=100, null=True, blank=True)),
-            ('alt_text', self.gf('django.db.models.fields.CharField')(max_length=100, null=True, blank=True)),
-            ('link', self.gf('django.db.models.fields.CharField')(max_length=500, null=True, blank=True)),
-            ('image_asset', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='image_text_widgets', null=True, to=orm['assets.ImageAsset'])),
-            ('text', self.gf('django.db.models.fields.CharField')(default='Your text goes here.', max_length=2000)),
-        ))
-        db.send_create_signal('fancypages', ['ImageAndTextWidget'])
-
-        # Adding model 'SingleProductWidget'
-        db.create_table('fancypages_singleproductwidget', (
-            ('widget_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Widget'], unique=True, primary_key=True)),
-            ('product', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['catalogue.Product'], null=True)),
-        ))
-        db.send_create_signal('fancypages', ['SingleProductWidget'])
-
-        # Adding model 'HandPickedProductsPromotionWidget'
-        db.create_table('fancypages_handpickedproductspromotionwidget', (
-            ('widget_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Widget'], unique=True, primary_key=True)),
-            ('promotion', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['promotions.HandPickedProductList'], null=True)),
-        ))
-        db.send_create_signal('fancypages', ['HandPickedProductsPromotionWidget'])
-
-        # Adding model 'AutomaticProductsPromotionWidget'
-        db.create_table('fancypages_automaticproductspromotionwidget', (
-            ('widget_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Widget'], unique=True, primary_key=True)),
-            ('promotion', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['promotions.AutomaticProductList'], null=True)),
-        ))
-        db.send_create_signal('fancypages', ['AutomaticProductsPromotionWidget'])
-
-        # Adding model 'OfferWidget'
-        db.create_table('fancypages_offerwidget', (
-            ('widget_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Widget'], unique=True, primary_key=True)),
-            ('offer', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['offer.ConditionalOffer'], null=True)),
-        ))
-        db.send_create_signal('fancypages', ['OfferWidget'])
-
-        # Adding model 'VideoWidget'
-        db.create_table('fancypages_videowidget', (
-            ('widget_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Widget'], unique=True, primary_key=True)),
-            ('source', self.gf('django.db.models.fields.CharField')(max_length=50)),
-            ('video_code', self.gf('django.db.models.fields.CharField')(max_length=50)),
-        ))
-        db.send_create_signal('fancypages', ['VideoWidget'])
-
-        # Adding model 'TwitterWidget'
-        db.create_table('fancypages_twitterwidget', (
-            ('widget_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Widget'], unique=True, primary_key=True)),
-            ('username', self.gf('django.db.models.fields.CharField')(max_length=50)),
-            ('max_tweets', self.gf('django.db.models.fields.PositiveIntegerField')(default=5)),
-        ))
-        db.send_create_signal('fancypages', ['TwitterWidget'])
-
+        "Write your forwards methods here."
+        # Note: Remember to use orm['appname.ModelName'] rather than "from appname.models..."
+        for category in orm['catalogue.Category'].objects.all():
+            orm.Page.objects.get_or_create(category=category)
 
     def backwards(self, orm):
-        # Deleting model 'Page'
-        db.delete_table('fancypages_page')
-
-        # Deleting model 'Container'
-        db.delete_table('fancypages_container')
-
-        # Deleting model 'Widget'
-        db.delete_table('fancypages_widget')
-
-        # Deleting model 'OrderedContainer'
-        db.delete_table('fancypages_orderedcontainer')
-
-        # Deleting model 'TabWidget'
-        db.delete_table('fancypages_tabwidget')
-
-        # Deleting model 'TwoColumnLayoutWidget'
-        db.delete_table('fancypages_twocolumnlayoutwidget')
-
-        # Deleting model 'ThreeColumnLayoutWidget'
-        db.delete_table('fancypages_threecolumnlayoutwidget')
-
-        # Deleting model 'FourColumnLayoutWidget'
-        db.delete_table('fancypages_fourcolumnlayoutwidget')
-
-        # Deleting model 'TextWidget'
-        db.delete_table('fancypages_textwidget')
-
-        # Deleting model 'TitleTextWidget'
-        db.delete_table('fancypages_titletextwidget')
-
-        # Deleting model 'ImageWidget'
-        db.delete_table('fancypages_imagewidget')
-
-        # Deleting model 'ImageAndTextWidget'
-        db.delete_table('fancypages_imageandtextwidget')
-
-        # Deleting model 'SingleProductWidget'
-        db.delete_table('fancypages_singleproductwidget')
-
-        # Deleting model 'HandPickedProductsPromotionWidget'
-        db.delete_table('fancypages_handpickedproductspromotionwidget')
-
-        # Deleting model 'AutomaticProductsPromotionWidget'
-        db.delete_table('fancypages_automaticproductspromotionwidget')
-
-        # Deleting model 'OfferWidget'
-        db.delete_table('fancypages_offerwidget')
-
-        # Deleting model 'VideoWidget'
-        db.delete_table('fancypages_videowidget')
-
-        # Deleting model 'TwitterWidget'
-        db.delete_table('fancypages_twitterwidget')
-
+        "Write your backwards methods here."
+        for page in orm.Page.objects.all():
+            page.delete(keep_category=True)
 
     models = {
         'assets.imageasset': {
@@ -420,7 +229,7 @@ class Migration(SchemaMigration):
         },
         'fancypages.page': {
             'Meta': {'object_name': 'Page'},
-            'category': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['catalogue.Category']", 'unique': 'True'}),
+            'category': ('django.db.models.fields.related.OneToOneField', [], {'related_name': "'page'", 'unique': 'True', 'to': "orm['catalogue.Category']"}),
             'date_visible_end': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'date_visible_start': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -581,3 +390,4 @@ class Migration(SchemaMigration):
     }
 
     complete_apps = ['fancypages']
+    symmetrical = True

@@ -9,6 +9,12 @@ Container = get_model('fancypages', 'Container')
 class PageEditorMixin(object):
     edit_mode = False
 
+    def get_object(self):
+        try:
+            return Page.objects.get(category__slug=self.kwargs.get('slug'))
+        except (Page.DoesNotExist, Page.MultipleObjectsReturned):
+            raise Http404
+
     def get_context_data(self, **kwargs):
         kwargs.update({
             'edit_mode': self.edit_mode,

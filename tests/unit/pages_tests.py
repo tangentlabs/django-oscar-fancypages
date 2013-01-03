@@ -45,7 +45,7 @@ class TestAPage(test.FancyPagesTestCase):
 {% endblock %}
 """)
         article_page = models.Page.add_root(
-            title='This is an article',
+            name='This is an article',
             template_name=self.template_name,
         )
 
@@ -61,7 +61,7 @@ class TestContainer(test.FancyPagesTestCase):
                                    "{% fancypages_container test-container %}")
 
         self.page = models.Page.add_root(
-            title="Some Title",
+            name="Some Title",
             template_name=self.template_name
         )
         self.container_names = get_container_names_from_template(
