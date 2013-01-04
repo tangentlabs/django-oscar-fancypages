@@ -26,13 +26,11 @@
                         <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu pull-right">
-                        {% comment %}
                         <li>
-                            <a href="">
-                                {% trans "Add new page" %}
+                            <a href="{% url fp-dashboard:child-page-create parent_pk=page.id %}">
+                                {% trans "Add child page" %}
                             </a>
                         </li>
-                        {% endcomment %}
                         <li>
                             <a href="{% url fp-dashboard:page-customise page.id %}">
                                 {% trans "Customise" %}
@@ -54,18 +52,6 @@
         {% with filename="fancypages/dashboard/partials/page_list_item.html" %}
             {% include filename with page_list=page.get_children %}
         {% endwith %}
-
-        <li style="list-style: none;">
-            <div class="well" >
-                <div class="span8">
-                    <a href="{% url fp-dashboard:child-page-create parent_pk=page.id %}"
-                       class="btn btn-primary">
-                        {% trans "Add new page" %}
-                    </a>
-                </div>
-            </div>
-        </li>
-
     </ol>
     {% endif %}
 </li>
