@@ -11,7 +11,7 @@ class Migration(SchemaMigration):
         # Adding model 'Page'
         db.create_table('fancypages_page', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('category', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['catalogue.Category'], unique=True)),
+            ('category', self.gf('django.db.models.fields.related.OneToOneField')(related_name='page', unique=True, to=orm['catalogue.Category'])),
             ('template_name', self.gf('django.db.models.fields.CharField')(default='fancypages/pages/page.html', max_length=255)),
             ('keywords', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
             ('status', self.gf('django.db.models.fields.CharField')(default=u'draft', max_length=15)),
@@ -107,6 +107,18 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('fancypages', ['ImageAndTextWidget'])
 
+        # Adding model 'PageNavigationWidget'
+        db.create_table('fancypages_pagenavigationwidget', (
+            ('widget_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Widget'], unique=True, primary_key=True)),
+        ))
+        db.send_create_signal('fancypages', ['PageNavigationWidget'])
+
+        # Adding model 'PrimaryNavigationWidget'
+        db.create_table('fancypages_primarynavigationwidget', (
+            ('widget_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Widget'], unique=True, primary_key=True)),
+        ))
+        db.send_create_signal('fancypages', ['PrimaryNavigationWidget'])
+
         # Adding model 'SingleProductWidget'
         db.create_table('fancypages_singleproductwidget', (
             ('widget_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.Widget'], unique=True, primary_key=True)),
@@ -188,6 +200,12 @@ class Migration(SchemaMigration):
 
         # Deleting model 'ImageAndTextWidget'
         db.delete_table('fancypages_imageandtextwidget')
+
+        # Deleting model 'PageNavigationWidget'
+        db.delete_table('fancypages_pagenavigationwidget')
+
+        # Deleting model 'PrimaryNavigationWidget'
+        db.delete_table('fancypages_primarynavigationwidget')
 
         # Deleting model 'SingleProductWidget'
         db.delete_table('fancypages_singleproductwidget')
@@ -420,7 +438,7 @@ class Migration(SchemaMigration):
         },
         'fancypages.page': {
             'Meta': {'object_name': 'Page'},
-            'category': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['catalogue.Category']", 'unique': 'True'}),
+            'category': ('django.db.models.fields.related.OneToOneField', [], {'related_name': "'page'", 'unique': 'True', 'to': "orm['catalogue.Category']"}),
             'date_visible_end': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'date_visible_start': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -428,6 +446,14 @@ class Migration(SchemaMigration):
             'keywords': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'status': ('django.db.models.fields.CharField', [], {'default': "u'draft'", 'max_length': '15'}),
             'template_name': ('django.db.models.fields.CharField', [], {'default': "'fancypages/pages/page.html'", 'max_length': '255'})
+        },
+        'fancypages.pagenavigationwidget': {
+            'Meta': {'ordering': "['display_order']", 'object_name': 'PageNavigationWidget', '_ormbases': ['fancypages.Widget']},
+            'widget_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['fancypages.Widget']", 'unique': 'True', 'primary_key': 'True'})
+        },
+        'fancypages.primarynavigationwidget': {
+            'Meta': {'ordering': "['display_order']", 'object_name': 'PrimaryNavigationWidget', '_ormbases': ['fancypages.Widget']},
+            'widget_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['fancypages.Widget']", 'unique': 'True', 'primary_key': 'True'})
         },
         'fancypages.singleproductwidget': {
             'Meta': {'ordering': "['display_order']", 'object_name': 'SingleProductWidget', '_ormbases': ['fancypages.Widget']},

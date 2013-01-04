@@ -79,3 +79,27 @@ class ImageAndTextWidget(ImageMetadataMixin, Widget):
 
     class Meta:
         app_label = 'fancypages'
+
+
+class PageNavigationWidget(Widget):
+    name = _("Page Navigation")
+    code = 'page-navigation'
+    template_name = "fancypages/widgets/pagenavigationwidget.html"
+
+    def __unicode__(self):
+        return u'Page Navigation'
+
+    class Meta:
+        app_label = 'fancypages'
+
+
+class PrimaryNavigationWidget(Widget):
+    name = _("Primary Navigation")
+    code = 'primary-navigation'
+    template_name = "fancypages/widgets/primarynavigationwidget.html"
+
+    def __unicode__(self):
+        return u'Primary Navigation'
+
+    class Meta:
+        app_label = 'fancypages'
