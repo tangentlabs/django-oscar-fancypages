@@ -50,6 +50,11 @@ class FancypagesDashboardApplication(Application):
                 name='page-create'
             ),
             url(
+                r'^create/(?P<parent_pk>\d+)/$',
+                self.page_create_view.as_view(),
+                name='child-page-create'
+            ),
+            url(
                 r'^update/(?P<pk>\d+)/$',
                 self.page_update_view.as_view(),
                 name='page-update'
