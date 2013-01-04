@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models import Q
 from django.utils import timezone
 from django.db.models.query import QuerySet
+from django.core.urlresolvers import reverse
 from django.contrib.contenttypes import generic
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ImproperlyConfigured
@@ -14,6 +15,20 @@ from model_utils.managers import InheritanceManager
 from fancypages.utils import get_container_names_from_template
 
 Category = models.get_model('catalogue', 'Category')
+
+
+#FIXME: this is a patch to bend the existing categories 
+# in Oscar to use the fancypages URLs without making any
+# additional code or template changes necessary. This is 
+# not a good way of handling this. Oscar should be able
+# to provide some sort of URL hook that allows for
+# enabling, disabling and changing of named URLs
+def get_absolute_url(self):
+    return reverse(
+        'fancypages:page-detail',
+        args=(self.slug,)
+    )
+Category.get_absolute_url = get_absolute_url
 
 
 class PageQuerySet(QuerySet):
