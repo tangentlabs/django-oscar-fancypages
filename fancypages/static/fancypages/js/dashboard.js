@@ -22,7 +22,7 @@ fancypages.dashboard = {
                 forcePlaceholderSize: true,
                 opacity: 0.6,
                 isTree: true,
-                items: 'li',
+                items: 'li.sortable',
                 handle: 'div',
                 //toleranceElement: '> div',
                 placeholder: 'nested-sortable-placeholder',

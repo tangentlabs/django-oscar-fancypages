@@ -32,6 +32,11 @@ class PageCreateView(generic.CreateView):
     form_class = forms.PageForm
     model = Page
 
+    def get_form_kwargs(self):
+        kwargs = super(PageCreateView, self).get_form_kwargs()
+        kwargs.update(self.kwargs)
+        return kwargs
+
     def get_success_url(self):
         return reverse('fp-dashboard:page-list')
 

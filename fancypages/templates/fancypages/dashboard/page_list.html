@@ -22,7 +22,7 @@
 {% block dashboard_content %}
 
 <div class="well well-info">
-    <a href="{% url fp-dashboard:page-create %}" class="btn btn-primary">{% trans "Create new page" %}</a>
+    <a href="{% url fp-dashboard:page-create %}" class="btn btn-primary">{% trans "Create new top-level page" %}</a>
 </div>
 
 {% if page_list|length %}
@@ -32,6 +32,10 @@
         {% include "fancypages/dashboard/partials/page_list_item.html" with page_list=page_list %}
     </ol>
 </form>
+
+<div class="well well-info">
+    <a href="{% url fp-dashboard:page-create %}" class="btn btn-primary">{% trans "Create new top-level page" %}</a>
+</div>
 
 {% else %}
     <p>{% trans "No pages found." %}</p>

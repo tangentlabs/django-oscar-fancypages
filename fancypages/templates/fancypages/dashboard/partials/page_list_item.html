@@ -2,7 +2,7 @@
 {% load fp_widget_tags %}
 
 {% for page in page_list %}
-<li id="page-{{ page.id }}" data-page-id="{{ page.id }}" style="list-style: none;">
+<li id="page-{{ page.id }}" class="sortable" data-page-id="{{ page.id }}" style="list-style: none;">
     <div class="well" >
         <div class="span8">
             <a href="{{ page.get_absolute_url }}">{{ page.title }}</a>
@@ -54,6 +54,18 @@
         {% with filename="fancypages/dashboard/partials/page_list_item.html" %}
             {% include filename with page_list=page.get_children %}
         {% endwith %}
+
+        <li style="list-style: none;">
+            <div class="well" >
+                <div class="span8">
+                    <a href="{% url fp-dashboard:child-page-create parent_pk=page.id %}"
+                       class="btn btn-primary">
+                        {% trans "Add new page" %}
+                    </a>
+                </div>
+            </div>
+        </li>
+
     </ol>
     {% endif %}
 </li>
