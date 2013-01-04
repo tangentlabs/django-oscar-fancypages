@@ -14,8 +14,11 @@ class FancypagesApplication(Application):
         urlpatterns = super(FancypagesApplication, self).get_urls()
 
         urlpatterns += patterns('',
-            url(r'^page/(?P<slug>[\w-]+(/[\w-]+)*)/$',
-                self.page_detail_view.as_view(), name='page-detail'),
+            url(
+                r'^(?P<slug>[\w-]+(/[\w-]+)*)/$',
+                self.page_detail_view.as_view(),
+                name='page-detail'
+            ),
         )
         return self.post_process_urls(urlpatterns)
 
