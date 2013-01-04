@@ -5,10 +5,12 @@ from django.conf.urls import patterns, include, url
 from oscar.app import shop
 
 import fancypages.urls
+from fancypages.views import FancyHomeView
 
 admin.autodiscover()
 
 urlpatterns = patterns('',
+    url(r'^$', FancyHomeView.as_view(), name='home'),
     url(r'^', include(shop.urls)),
     url(r'^', include(fancypages.urls)),
     url(r'^admin/', include(admin.site.urls)),
