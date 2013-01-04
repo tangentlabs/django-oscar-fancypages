@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
+from django.db.models.query import QuerySet
 from django.contrib.contenttypes import generic
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ImproperlyConfigured
@@ -8,7 +9,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.template import loader, RequestContext, Context
 from django.contrib.contenttypes.generic import GenericRelation
 
-from treebeard.mp_tree import MP_NodeQuerySet
 from model_utils.managers import InheritanceManager
 
 from fancypages.utils import get_container_names_from_template
@@ -16,24 +16,24 @@ from fancypages.utils import get_container_names_from_template
 Category = models.get_model('catalogue', 'Category')
 
 
-#class PageQuerySet(QuerySet):
-#
-#    def visible(self):
-#        now = timezone.now()
-#        return self.filter(
-#            status=Page.PUBLISHED,
-#            is_active=True,
-#        ).filter(
-#            models.Q(date_visible_start=None) |
-#            models.Q(date_visible_start__lt=now),
-#            models.Q(date_visible_end=None) |
-#            models.Q(date_visible_end__gt=now)
-#        )
-#
-#
-#class PageManager(models.Manager):
-#    def get_query_set(self):
-#        return PageQuerySet(self.model)
+class PageQuerySet(QuerySet):
+
+    def visible(self):
+        now = timezone.now()
+        return self.filter(
+            status=Page.PUBLISHED,
+            is_active=True,
+        ).filter(
+            models.Q(date_visible_start=None) |
+            models.Q(date_visible_start__lt=now),
+            models.Q(date_visible_end=None) |
+            models.Q(date_visible_end__gt=now)
+        )
+
+
+class PageManager(models.Manager):
+    def get_query_set(self):
+        return PageQuerySet(self.model).order_by('category__path')
 
 
 class Page(models.Model):
@@ -66,7 +66,7 @@ class Page(models.Model):
     # page invisible
     is_active = models.BooleanField(_("Is active"), default=True)
 
-    #objects = PageManager()
+    objects = PageManager()
 
     @classmethod
     def add_root(cls, name, slug=None, template_name=None):

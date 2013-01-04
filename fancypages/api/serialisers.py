@@ -7,6 +7,7 @@ from rest_framework import serializers
 
 from fancypages.dashboard import forms
 
+Page = get_model('fancypages', 'Page')
 Widget = get_model('fancypages', 'Widget')
 OrderedContainer = get_model('fancypages', 'OrderedContainer')
 
@@ -108,3 +109,23 @@ class OrderedContainerSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderedContainer
         exclude = ['display_order']
+
+
+class PageMoveSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField('get_page_title')
+    is_visible = serializers.SerializerMethodField('get_visibility')
+
+    parent = serializers.IntegerField(required=True)
+    new_index = serializers.IntegerField()
+    old_index = serializers.IntegerField(required=True)
+
+    def get_page_title(self):
+        return self.object.name
+
+    def get_visibility(self):
+        return self.object.is_visible
+
+    class Meta:
+        model = Page
+        fields = ['parent', 'new_index', 'old_index']
+        read_only_fields = ['status', 'is_active']

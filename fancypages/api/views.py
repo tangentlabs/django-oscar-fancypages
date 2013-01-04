@@ -12,7 +12,9 @@ from rest_framework.authentication import SessionAuthentication
 from fancypages.dashboard import forms
 from fancypages.api import serialisers
 
+Page = get_model('fancypages', 'Page')
 Widget = get_model('fancypages', 'Widget')
+Category = get_model('catalogue', 'Category')
 Container = get_model('fancypages', 'Container')
 OrderedContainer = get_model('fancypages', 'OrderedContainer')
 
@@ -117,3 +119,47 @@ class WidgetTypesView(APIView):
             }
         )
         return tmpl.render(ctx)
+
+
+class PageMoveView(generics.UpdateAPIView):
+    model = Page
+    serializer_class = serialisers.PageMoveSerializer
+
+    authentication_classes = (SessionAuthentication,)
+    permission_classes = (IsAdminUser,)
+
+    def pre_save(self, obj):
+        if obj.new_index <= obj.old_index:
+            position = 'left'
+        else:
+            position = 'right'
+
+        # if the parent ID is '0' the page will be moved to the
+        # root level. That means we have to lookup the root node
+        # that we use to relate the move to. This is the root node
+        # at the position of the new_index. If it is the last node
+        # the index will cause a IndexError so we insert the page
+        # after the last node.
+        if not obj.parent:
+            try:
+                category = Category.get_root_nodes()[obj.new_index]
+            except IndexError:
+                category = Category.get_last_root_node()
+                position = 'right'
+
+        # in this case the page is moved relative to a parent node.
+        # we have to handle the same special case for the last node
+        # as above and also have to insert as 'first-child' if no
+        # other children are present due to different relative node
+        else:
+            category = Page.objects.get(id=obj.parent).category
+            if not category.numchild:
+                position = 'first-child'
+            else:
+                try:
+                    category = category.get_children()[obj.new_index]
+                except IndexError:
+                    position = 'last-child'
+
+        obj.category.move(category, position)
+        return obj
