@@ -2,7 +2,7 @@
 {% load i18n %}
 
 {% block title %}
-{% trans "Create new page" %} | {{ block.super }}
+{{ title }} | {{ block.super }}
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -25,7 +25,7 @@
 
 {% block header %}
 <div class="page-header">
-    <h1>{% trans "Create new page" %} </h1>
+    <h1>{{ title }}</h1>
 </div>
 {% endblock header %}
 

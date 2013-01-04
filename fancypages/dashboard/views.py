@@ -4,6 +4,7 @@ from django.db.models import get_model
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 from django.forms.models import modelform_factory
+from django.utils.translation import ugettext as _
 from django.contrib.contenttypes.models import ContentType
 
 from fancypages.dashboard import forms
@@ -29,13 +30,18 @@ class PageListView(generic.ListView):
 
 class PageCreateView(generic.CreateView):
     template_name = "fancypages/dashboard/page_update.html"
-    form_class = forms.PageForm
+    form_class = forms.PageCreateForm
     model = Page
 
     def get_form_kwargs(self):
         kwargs = super(PageCreateView, self).get_form_kwargs()
         kwargs.update(self.kwargs)
         return kwargs
+
+    def get_context_data(self, **kwargs):
+        ctx = super(PageCreateView, self).get_context_data(**kwargs)
+        ctx['title'] = _("Create new page")
+        return ctx
 
     def get_success_url(self):
         return reverse('fp-dashboard:page-list')
@@ -46,6 +52,16 @@ class PageUpdateView(generic.UpdateView):
     form_class = forms.PageForm
     context_object_name = 'page'
     model = Page
+
+    def get_initial(self):
+        initial = super(PageUpdateView, self).get_initial()
+        initial['name'] = self.object.category.name
+        return initial
+
+    def get_context_data(self, **kwargs):
+        ctx = super(PageUpdateView, self).get_context_data(**kwargs)
+        ctx['title'] = _("Update page")
+        return ctx
 
     def get_success_url(self):
         return reverse('fp-dashboard:page-list')

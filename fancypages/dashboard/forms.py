@@ -11,9 +11,25 @@ Category = get_model('catalogue', 'Category')
 class PageForm(forms.ModelForm):
     name = forms.CharField(max_length=128)
 
+    def save(self, commit=True):
+        page_name = self.cleaned_data['name']
+        self.instance.category.name = page_name
+        self.instance.category.save()
+        return super(PageForm, self).save(commit=True)
+
+    class Meta:
+        model = Page
+        fields = ['name', 'template_name', 'keywords',
+                  'status', 'date_visible_start',
+                  'date_visible_end', 'is_active']
+
+
+class PageCreateForm(forms.ModelForm):
+    name = forms.CharField(max_length=128)
+
     def __init__(self, *args, **kwargs):
         parent_id = kwargs.pop('parent_pk', None)
-        super(PageForm, self).__init__(*args, **kwargs)
+        super(PageCreateForm, self).__init__(*args, **kwargs)
         try:
             self.parent = Category.objects.get(id=parent_id)
         except Category.DoesNotExist:
@@ -25,11 +41,13 @@ class PageForm(forms.ModelForm):
             self.instance.category = self.parent.add_child(name=page_name)
         else:
             self.instance.category = Category.add_root(name=page_name)
-        return super(PageForm, self).save(commit=True)
+        return super(PageCreateForm, self).save(commit=True)
 
     class Meta:
         model = Page
-        fields = ['name', 'template_name']
+        fields = ['name', 'template_name', 'keywords',
+                  'status', 'date_visible_start',
+                  'date_visible_end', 'is_active']
 
 
 class WidgetCreateSelectForm(forms.Form):

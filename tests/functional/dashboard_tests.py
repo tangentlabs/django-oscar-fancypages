@@ -11,9 +11,9 @@ PageType = get_model('fancypages', 'PageType')
 class TestAStaffMember(test.FancyPagesWebTest):
     is_staff = True
 
-    def test_can_create_a_new_toplevel_article_page(self):
+    def test_can_create_a_new_toplevel_page(self):
         page = self.get(reverse('fp-dashboard:page-list'))
-        page = page.click("Create new page")
+        page = page.click("Create new top-level page")
 
         self.assertContains(page, "Create new page")
 
@@ -33,7 +33,23 @@ class TestAStaffMember(test.FancyPagesWebTest):
         self.assertEquals(article_page.is_visible, False)
         self.assertContains(page, u"not visible")
 
-    def test_can_delete_an_article(self):
+    def test_update_a_toplevel_page(self):
+        fancy_page = Page.add_root(name="Test page")
+
+        page = self.get(
+            reverse('fp-dashboard:page-update', args=(fancy_page.id,))
+        )
+        self.assertContains(page, 'Update page')
+        self.assertContains(page, fancy_page.category.name)
+
+        form = page.form
+        form['name'] = 'Another name'
+        page = form.submit()
+
+        fancy_page = Page.objects.get(id=fancy_page.id)
+        self.assertEquals(fancy_page.category.name, 'Another name')
+
+    def test_can_delete_a_page(self):
         Page.add_root(name="A new page")
         self.assertEquals(Page.objects.count(), 1)
         page = self.get(reverse("fp-dashboard:page-list"))
@@ -51,7 +67,7 @@ class TestAStaffMember(test.FancyPagesWebTest):
         page = page.click("Delete")
         page = page.click('cancel')
         self.assertEquals(Page.objects.count(), 1)
-        self.assertContains(page, "Create new page")
+        self.assertContains(page, "Create new top-level page")
         self.assertContains(page, "Page Management")
 
     def test_can_delete_a_child_page(self):
