@@ -1,20 +1,10 @@
-from django.utils.translation import ugettext_lazy as _
 from django.conf.urls.defaults import patterns, url, include
 
 from oscar.core.application import Application
-from oscar.apps.dashboard.nav import register, Node
 from oscar.views.decorators import staff_member_required
 
 from fancypages.dashboard import views
 from fancypages.assets.app import application as assets_app
-
-
-node = Node(_('Page Manager'))
-node.add_child(Node(
-    _('Pages'),
-    'fp-dashboard:page-list')
-)
-register(node, 100)
 
 
 class FancypagesDashboardApplication(Application):

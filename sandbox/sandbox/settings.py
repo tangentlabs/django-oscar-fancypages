@@ -169,6 +169,8 @@ DEBUG_TOOLBAR_CONFIG = {
 
 # Oscar settings
 from oscar.defaults import *
+from fancypages.defaults import *
+
 OSCAR_ALLOW_ANON_CHECKOUT = True
 
 OSCAR_SHOP_NAME = 'FancyPages Sandbox'
