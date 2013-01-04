@@ -8,6 +8,8 @@ from fancypages.models.widgets.content import (
     TextWidget,
     TitleTextWidget,
     ImageWidget,
+    PageNavigationWidget,
+    PrimaryNavigationWidget,
 )
 from fancypages.models.widgets.product import (
     SingleProductWidget,
