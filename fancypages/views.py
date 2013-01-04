@@ -1,6 +1,6 @@
 from django.http import Http404
 from django.db.models import get_model
-from django.views.generic import DetailView
+from django.views.generic import TemplateView, DetailView
 
 Page = get_model('fancypages', 'Page')
 Container = get_model('fancypages', 'Container')
@@ -42,3 +42,14 @@ class PageDetailView(PageEditorMixin, DetailView):
 
     def get_template_names(self):
         return [self.object.template_name]
+
+
+class FancyHomeView(PageDetailView):
+    model = Page
+
+    def get_object(self):
+        try:
+            page = Page.objects.get(category__slug='home')
+        except Page.DoesNotExist:
+            page = Page.add_root(name='Home', slug='home')
+        return page
