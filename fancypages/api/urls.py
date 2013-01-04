@@ -26,4 +26,9 @@ urlpatterns = patterns('',
         views.WidgetTypesView.as_view(),
         name='widget-type-list'
     ),
+    url(
+        r'^page/(?P<pk>\d+)/move$',
+        views.PageMoveView.as_view(),
+        name='page-move'
+    ),
 )

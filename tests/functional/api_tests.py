@@ -8,8 +8,9 @@ from fancypages import test
 
 Page = get_model('fancypages', 'Page')
 Widget = get_model('fancypages', 'Widget')
-TextWidget = get_model('fancypages', 'TextWidget')
+Category = get_model('catalogue', 'Category')
 Container = get_model('fancypages', 'Container')
+TextWidget = get_model('fancypages', 'TextWidget')
 
 
 class TestTheWidgetTypeApi(test.FancyPagesWebTest):
@@ -213,3 +214,125 @@ class TestTheWidgetMoveApi(test.FancyPagesWebTest):
                 TextWidget.objects.get(id=self.main_widgets[idx].id).display_order,
                 pos
             )
+
+
+class TestThePageMoveApi(test.FancyPagesWebTest):
+    is_staff = True
+    csrf_checks = False
+
+    def setUp(self):
+        super(TestThePageMoveApi, self).setUp()
+        self.first_parent = Page.add_root(name="First parent")
+        self.second_parent = Page.add_root(name="Second parent")
+        self.third_parent = Page.add_root(name="Third parent")
+
+        self.a_child = self.first_parent.add_child(name='One child')
+        self.first_parent.add_child(name='Another child')
+        self.first_parent.add_child(name='Third child')
+
+        #self.second_parent.add_child(name='Last child')
+
+    def put(self, page, params):
+        return self.app.put(
+            reverse('fp-api:page-move', args=(page.id,)),
+            params=params,
+            user=self.user
+        )
+
+    def test_can_move_second_root_above_first(self):
+        self.put(self.second_parent, {
+            'parent': 0,
+            'new_index': 0,
+            'old_index': 1,
+        })
+
+        self.assertEquals(
+            self.second_parent.category.id,
+            Category.get_first_root_node().id
+        )
+
+    def test_can_move_root_page_into_parent_with_no_child(self):
+        self.put(self.third_parent, {
+            'parent': self.second_parent.id,
+            'new_index': 0,
+            'old_index': 1,
+        })
+
+        category = Category.objects.get(page=self.third_parent)
+        self.assertEquals(category.path, '00020001')
+
+    def test_can_move_child_page_to_first_root(self):
+        self.put(self.a_child, {
+            'parent': 0,
+            'new_index': 0,
+            'old_index': 1,
+        })
+
+        category = Category.objects.get(page=self.a_child)
+        self.assertEquals(category.path, '0001')
+
+    def test_can_move_child_page_to_last_root(self):
+        self.put(self.a_child, {
+            'parent': 0,
+            'new_index': 2,
+            'old_index': 1,
+        })
+
+        category = Category.objects.get(page=self.a_child)
+        self.assertEquals(category.path, '0004')
+
+    def test_can_move_root_page_into_parent_before_child(self):
+        self.second_parent.add_child(name='Last child')
+
+        self.put(self.third_parent, {
+            'parent': self.second_parent.id,
+            'new_index': 0,
+            'old_index': 1,
+        })
+
+        category = Category.objects.get(page=self.third_parent)
+        self.assertEquals(category.path, '00020001')
+
+    def test_can_move_root_page_into_parent_after_child(self):
+        child = self.second_parent.add_child(name='Last child')
+
+        self.put(self.third_parent, {
+            'parent': self.second_parent.id,
+            'new_index': 1,
+            'old_index': 1,
+        })
+
+        category = Category.objects.get(page=self.third_parent)
+        self.assertEquals(category.path, '00020002')
+        category = Category.objects.get(page=child)
+        self.assertEquals(category.path, '00020001')
+
+    def test_can_move_page_up_within_parent(self):
+        first_child = self.second_parent.add_child(name='first child')
+        second_child = self.second_parent.add_child(name='2nd child')
+
+        self.put(second_child, {
+            'parent': self.second_parent.id,
+            'new_index': 0,
+            'old_index': 1,
+        })
+
+        category = Category.objects.get(page=first_child)
+        self.assertEquals(category.path, '00020002')
+        category = Category.objects.get(page=second_child)
+        self.assertEquals(category.path, '00020001')
+
+    def test_can_move_page_down_within_parent(self):
+        first_child = self.second_parent.add_child(name='first child')
+        second_child = self.second_parent.add_child(name='2nd child')
+
+        self.put(first_child, {
+            'parent': self.second_parent.id,
+            'new_index': 1,
+            'old_index': 0,
+        })
+
+        category = Category.objects.get(page=first_child)
+        self.assertEquals(category.path, '00020003')
+        category = Category.objects.get(page=second_child)
+        self.assertEquals(category.path, '00020002')
