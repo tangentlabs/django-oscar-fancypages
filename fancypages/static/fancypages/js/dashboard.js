@@ -412,23 +412,22 @@ fancypages.dashboard = {
         $('div.delete', previewDoc).click(function (ev) {
             var widget = $(this).parents('.widget');
 
-            $.ajax({
-                url: 'api/v1/widget/' + $(widget).data('widget-id'),
-                type: 'DELETE',
-                success: function (data) {
+            var deleteUrl = '/dashboard/fancypages/widget/delete/' + $(widget).data('widget-id') + "/";
+
+            $.ajax(deleteUrl)
+                .done(function (data) {
                     var widgetWrapper = $('div[id=widget_input_wrapper]');
                     widgetWrapper.after(data);
 
                     $(data).load(function () {
                         $(this).modal('show');
                     });
-                },
-                error: function () {
+                })
+                .error(function () {
                     parent.oscar.messages.error(
                         "An error occured trying to delete a widget. Please try it again."
                     );
-                }
-            });
+                });
         });
 
         // Add / removed page elements for page preview
