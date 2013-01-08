@@ -1,14 +1,62 @@
+======================================
 Fancy CMS-style page editing for Oscar
 ======================================
 
-This extension provides fancy page editing for Oscar.
+Fancy pages is an extension to provide a Content Management System for Oscar Commerce which allows a site to be customised and built using widgets within any page of the website.
 
-Disclaimer
-----------
+It is structured to allow widgets to be added to any page within an Oscar site without restriction. All pages created by fancy pages are in fact created as Oscar categories so are made available to the product navigation on the site.
 
-This project is currently a better proof of concept and will most
-likely break or not work. Please use with care until this message
-disappears!!!
+Current Functionality
+=====================
+
+A dashboard administrator can
+
+* Create a new Page (category) in the site within a tree structure
+* Manage the meta keywords for a page
+* Manage whether a page is active or not
+* Move pages within the tree structure via drag and drop
+* Manage page visibility via start / end dates, and draft/published/archived status
+* Preview a page within the site
+* Add widgets to a page
+* Alter the structure of a page using layout widgets
+* Layout widgets can be nested to allow complete flexibility of the structure of a page
+* Drag and drop widgets within a page
+
+The following Widgets are currently shipped with fancy pages
+
+Layout Widgets
+
+* 2 Column widget - which can be split in proportion to the page
+* 3 Column widget
+* 4 column widget
+* Tabbed content widget
+
+Design Widgets
+
+* Text
+* Title + Text
+* Image
+* Image + Text
+
+eCommerce Widgets
+
+* Single Product Showcase
+* Automatic Product Showcase
+* Hand Picked Products Showcase
+* Products within an offer showcase
+
+3rd Party Plugin widgets
+
+* Youtube
+* Twitter
+
+
+
+Planned Functionality
+=====================
+
+Fancy pages is still in active development with the following on the to-do list
+
 
 Running the sandbox
 ===================
