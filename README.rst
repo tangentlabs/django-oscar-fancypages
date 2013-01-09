@@ -6,6 +6,8 @@ Fancy pages is an extension to provide a Content Management System for Oscar Com
 
 It is structured to allow widgets to be added to any page within an Oscar site without restriction. All pages created by fancy pages are in fact created as Oscar categories so are made available to the product navigation on the site.
 
+.. image:: http://www.diigo.com/item/image/3j3of/ybch
+
 Current Functionality
 =====================
 
