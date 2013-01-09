@@ -51,12 +51,31 @@ eCommerce Widgets
 * Twitter
 
 
-
 Planned Functionality
 =====================
 
-Fancy pages is still in active development with the following on the to-do list
+Fancy pages is still in active development with the following on the to do list. We dont feel its quite ready to be called a 0.1 release as there needs to be the following functionality added.
 
+v0.1 Release
+
+* A widget which displays all the products in the current and child categories in a list form which can be filtered. This is a must for e-commerce sites
+* 
+
+Beyond the 0.1 the roadmap is as follows
+
+v0.2 Release
+
+* Giving the users the ability to create "Master pages" so when a user creates a new page, they can choose from an existing layout with pre-created widgets and dummy data.
+* A Facebook widget which pulls through the Facebook social plugin
+* The ability to "copy" widgets and layouts
+* A tidy up of the editing interface to make dragging and dropping of widgets easier
+* A tidy up of the you tube widget to resize the video automatically
+* A data capture widget which allows users to create forms
+* Article snippets widget which can pull through summary data from another page / group of pages automatically
+
+v0.3 Release
+
+* A re-write of the Fancy pages tree structure and administration to provide a better user experience of creating and managing the site.
 
 Running the sandbox
 ===================
