@@ -10,6 +10,14 @@ As with the rest of the core oscar sandbox, the pages are automatically fully re
 
 It is structured to allow widgets to be added to any page within an Oscar site without restriction. All pages created by fancy pages are in fact created as Oscar categories so are made available to the product navigation on the site.
 
+Basic Screencast for creating a new page
+========================================
+
+Below is a screencast which was created to show how easy it is to create a basic fancy page. In this demo, the most basic widgets are used to demonstrate how easily a simple page can be created.
+
+https://www.youtube.com/watch?v=DyVD4TOQwgU
+
+
 Viewing and editing a page
 ==========================
 
