@@ -4,10 +4,16 @@ Fancy CMS-style page editing for Oscar
 
 Fancy pages is an extension to provide a Content Management System for Oscar Commerce which allows a site to be customised and built using widgets within any page of the website.
 
+Fancy pages gives users the ability to create any page layout desired. You are not restricted to any particular layout as you can use the layout widgets to create exactly the page layout you need.
+
+As with the rest of the core oscar sandbox, the pages are automatically fully responsive, widgets can be easily rearranged between sections and updated in line.
+
 It is structured to allow widgets to be added to any page within an Oscar site without restriction. All pages created by fancy pages are in fact created as Oscar categories so are made available to the product navigation on the site.
 
 .. image:: http://i.imgur.com/NWcEt.jpg?1
 .. image:: http://i.imgur.com/7KFDm.png?1
+.. image:: http://i.imgur.com/wZRY0.jpg
+
 
 Current Functionality
 =====================
@@ -15,6 +21,7 @@ Current Functionality
 A dashboard administrator can
 
 * Create a new Page (category) in the site within a tree structure
+* Layout a page in an almost unlimited number of ways, the layout widgets allow for any site setup to be configured
 * Manage the meta keywords for a page
 * Manage whether a page is active or not
 * Move pages within the tree structure via drag and drop
@@ -26,6 +33,8 @@ A dashboard administrator can
 * Drag and drop widgets within a page
 
 The following Widgets are currently shipped with fancy pages
+
+
 
 Layout Widgets
 
