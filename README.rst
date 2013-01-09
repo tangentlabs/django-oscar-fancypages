@@ -10,8 +10,10 @@ As with the rest of the core oscar sandbox, the pages are automatically fully re
 
 It is structured to allow widgets to be added to any page within an Oscar site without restriction. All pages created by fancy pages are in fact created as Oscar categories so are made available to the product navigation on the site.
 
-.. image:: http://i.imgur.com/NWcEt.jpg?1
-.. image:: http://i.imgur.com/7KFDm.png?1
+.. image:: http://i.imgur.com/gi9zR.jpg
+
+.. image:: http://i.imgur.com/66wvR.jpg
+
 .. image:: http://i.imgur.com/wZRY0.jpg
 
 
@@ -33,8 +35,6 @@ A dashboard administrator can
 * Drag and drop widgets within a page
 
 The following Widgets are currently shipped with fancy pages
-
-
 
 Layout Widgets
 
