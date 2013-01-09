@@ -72,10 +72,14 @@ v0.2 Release
 * A tidy up of the you tube widget to resize the video automatically
 * A data capture widget which allows users to create forms
 * Article snippets widget which can pull through summary data from another page / group of pages automatically
+* Grouping of widgets together per widget type eg. Layout widgets, 3rd Party widgets
+* Adding much needed documentation for getting started with fancy pages and how to create your first widget
 
 v0.3 Release
 
 * A re-write of the Fancy pages tree structure and administration to provide a better user experience of creating and managing the site.
+* Front end improvements for multi site configuration - having the ability to target pages / widgets per different sites.
+* General improvements to the Assets library to allow filtering of assets on sites with many
 
 Running the sandbox
 ===================
