@@ -1,5 +1,6 @@
 from django import forms
 from django.db.models import get_model
+from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
 from fancypages.widgets import SelectWidgetRadioFieldRenderer
@@ -34,6 +35,18 @@ class PageCreateForm(forms.ModelForm):
             self.parent = Category.objects.get(id=parent_id)
         except Category.DoesNotExist:
             self.parent = None
+
+    def clean_name(self):
+        name = self.cleaned_data.get('name')
+        try:
+            Page.objects.get(category__slug=slugify(name))
+        except Page.DoesNotExist:
+            pass
+        else:
+            raise forms.ValidationError(
+                _("A page with this title already exists")
+            )
+        return name
 
     def save(self, commit=True):
         page_name = self.cleaned_data['name']

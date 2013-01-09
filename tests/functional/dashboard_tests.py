@@ -96,3 +96,22 @@ class TestAStaffMember(test.FancyPagesWebTest):
 
         Page.add_root(name="3rd page")
         self.assertEquals(Page.objects.count(), 3)
+
+
+class TestANewPage(test.FancyPagesWebTest):
+    is_staff = True
+
+    def test_displays_an_error_when_slug_already_exists(self):
+        page_title = "Home"
+        home_page = Page.add_root(name=page_title)
+        self.assertEquals(home_page.category.slug, 'home')
+
+        page = self.get(reverse('fp-dashboard:page-list'))
+        self.assertContains(page, 'Home')
+
+        page = page.click('Create new top-level page', index=0)
+        new_page_form = page.form
+        new_page_form['name'] = page_title
+        page = new_page_form.submit()
+
+        self.assertContains(page, 'A page with this title already exists')
