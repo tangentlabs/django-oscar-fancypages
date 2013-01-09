@@ -10,12 +10,30 @@ As with the rest of the core oscar sandbox, the pages are automatically fully re
 
 It is structured to allow widgets to be added to any page within an Oscar site without restriction. All pages created by fancy pages are in fact created as Oscar categories so are made available to the product navigation on the site.
 
+Viewing and editing a page
+==========================
+
 .. image:: http://i.imgur.com/gi9zR.jpg
+
+Site Category Management
+==========================
 
 .. image:: http://i.imgur.com/66wvR.jpg
 
+Adding Widgets to the page
+==========================
+
 .. image:: http://i.imgur.com/wZRY0.jpg
 
+Moving Widgets around the page
+==============================
+
+.. image:: http://i.imgur.com/4KoPT.jpg
+
+Editing a widgets data - this is different depending on the widget
+==================================================================
+
+.. image:: http://i.imgur.com/Q6WuT.jpg?1
 
 Current Functionality
 =====================
