@@ -5,7 +5,7 @@ from fancypages import test
 
 Page = get_model('fancypages', 'Page')
 Widget = get_model('fancypages', 'Widget')
-PageType = get_model('fancypages', 'PageType')
+Page = get_model('fancypages', 'Page')
 TextWidget = get_model('fancypages', 'TextWidget')
 PageTemplate = get_model('fancypages', 'PageTemplate')
 TitleTextWidget = get_model('fancypages', 'TitleTextWidget')

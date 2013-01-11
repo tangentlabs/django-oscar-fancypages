@@ -3,12 +3,15 @@ from django.db.models import Q
 from django.utils import timezone
 from django.db.models.query import QuerySet
 from django.core.urlresolvers import reverse
+from django.db.models.signals import post_save
 from django.contrib.contenttypes import generic
+from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ImproperlyConfigured
 from django.contrib.contenttypes.models import ContentType
 from django.template import loader, RequestContext, Context
 from django.contrib.contenttypes.generic import GenericRelation
+
 
 from model_utils.managers import InheritanceManager
 
@@ -17,9 +20,9 @@ from fancypages.utils import get_container_names_from_template
 Category = models.get_model('catalogue', 'Category')
 
 
-#FIXME: this is a patch to bend the existing categories 
+#FIXME: this is a patch to bend the existing categories
 # in Oscar to use the fancypages URLs without making any
-# additional code or template changes necessary. This is 
+# additional code or template changes necessary. This is
 # not a good way of handling this. Oscar should be able
 # to provide some sort of URL hook that allows for
 # enabling, disabling and changing of named URLs
@@ -51,17 +54,46 @@ class PageManager(models.Manager):
         return PageQuerySet(self.model).order_by('category__path')
 
 
+class PageType(models.Model):
+    name = models.CharField(_("Name"), max_length=128)
+    slug = models.SlugField(_("Slug"), max_length=128)
+
+    template_name = models.CharField(
+        _("Template name"),
+        max_length=255,
+        default="fancypages/pages/page.html"
+    )
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        return super(PageType, self).save(*args, **kwargs)
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        app_label = 'fancypages'
+
+
 class Page(models.Model):
     category = models.OneToOneField(
         'catalogue.Category',
         verbose_name=_("Category"),
         related_name="page",
     )
-    template_name = models.CharField(_("Template name"), max_length=255,
-                                     default="fancypages/pages/page.html")
+    page_type = models.ForeignKey(
+        'fancypages.PageType',
+        verbose_name=_("Page type"),
+        related_name="pages",
+        null=True, blank=True,
+    )
 
-    keywords = models.CharField(_("Keywords"), max_length=255, null=True,
-                                blank=True)
+    keywords = models.CharField(
+        _("Keywords"),
+        max_length=255,
+        null=True, blank=True
+    )
 
     containers = generic.GenericRelation('fancypages.Container')
 
@@ -84,19 +116,27 @@ class Page(models.Model):
     objects = PageManager()
 
     @classmethod
-    def add_root(cls, name, slug=None, template_name=None):
+    def add_root(cls, name, slug=None, page_type=None):
         category = Category.add_root(name=name, slug=slug)
-        kwargs = {'category': category}
-        if template_name:
-            kwargs['template_name'] = template_name
-        return cls.objects.create(**kwargs)
+        category.page.name = name
+        if slug:
+            category.page.slug = slug
+        if not page_type:
+            page_type, __ = PageType.objects.get_or_create(name='Default Template')
+        category.page.page_type = page_type
+        category.page.save()
+        return category.page
 
-    def add_child(self, name, slug=None, template_name=None):
+    def add_child(self, name, slug=None, page_type=None):
         category = self.category.add_child(name=name, slug=slug)
-        kwargs = {'category': category}
-        if template_name:
-            kwargs['template_name'] = template_name
-        return self.__class__.objects.create(**kwargs)
+        category.page.name = name
+        if slug:
+            category.page.slug = slug
+        if not page_type:
+            page_type, __ = PageType.objects.get_or_create(name='Default Template')
+        category.page.page_type = page_type
+        category.page.save()
+        return category.page
 
     def delete(self, keep_category=False):
         super(Page, self).delete()
@@ -165,8 +205,11 @@ class Page(models.Model):
     def save(self, update_slugs=True, *args, **kwargs):
         super(Page, self).save(*args, **kwargs)
 
+        if not self.page_type:
+            return
+
         existing_containers = [c.variable_name for c in self.containers.all()]
-        for cname in get_container_names_from_template(self.template_name):
+        for cname in get_container_names_from_template(self.page_type.template_name):
             if cname not in existing_containers:
                 self.containers.create(page_object=self, variable_name=cname)
 
@@ -386,3 +429,15 @@ class ImageMetadataMixin(models.Model):
     class Meta:
         abstract = True
         app_label = 'fancypages'
+
+
+# this makes sure that when a new category is created without
+# page that a page is created for the page
+def create_page_for_category(sender, instance, created, **kwargs):
+    if created:
+        Page.objects.get_or_create(category=instance)
+
+post_save.connect(
+    create_page_for_category,
+    sender=models.get_model('catalogue', 'Category')
+)

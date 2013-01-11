@@ -44,9 +44,13 @@ class TestAPage(test.FancyPagesTestCase):
 {% templatetag opencomment %}
 {% endblock %}
 """)
+        page_type = models.PageType.objects.create(
+            name="Example Type",
+            template_name=self.template_name,
+        )
         article_page = models.Page.add_root(
             name='This is an article',
-            template_name=self.template_name,
+            page_type=page_type,
         )
 
         article_page = models.Page.objects.get(id=article_page.id)
@@ -60,12 +64,16 @@ class TestContainer(test.FancyPagesTestCase):
         self.prepare_template_file("{% load fp_container_tags %}"
                                    "{% fancypages_container test-container %}")
 
+        page_type = models.PageType.objects.create(
+            name="Example Type",
+            template_name=self.template_name,
+        )
         self.page = models.Page.add_root(
             name="Some Title",
-            template_name=self.template_name
+            page_type=page_type
         )
         self.container_names = get_container_names_from_template(
-            self.page.template_name
+            self.page.page_type.template_name
         )
 
     def test_can_be_assigned_to_a_page(self):

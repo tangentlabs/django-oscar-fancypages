@@ -1,6 +1,8 @@
 from django.http import Http404
+from django.conf import settings
 from django.db.models import get_model
-from django.views.generic import TemplateView, DetailView
+
+from oscar.apps.catalogue.views import ProductCategoryView
 
 Page = get_model('fancypages', 'Page')
 Container = get_model('fancypages', 'Container')
@@ -25,11 +27,21 @@ class PageEditorMixin(object):
         return super(PageEditorMixin, self).get_context_data(**kwargs)
 
 
-class PageDetailView(PageEditorMixin, DetailView):
-    model = Page
-    context_object_name = "page"
+class PageDetailView(PageEditorMixin, ProductCategoryView):
+
+    def get_context_data(self, **kwargs):
+        context = super(PageDetailView, self).get_context_data(**kwargs)
+        context['object'] = self.object
+        context['page'] = self.object
+        return context
+
+    def get_template_names(self):
+        if not self.object.page_type:
+            return [settings.FP_DEFAULT_TEMPLATE]
+        return [self.object.page_type.template_name]
 
     def get(self, request, *args, **kwargs):
+        self.object = self.get_categories()[0].page
         response = super(PageDetailView, self).get(request, *args, **kwargs)
 
         if request.user.is_staff:
@@ -39,9 +51,6 @@ class PageDetailView(PageEditorMixin, DetailView):
             raise Http404
 
         return response
-
-    def get_template_names(self):
-        return [self.object.template_name]
 
 
 class FancyHomeView(PageDetailView):

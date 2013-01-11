@@ -7,6 +7,7 @@ import tempfile
 from django.conf import settings
 
 from oscar.defaults import OSCAR_SETTINGS
+from fancypages.defaults import FANCYPAGES_SETTINGS
 from oscar import OSCAR_MAIN_TEMPLATE_DIR, OSCAR_CORE_APPS
 
 location = lambda x: os.path.join(os.path.dirname(os.path.realpath(__file__)), x)
@@ -14,6 +15,7 @@ location = lambda x: os.path.join(os.path.dirname(os.path.realpath(__file__)), x
 
 def configure():
     if not settings.configured:
+        OSCAR_SETTINGS.update(FANCYPAGES_SETTINGS)
         settings.configure(
             DATABASES={
                 'default': {

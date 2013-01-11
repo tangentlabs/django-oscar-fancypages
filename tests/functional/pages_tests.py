@@ -8,6 +8,7 @@ from fancypages.test import FancyPagesWebTest
 
 
 Page = get_model('fancypages', 'Page')
+PageType = get_model('fancypages', 'PageType')
 Container = get_model('fancypages', 'Container')
 TitleTextWidget = get_model('fancypages', 'TitleTextWidget')
 
@@ -23,10 +24,14 @@ class TestAnAnonymousUser(FancyPagesWebTest):
             "{% fancypages_container main-container %}"
             "{% fancypages_container left-column %}"
         )
+        page_type = PageType.objects.create(
+            name='template',
+            template_name=self.template_name
+        )
         self.page = Page.add_root(
             name="A new page",
             slug='a-new-page',
-            template_name=self.template_name,
+            page_type=page_type,
         )
 
         self.left_container = self.page.get_container_from_name('left-column')

@@ -9,6 +9,7 @@ from fancypages import test
 Page = get_model('fancypages', 'Page')
 Widget = get_model('fancypages', 'Widget')
 Category = get_model('catalogue', 'Category')
+PageType = get_model('fancypages', 'PageType')
 Container = get_model('fancypages', 'Container')
 TextWidget = get_model('fancypages', 'TextWidget')
 
@@ -152,8 +153,15 @@ class TestTheWidgetMoveApi(test.FancyPagesWebTest):
             "{% fancypages_container left-container %}"
         )
 
-        self.page = Page.add_root(name="A new page", slug='a-new-page',
-                                  template_name=self.template_name)
+        page_type = PageType.objects.create(
+            name="Example Template",
+            template_name=self.template_name,
+        )
+        self.page = Page.add_root(
+            name="A new page",
+            slug='a-new-page',
+            page_type=page_type,
+        )
         self.left_container = self.page.get_container_from_name('left-container')
         self.main_container = self.page.get_container_from_name('main-container')
 

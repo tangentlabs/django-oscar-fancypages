@@ -15,7 +15,7 @@ class FancypagesApplication(Application):
 
         urlpatterns += patterns('',
             url(
-                r'^(?P<slug>[\w-]+(/[\w-]+)*)/$',
+                r'^(?P<category_slug>[\w-]+(/[\w-]+)*)/$',
                 self.page_detail_view.as_view(),
                 name='page-detail'
             ),

@@ -1,0 +1,71 @@
+{% extends "oscar/catalogue/browse.html" %}
+{% load i18n %}
+{% load fp_container_tags %}
+
+{% block column_left %}
+    {% fancypages_container left-column-top edit_mode %}
+    {{ block.super }}
+    {% fancypages_container left-column-bottom edit_mode %}
+{% endblock %}
+
+{% block content %}
+    <div class="sub-header">
+        <h1>{{ summary }}</h1>
+    </div>
+
+    <div class="row-fluid">
+        <div class="span12">
+            {% fancypages_container main-column-top edit_mode %}
+        </div>
+    </div>
+
+    {% if category.description %}
+        <div class="row-fluid">
+            <div class="span9"><p>{{ category.description|safe }}</p></div>
+
+            {% if category.image %}
+                <div class="span3"><img src="{{ category.image.url }}" alt="{{ summary }}" /></div>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    {% fancypages_container main-column-above-products edit_mode %}
+
+    {% if products.count %}
+    <section>
+        <div class="mod">
+            <ol class="products four">
+                {% for product in products %}
+                <li>{% include "catalogue/partials/product.html" %}</li>
+                {% endfor %}
+            </ol>
+            {% include "partials/pagination.html" %}
+        </div>
+    </section>
+    {% else %}
+	<p class="nonefound">{% trans "No products found." %}</p>
+    {% endif %}
+
+    {% fancypages_container main-column-below-products edit_mode %}
+{% endblock content %}
+
+{% block navigation %}
+    {{ block.super }}
+    {% include "fancypages/partials/draft_note_block.html" %}
+{% endblock %}
+
+{% if edit_mode %}
+    {% block extrahead %}
+        {{ block.super }}
+        {% include "fancypages/dashboard/partials/edit_mode_extrahead.html" %}
+    {% endblock %}
+
+    {% block extrascripts %}
+        {{ block.super }}
+        {% include "fancypages/dashboard/partials/edit_mode_extrascripts.html" %}
+    {% endblock %}
+
+    {% block onbodyload %}
+        {% include "fancypages/dashboard/partials/edit_mode_onbodyload.html" %}
+    {% endblock %}
+{% endif %}

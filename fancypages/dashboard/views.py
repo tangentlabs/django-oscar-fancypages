@@ -101,6 +101,13 @@ class PagePreviewView(PageDetailView):
         ctx['widget_create_form'] = forms.WidgetCreateSelectForm()
         return ctx
 
+    def get(self, request, *args, **kwargs):
+        self.kwargs['category_slug'] = self.get_object().category.slug
+        return super(PagePreviewView, self).get(request, *args, **kwargs)
+
+    def get_template_names(self):
+        return [self.object.page_type.template_name]
+
 
 class PageSelectView(generic.ListView):
     model = Page

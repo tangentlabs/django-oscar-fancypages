@@ -103,3 +103,9 @@ OSCAR_DASHBOARD_NAVIGATION = [
         'url_name': 'dashboard:reports-index',
     },
 ]
+
+FP_DEFAULT_TEMPLATE = 'fancypages/pages/page.html'
+
+FANCYPAGES_SETTINGS = dict(
+    [(k, v) for k, v in locals().items() if k.startswith('FP_')]
+)

@@ -7,10 +7,17 @@ from fancypages.widgets import SelectWidgetRadioFieldRenderer
 
 Page = get_model('fancypages', 'Page')
 Category = get_model('catalogue', 'Category')
+PageType = get_model('fancypages', 'PageType')
 
 
 class PageForm(forms.ModelForm):
     name = forms.CharField(max_length=128)
+    page_type = forms.ModelChoiceField(PageType.objects.none(), required=True)
+
+    def __init__(self, *args, **kwargs):
+        super(PageForm, self).__init__(*args, **kwargs)
+        if 'page_type' in self.fields:
+            self.fields['page_type'].queryset = PageType.objects.all()
 
     def save(self, commit=True):
         page_name = self.cleaned_data['name']
@@ -20,13 +27,14 @@ class PageForm(forms.ModelForm):
 
     class Meta:
         model = Page
-        fields = ['name', 'template_name', 'keywords',
+        fields = ['name', 'keywords', 'page_type',
                   'status', 'date_visible_start',
                   'date_visible_end', 'is_active']
 
 
 class PageCreateForm(forms.ModelForm):
     name = forms.CharField(max_length=128)
+    page_type = forms.ModelChoiceField(PageType.objects.none(), required=True)
 
     def __init__(self, *args, **kwargs):
         parent_id = kwargs.pop('parent_pk', None)
@@ -35,6 +43,8 @@ class PageCreateForm(forms.ModelForm):
             self.parent = Category.objects.get(id=parent_id)
         except Category.DoesNotExist:
             self.parent = None
+        if 'page_type' in self.fields:
+            self.fields['page_type'].queryset = PageType.objects.all()
 
     def clean_name(self):
         name = self.cleaned_data.get('name')
@@ -51,14 +61,21 @@ class PageCreateForm(forms.ModelForm):
     def save(self, commit=True):
         page_name = self.cleaned_data['name']
         if self.parent:
-            self.instance.category = self.parent.add_child(name=page_name)
+            category = self.parent.add_child(name=page_name)
         else:
-            self.instance.category = Category.add_root(name=page_name)
-        return super(PageCreateForm, self).save(commit=True)
+            category = Category.add_root(name=page_name)
+        instance = super(PageCreateForm, self).save(commit=False)
+        # this is a bit of a hack but we cannot create a new
+        # instance here because it has already been created using
+        # a post_save signal on the category.
+        instance.id = category.page.id
+        instance.category = category
+        instance.save()
+        return instance
 
     class Meta:
         model = Page
-        fields = ['name', 'template_name', 'keywords',
+        fields = ['name', 'keywords', 'page_type',
                   'status', 'date_visible_start',
                   'date_visible_end', 'is_active']
 

@@ -11,6 +11,10 @@ PageType = get_model('fancypages', 'PageType')
 class TestAStaffMember(test.FancyPagesWebTest):
     is_staff = True
 
+    def setUp(self):
+        super(TestAStaffMember, self).setUp()
+        self.page_type = PageType.objects.create(name="Example Type")
+
     def test_can_create_a_new_toplevel_page(self):
         page = self.get(reverse('fp-dashboard:page-list'))
         page = page.click("Create new top-level page")
@@ -19,6 +23,7 @@ class TestAStaffMember(test.FancyPagesWebTest):
 
         create_form = page.form
         create_form['name'] = "A new page"
+        create_form['page_type'] = self.page_type.id
         page = create_form.submit()
 
         self.assertRedirects(page, reverse('fp-dashboard:page-list'))
