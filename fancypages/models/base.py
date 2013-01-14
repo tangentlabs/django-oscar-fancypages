@@ -196,8 +196,7 @@ class Page(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('fancypages:page-detail', (), {
-                'slug': self.category.slug})
+        return ('fancypages:page-detail', (self.category.slug,), {})
 
     def __unicode__(self):
         return u"Page '%s'" % self.category.name
