@@ -94,13 +94,6 @@ Planned Functionality
 
 Fancy pages is still in active development with the following on the to do list. We dont feel its quite ready to be called a 0.1 release as there needs to be the following functionality added.
 
-v0.1 Release
-
-* A widget which displays all the products in the current and child categories in a list form which can be filtered. This is a must for e-commerce sites
-* 
-
-Beyond the 0.1 the roadmap is as follows
-
 v0.2 Release
 
 * Giving the users the ability to create "Master pages" so when a user creates a new page, they can choose from an existing layout with pre-created widgets and dummy data.
