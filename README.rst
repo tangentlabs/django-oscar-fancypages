@@ -92,7 +92,7 @@ eCommerce Widgets
 Planned Functionality
 =====================
 
-Fancy pages is still in active development with the following on the to do list. We dont feel its quite ready to be called a 0.1 release as there needs to be the following functionality added.
+Fancy pages is still in active development with the following on the to do list. 
 
 v0.2 Release
 
