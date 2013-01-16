@@ -96,6 +96,7 @@ Fancy pages is still in active development with the following on the to do list.
 
 v0.2 Release
 
+* Adding Fancy Page Elements so widgets can be added to any page on an Oscar website.
 * Giving the users the ability to create "Master pages" so when a user creates a new page, they can choose from an existing layout with pre-created widgets and dummy data.
 * A Facebook widget which pulls through the Facebook social plugin
 * The ability to "copy" widgets and layouts
