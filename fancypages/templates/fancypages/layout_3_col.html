@@ -11,6 +11,11 @@
         {% include "fancypages/dashboard/partials/edit_mode_extrahead.html" %}
     {% endblock %}
 
+    {% block cdn_scripts%}
+        {{ block.super }}
+        {% include "fancypages/dashboard/partials/edit_mode_cdnscripts.html" %}
+    {% endblock %}
+
     {% block extrascripts %}
         {{ block.super }}
         {% include "fancypages/dashboard/partials/edit_mode_extrascripts.html" %}
