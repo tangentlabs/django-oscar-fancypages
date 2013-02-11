@@ -26,7 +26,7 @@ setup(
         'djangorestframework>=2.1.12',
     ],
     dependency_links = [
-        'https://github.com/tangentlabs/django-oscar/tarball/master#egg=django-oscar-0.5-pre-alpha',
+        'https://github.com/tangentlabs/django-oscar/tarball/experimental/use_virtual_node#egg=django-oscar-0.5-pre-alpha',
     ],
     # See http://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[

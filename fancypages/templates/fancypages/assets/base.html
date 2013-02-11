@@ -26,9 +26,7 @@
     </div><!-- /container-fluid -->
 {% endblock %}
 
-{% block extrahead %}
+{% block extrastyles %}
     {{ block.super }}
-    {% compress css %}
     <link rel='stylesheet' type='text/less' href="{% static "fancypages/less/fancypages.less" %}" />
-    {% endcompress %}
 {% endblock %}
