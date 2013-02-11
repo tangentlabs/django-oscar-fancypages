@@ -56,6 +56,10 @@ class PageDetailView(PageEditorMixin, ProductCategoryView):
 class FancyHomeView(PageDetailView):
     model = Page
 
+    def get(self, request, *args, **kwargs):
+        self.kwargs.setdefault('category_slug', 'home')
+        return super(FancyHomeView, self).get(request, *args, **kwargs)
+
     def get_object(self):
         try:
             page = Page.objects.get(category__slug='home')
