@@ -604,25 +604,25 @@ fancypages.dashboard = {
     * carousel is
     */
     carouselPosition: function () {
-        var previewDoc = fancypages.dashboard.getPreviewDocument(),
-            es_carousel = $('.es-carousel-wrapper', previewDoc);
+        var previewDoc = fancypages.dashboard.getPreviewDocument();
 
-        $('.sidebar .es-carousel-wrapper', previewDoc).each(function () {
-            var es_carouselHeight = $(this).find('.products li:first').height();
+        $('.es-carousel-wrapper', previewDoc).each(function () {
+            var es_carouselHeight = $(this).find('.products li:first').height(),
+                es_carouselWidth = $(this).closest('.widget-wrapper').width();
+            
             $(this).find('.products').css('height', es_carouselHeight);
-            $(this).elastislide({
-                minItems: 1,
-                onClick: true
-            });
-        });
-
-        $('.tab-pane .es-carousel-wrapper', previewDoc).each(function () {
-            var es_carouselHeight = $(this).find('.products li:first').height();
-            $(this).find('.products').css('height', es_carouselHeight);
-            $(this).elastislide({
-                minItems: 4,
-                onClick: true
-            });
+                
+            if (es_carouselWidth > 300) {
+              $(this).elastislide({
+                  minItems: 4,
+                  onClick: true
+              });
+            } else {
+              $(this).elastislide({
+                  minItems: 1,
+                  onClick: true
+              });
+            }   
         });
     }
 };

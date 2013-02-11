@@ -34,6 +34,24 @@ body.fancypages.edit-page {
 .sidebar-content {
   width:@editorWidth - 2;
 }
+//Scrollbar
+ .jspContainer{overflow:hidden;position:relative}
+ .jspPane{position:absolute}
+ .jspVerticalBar{position:absolute;top:0;right:0;width:10px;height:100%;background:red}
+ .jspHorizontalBar{position:absolute;bottom:0;left:0;width:100%;height:10px;background:red}
+ .jspVerticalBar *,.jspHorizontalBar *{margin:0;padding:0}
+ .jspCap{display:none}.jspHorizontalBar .jspCap{float:left}
+ .jspTrack{background:#efefef;position:relative}
+ .jspDrag{background:#ccc;position:relative;top:0;left:0;cursor:pointer;.border-radius(5px);}
+ .jspHorizontalBar .jspTrack,.jspHorizontalBar .jspDrag{float:left;height:100%}
+ .jspArrow{background:#50506d;text-indent:-20000px;display:block;cursor:pointer}
+ .jspArrow.jspDisabled{cursor:default;background:#80808d}
+ .jspVerticalBar .jspArrow{height:10px}
+ .jspHorizontalBar .jspArrow{width:10px;float:left;height:100%}
+ .jspVerticalBar .jspArrow:focus{outline:0}
+ .jspCorner{background:#eeeef4;float:left;height:100%}
+ * html .jspCorner{margin:0 -3px 0 0}
+ 
 .sidebar-content,
 .slide-pane {
   overflow: auto;
@@ -51,7 +69,6 @@ body.fancypages.edit-page {
   }
   .jspTrack,
   .jspHorizontalBar {
-/*    padding:0 2px;*/
     background: #333;
   }
 }
