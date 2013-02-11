@@ -70,14 +70,16 @@ fancypages.dashboard = {
             $('.sortable').sortable({
                 cursor: 'move',
                 handle: '.move',
+                opacity: 0.7,
+                forceHelperSize: true,
+                tolerance: "pointer",
                 connectWith: ".connectedSortable",
                 cursorAt: {
                     top: 0,
-                    left: 0
+                    left: 5
                 },
                 activate: function (event, ui) {
                     $('body').addClass('widget-move');
-                    $('.ui-sortable-placeholder').prepend(tooltip);
                 },
                 deactivate: function (event, ui) {
                     $('body').removeClass('widget-move');

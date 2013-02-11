@@ -24,15 +24,11 @@ body.preview {
   opacity: 0;
   margin: 5px;
 }
-.sortable-placeholder {
-  background-color: #5BB75B;
-  opacity: 0.5;
-}
+
 .widget {
   position: relative;
   border:1px dashed transparent;
 }
-
 .widget-wrapper {
   margin-bottom:@baseLineHeight;
 }
@@ -46,12 +42,8 @@ body.preview {
   }
 }
 
-.ui-sortable-placeholder { background:#0088cc; visibility: visible !important; height: 3px !important;border:none!important; }
+.ui-sortable-placeholder { border: 1px dotted black; visibility: visible !important; height: 50px !important;background:#efefef; }
 .ui-sortable-placeholder * { visibility: hidden; }
-
-.ui-sortable-helper {
-  visibility:hidden;
-}
 
 .widget-move {
   .widget-hover {
@@ -64,23 +56,9 @@ body.preview {
   .widget, .sortable {
     border: 1px solid lightblue;
   }
-  .sortable {
+  .sortable, .row-fluid [class*="span"] {
     min-height: 100px;
   }
-}
-
-// Base class
-.tool-tip {
-  display: inline-block;
-  visibility: visible;
-  padding: 2px 5px;
-  font-size: 11px;
-  background:#0088cc;
-  color:#fff;
-  position:absolute;
-  left:46%;
-  top:5px;
-  .border-radius(4px);
 }
 
 .widget.editing {
@@ -94,9 +72,7 @@ body.preview {
   opacity: 0;
 }
 
-.ui-state-highlight { 
-  background-color:darken(@grayLighter, 1%);
-}
+
 
 .widget-add-control {
   position: relative;
