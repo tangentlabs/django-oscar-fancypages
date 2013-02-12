@@ -11,7 +11,10 @@
 	font-weight: normal;
 	font-style: normal;
 }
-
+//Utilities
+.visible-editor {
+  display:block;
+}
 // Show hide page element on preview
 body.preview {
   background:#fff;
@@ -19,24 +22,19 @@ body.preview {
 .preview .footer {
   display:none;
 }
-
-.edit-button {
-  opacity: 0;
-  margin: 5px;
-}
-.sortable-placeholder {
-  background-color: #5BB75B;
-  opacity: 0.5;
-}
+//Widgets
 .widget {
   position: relative;
   border:1px dashed transparent;
 }
-
 .widget-wrapper {
   margin-bottom:@baseLineHeight;
 }
-
+//Widgets Editing / Sortable
+.edit-button {
+  opacity: 0;
+  margin: 5px;
+}
 .widget.editing,
 .widget.widget-hover {
   border:1px dashed #ccc;
@@ -45,14 +43,8 @@ body.preview {
     .opacity(100);
   }
 }
-
-.ui-sortable-placeholder { background:#0088cc; visibility: visible !important; height: 3px !important;border:none!important; }
+.ui-sortable-placeholder { border: 1px dotted black; visibility: visible !important; height: 50px !important;background:#efefef; }
 .ui-sortable-placeholder * { visibility: hidden; }
-
-.ui-sortable-helper {
-  visibility:hidden;
-}
-
 .widget-move {
   .widget-hover {
     border-color:transparent;
@@ -64,25 +56,10 @@ body.preview {
   .widget, .sortable {
     border: 1px solid lightblue;
   }
-  .sortable {
+  .sortable, .row-fluid [class*="span"] {
     min-height: 100px;
   }
 }
-
-// Base class
-.tool-tip {
-  display: inline-block;
-  visibility: visible;
-  padding: 2px 5px;
-  font-size: 11px;
-  background:#0088cc;
-  color:#fff;
-  position:absolute;
-  left:46%;
-  top:5px;
-  .border-radius(4px);
-}
-
 .widget.editing {
   border-color:#333!important;
 }
@@ -93,11 +70,6 @@ body.preview {
   right: 5px;
   opacity: 0;
 }
-
-.ui-state-highlight { 
-  background-color:darken(@grayLighter, 1%);
-}
-
 .widget-add-control {
   position: relative;
   margin-top: 30px;
@@ -115,7 +87,6 @@ body.preview {
     margin-left: 5px;
   }
 }
-
 .sortable {
   list-style-type: none;
   margin: 0;
@@ -125,8 +96,23 @@ body.preview {
     padding: 0;
   }
 }
+//Thumbnail
+.no-asset {
+  text-align:center;
+  padding:60px 0;
+  margin:0;
+  #gradient .vertical(#fff, #efefef);
+  i {
+    font-size:50px;
+    line-height:40px;
+    display:block;
+  }
+}
+.no-asset.edit-button {
+  .opacity(100);
+}
 
-//Modals
+//Modals + Widget modal
 .modal {
   > form {
     margin:0;
@@ -138,7 +124,6 @@ body.preview {
     } 
   }
 }
-
 .add-content {
   ul {
     margin:10px 0 0;
@@ -177,7 +162,7 @@ body.preview {
     }
   }
 }
-
+//Icon fonts
 label#text {
   &:before {
     font-family: FontAwesome;
@@ -225,8 +210,6 @@ label#four-column-layout {
     content: "\e014";
   }
 }
-
-
 label#products-range {
   &:before {
     content: "\e011";
@@ -242,7 +225,6 @@ label#tabbed-block {
     content: "\e00f";
   }
 }
-
 label#video {
   &:before {
     font-family: FontAwesome;
@@ -255,8 +237,6 @@ label#twitter {
     content: "\f099";
   }
 }
-
-
 .icon-title-and-text:before {
 	content: "\21";
 }
@@ -264,7 +244,8 @@ label#twitter {
 	content: "\22";
 }
 .icon-single-product:before {
-	content: "\23";
+	content: "\e010";
+	font-family: icomoon;
 }
 .icon-offer-products:before {
 	content: "\24";
@@ -328,7 +309,8 @@ label#twitter {
   color: rgba(0,0,0,.5);
   outline: 0;
 }
-//sidebar
+
+//Alternate width content
 .span1,.span2, .span3, .span4 {
   .widget-wrapper {
     [class*="span"],
@@ -347,7 +329,6 @@ label#twitter {
       overflow:hidden;
     }
   }
-  
 }
 
 

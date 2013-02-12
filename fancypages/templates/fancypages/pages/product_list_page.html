@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load compress %}
 {% load fp_container_tags %}
+{% load staticfiles %}
 
 {% block column_left %}
     {% fancypages_container left-column-top edit_mode %}
@@ -55,27 +56,35 @@
     {% include "fancypages/partials/draft_note_block.html" %}
 {% endblock %}
 
-{% if edit_mode %}
-    {% block extrastyles %}
+{% block extrastyles %}
+    {{ block.super }}
+    {% if edit_mode %}
         {% compress css %}
-        {{ block.super }}
-        {% include "fancypages/dashboard/partials/edit_mode_extrahead.html" %}
+            {% include "fancypages/dashboard/partials/edit_mode_extrahead.html" %}
         {% endcompress %}
-    {% endblock %}
+    {% endif %}
+{% endblock %}
 
-    {% block cdn_scripts%}
-        {{ block.super }}
+{% block cdn_scripts%}
+    {{ block.super }}
+    {% if edit_mode %}
         {% include "fancypages/dashboard/partials/edit_mode_cdnscripts.html" %}
-    {% endblock %}
+    {% endif %}
+{% endblock %}
 
-    {% block extrascripts %}
+
+{% block extrascripts %}
+    {{ block.super }}
+    {% if edit_mode %}
         {% compress js %}
-        {{ block.super }}
-        {% include "fancypages/dashboard/partials/edit_mode_extrascripts.html" %}
+            {% include "fancypages/dashboard/partials/edit_mode_extrascripts.html" %}
         {% endcompress %}
-    {% endblock %}
+    {% endif %}   
+    <script src="{% static "fancypages/js/fitvids/jquery.fitvids.min.js" %}" type="text/javascript" charset="utf-8"></script>     
+{% endblock %}
 
-    {% block onbodyload %}
+{% block onbodyload %}
+    {% if edit_mode %}
         {% include "fancypages/dashboard/partials/edit_mode_onbodyload.html" %}
-    {% endblock %}
-{% endif %}
+    {% endif %}
+{% endblock %}
