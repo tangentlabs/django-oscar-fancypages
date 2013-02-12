@@ -1,4 +1,5 @@
 {% extends "layout_2_col.html" %}
+{% load compress %}
 
 {% block navigation %}
     {{ block.super }}
@@ -6,9 +7,12 @@
 {% endblock %}
 
 {% if edit_mode %}
+    
     {% block extrahead %}
+        {% compress css %}
         {{ block.super }}
         {% include "fancypages/dashboard/partials/edit_mode_extrahead.html" %}
+        {% endcompress %}
     {% endblock %}
 
     {% block cdn_scripts%}
@@ -17,8 +21,10 @@
     {% endblock %}
 
     {% block extrascripts %}
+        {% compress css %}
         {{ block.super }}
         {% include "fancypages/dashboard/partials/edit_mode_extrascripts.html" %}
+        {% endcompress %}
     {% endblock %}
 
     {% block onbodyload %}
