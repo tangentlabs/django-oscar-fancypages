@@ -2,11 +2,15 @@
 {% load fp_widget_tags %}
 
 {% for page in page_list %}
-<li id="page-{{ page.id }}" class="sortable" data-page-id="{{ page.id }}" style="list-style: none;">
-    <div class="well" >
-        <div class="span8">
-            <a href="{{ page.get_absolute_url }}">{{ page.title }}</a>
-        </div>
+<li id="page-{{ page.id }}" class="sortable" data-page-id="{{ page.id }}">
+    <div class="row-fluid" >
+        <h5 class="span8">
+            {% if page.numchild %}
+            <a href="#" data-toggle="collapse" data-target="#{{ page.id }}"><i class="icon-caret-down"></i><i class="icon-file icon-large"></i> {{ page.title }}</a>
+            {% else %}
+            <i class="icon-file icon-large"></i> {{ page.title }}
+            {% endif %}
+        </h5>
 
         <div class="span2">
             {% if page.is_visible %}
@@ -17,15 +21,19 @@
             <span class="label">{{ page.status|capfirst }}</span>
         </div>
 
-
-        <div class="span2 pull-right">
-            <div class="btn-toolbar">
+        <div class="span2">
+            <div class="btn-toolbar pull-right">
                 <div class="btn-group">
                     <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
                         {% trans "Actions" %}
                         <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu pull-right">
+                        <li>
+                            <a href="{{ page.get_absolute_url }}">
+                                {% trans "View page" %}
+                            </a>
+                        </li>
                         <li>
                             <a href="{% url fp-dashboard:child-page-create parent_pk=page.id %}">
                                 {% trans "Add child page" %}
@@ -48,7 +56,7 @@
 
     </div>
     {% if page.numchild %}
-    <ol>
+    <ol id="{{ page.id }}" class="collapse in">
         {% with filename="fancypages/dashboard/partials/page_list_item.html" %}
             {% include filename with page_list=page.get_children %}
         {% endwith %}

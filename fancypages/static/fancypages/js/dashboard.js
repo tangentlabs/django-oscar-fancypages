@@ -52,6 +52,8 @@ fancypages.dashboard = {
                         },
                         success: function (data) {
                             parent.fancypages.dashboard.reloadPreview();
+                            $('.tree li').removeClass('last');
+                            $('.tree li:last-child').addClass('last');
                         },
                         error: function () {
                             parent.oscar.messages.error(
@@ -62,6 +64,8 @@ fancypages.dashboard = {
                     $(this).removeAttr('data-old-position');
                 }
             });
+            $('.tree li:last-child').addClass('last');    
+            
         }
     },
     preview: {

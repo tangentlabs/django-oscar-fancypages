@@ -7,7 +7,7 @@
     {% include "oscar/promotions/singleproduct.html" with product=object.product %}
     {% else %}
     <div class="thumbnail">
-        <p class="no-asset edit-button"><i class="icon-single-product"></i> {% trans "Click to add a single product" %}</p>
+        <p class="no-asset edit-button"><i class="icon-single-product"></i> <span class="visible-editor">{% trans "Click to add a single product" %}</span></p>
     </div>
     {% endif %}
 {% endblock %}

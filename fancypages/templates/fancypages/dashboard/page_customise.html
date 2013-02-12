@@ -8,7 +8,7 @@
 {% blocktrans with title=page.title %}Customise page "{{ title }}" {% endblocktrans %} | {{ block.super }}
 {% endblock %}
 
-{% block extrahead %}
+{% block cdn_scripts %}
     <link rel="stylesheet" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css" />
     {{ block.super }}
 {% endblock %}
