@@ -1,9 +1,15 @@
+{% load staticfiles %}
+{% load i18n %}
+
 <div class="thumbnail">
     {% with image_asset_name=object.image_asset.name image_url=object.image_asset.image.url %}
-    <img src="{{ image_url }}"
-         title="{{ object.title|default:image_asset_name }}"
-         alt="{{ object.alt_text|default:image_asset_name }}" />
-
+        
+        {% if object.image_asset.image %}
+            <img src="{{ image_url }}" title="{{ object.title|default:image_asset_name }}" alt="{{ object.alt_text|default:image_asset_name }}" />
+        {% else %}
+            <p class="no-asset edit-button"><i class="icon-picture"></i> {% trans "Click to add an image" %}</p>
+        {% endif %}
+        
         {% if object.code == 'image-text' %}
         <div class="caption">
             <p>{{ object.title|default:image_asset_name }}</p>

@@ -1,6 +1,13 @@
 {% extends "fancypages/base/widget.html" %}
 {% load fp_widget_tags %}
+{% load i18n %}
 
 {% block widget %}
-{% include "oscar/promotions/singleproduct.html" with product=object.product %}
+    {% if object.product %}
+    {% include "oscar/promotions/singleproduct.html" with product=object.product %}
+    {% else %}
+    <div class="thumbnail">
+        <p class="no-asset edit-button"><i class="icon-single-product"></i> {% trans "Click to add a single product" %}</p>
+    </div>
+    {% endif %}
 {% endblock %}

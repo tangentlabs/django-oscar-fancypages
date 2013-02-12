@@ -5,23 +5,31 @@
     {% include "fancypages/partials/draft_note_block.html" %}
 {% endblock %}
 
-{% if edit_mode %}
-    {% block extrastyles %}
-        {{ block.super }}
+
+{% block extrastyles %}
+    {{ block.super }}
+    {% if edit_mode %}
         {% include "fancypages/dashboard/partials/edit_mode_extrahead.html" %}
-    {% endblock %}
+    {% endif %}
+{% endblock %}
 
-    {% block cdn_scripts%}
-        {{ block.super }}
+{% block cdn_scripts%}
+    {{ block.super }}
+    {% if edit_mode %}
         {% include "fancypages/dashboard/partials/edit_mode_cdnscripts.html" %}
-    {% endblock %}
+    {% endif %}
+{% endblock %}
 
-    {% block extrascripts %}
-        {{ block.super }}
+{% block extrascripts %}
+    {{ block.super }}
+    {% if edit_mode %}
         {% include "fancypages/dashboard/partials/edit_mode_extrascripts.html" %}
-    {% endblock %}
+    {% endif %}
+{% endblock %}
 
-    {% block onbodyload %}
+{% block onbodyload %}
+    {% if edit_mode %}
         {% include "fancypages/dashboard/partials/edit_mode_onbodyload.html" %}
-    {% endblock %}
-{% endif %}
+    {% endif %}
+{% endblock %}
+

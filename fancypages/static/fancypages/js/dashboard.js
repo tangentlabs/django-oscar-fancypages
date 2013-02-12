@@ -125,6 +125,9 @@ fancypages.dashboard = {
                 fancypages.dashboard.removeModal(this);
                 $(this).parents('div[id$=_modal]').remove();
             });
+            
+            // initialise fitVids plugin for resizing IFRAME YouTube videos
+            $('.widget-video').fitVids();
 
             // initialise modal for adding widget
             $('form[id$=add_widget_form] input[type=radio]').live('click', function (ev) {
@@ -625,4 +628,5 @@ fancypages.dashboard = {
             }   
         });
     }
+
 };
