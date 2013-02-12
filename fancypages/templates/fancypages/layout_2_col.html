@@ -9,8 +9,8 @@
 {% if edit_mode %}
     
     {% block extrahead %}
-        {% compress css %}
         {{ block.super }}
+        {% compress css %}
         {% include "fancypages/dashboard/partials/edit_mode_extrahead.html" %}
         {% endcompress %}
     {% endblock %}
@@ -21,8 +21,8 @@
     {% endblock %}
 
     {% block extrascripts %}
-        {% compress css %}
         {{ block.super }}
+        {% compress css %}
         {% include "fancypages/dashboard/partials/edit_mode_extrascripts.html" %}
         {% endcompress %}
     {% endblock %}
