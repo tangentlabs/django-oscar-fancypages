@@ -20,7 +20,21 @@ function initFitvids() {
   $('.widget-video').fitVids();
 }
 
-$(document).ready(function() {
+//Check if Mobile
+function checkMobile() {
+  var breakpoint = 767,
+      mobile = (sw > breakpoint) ? false : true;
+
+  if (!mobile) { //If Not Mobile
     resetCarousel();
-    initFitvids();    
+  } else { //Hide 
+    
+  }
+}
+
+$(document).ready(function() {
+    initFitvids();
+    sw = document.documentElement.clientWidth;
+    sh = document.documentElement.clientHeight;
+    checkMobile();    
 });
