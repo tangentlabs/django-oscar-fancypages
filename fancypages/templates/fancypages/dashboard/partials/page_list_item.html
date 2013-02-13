@@ -4,12 +4,11 @@
 {% for page in page_list %}
 <li id="page-{{ page.id }}" class="sortable" data-page-id="{{ page.id }}">
     <div class="row-fluid" >
-        <h5 class="span8">
+        <h5 class="span10">
             {% if page.numchild %}
-            <a href="#" data-toggle="collapse" data-target="#{{ page.id }}"><i class="icon-caret-down"></i><i class="icon-file icon-large"></i> {{ page.title }}</a>
-            {% else %}
-            <i class="icon-file icon-large"></i> {{ page.title }}
+            <a href="#" data-toggle="collapse" data-target="#{{ page.id }}-tree"><i class="icon-caret-down"></i></a>
             {% endif %}
+            <a href="#" data-toggle="collapse" data-target="#{{ page.id }}-actions"><i class="icon-file icon-large"></i> {{ page.title }}</a>            
         </h5>
 
         <div class="span2">
@@ -20,43 +19,19 @@
             {% endif %}
             <span class="label">{{ page.status|capfirst }}</span>
         </div>
-
-        <div class="span2">
-            <div class="btn-toolbar pull-right">
-                <div class="btn-group">
-                    <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-                        {% trans "Actions" %}
-                        <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu pull-right">
-                        <li>
-                            <a href="{{ page.get_absolute_url }}">
-                                {% trans "View page" %}
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{% url fp-dashboard:child-page-create parent_pk=page.id %}">
-                                {% trans "Add child page" %}
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{% url fp-dashboard:page-customise page.id %}">
-                                {% trans "Customise" %}
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{% url fp-dashboard:page-delete page.id %}">
-                                {% trans "Delete" %}
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+    </div>
+    <div class="collapse" id="{{ page.id }}-actions">
+        <div class="row-actions">
+        <a href="#" data-toggle="collapse" data-target="#{{ page.id }}-actions"><i class="icon-caret-up"></i></a>
+        <a class="btn btn-small btn-primary" href="{% url fp-dashboard:page-customise page.id %}">{% trans "Edit" %}</a>
+        <a class="btn btn-small" href="{{ page.get_absolute_url }}">{% trans "View page" %}</a>
+        <a class="btn btn-small btn-success" href="{% url fp-dashboard:child-page-create parent_pk=page.id %}">{% trans "Add child page" %}</a>
+        <a class="btn btn-small btn-danger" href="{% url fp-dashboard:page-delete page.id %}">{% trans "Delete" %}</a>
+        links to <a href="{{ page.get_absolute_url }}"><i class="icon-link"></i> {{ page.get_absolute_url }}</a>
         </div>
-
     </div>
     {% if page.numchild %}
-    <ol id="{{ page.id }}" class="collapse in">
+    <ol id="{{ page.id }}-tree" class="collapse in">
         {% with filename="fancypages/dashboard/partials/page_list_item.html" %}
             {% include filename with page_list=page.get_children %}
         {% endwith %}

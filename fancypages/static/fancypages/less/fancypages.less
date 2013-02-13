@@ -402,11 +402,29 @@ input[type="color"]:focus,
       background:none!important;
     }
   }
+  .row-fluid {
+    &:hover {
+      background-color: rgba(221, 221, 221, .5);
+      cursor:move;
+    }
+  }
+  [class*="span"] {
+    margin-top:3px;
+    margin-bottom:3px;
+  }
   h5, .btn-toolbar {
     margin:0;
   }
   h5 {
     margin-top:2px;
+  }
+}
+.row-actions {
+  padding-left:10px;
+  padding-bottom:10px;
+  margin-bottom:5px;
+  a.btn {
+    margin-right:5px;
   }
 }
 .collapsed .icon-caret-down:before {
