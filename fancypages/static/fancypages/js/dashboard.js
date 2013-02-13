@@ -310,8 +310,6 @@ fancypages.dashboard = {
         $("#asset-modal").live('shown', function () {
             var assetManager = $("#asset-manager");
             assetManager.attr('src', assetManager.data("src")).load(function () {
-                var modalHeight = $(window).height() - 100;
-                $('.slide-pane', fancypages.dashboard.getAssetDocument()).css('height', modalHeight - 100);
                 $('.slide-pane', fancypages.dashboard.getAssetDocument()).jScrollPane({
                     horizontalDragMaxWidth: 0
                 });
