@@ -23,6 +23,7 @@ def configure():
                     'NAME': ':memory:',
                 }
             },
+            SITE_ID=1,
             MEDIA_ROOT=location('public/media'),
             MEDIA_URL='/media/',
             STATIC_URL='/static/',

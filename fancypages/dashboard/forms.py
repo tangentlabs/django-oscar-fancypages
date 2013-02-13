@@ -23,13 +23,20 @@ class PageForm(forms.ModelForm):
         page_name = self.cleaned_data['name']
         self.instance.category.name = page_name
         self.instance.category.save()
-        return super(PageForm, self).save(commit=True)
+
+        sites = self.cleaned_data.pop('display_on_sites')
+        instance = super(PageForm, self).save(commit=True)
+
+        if sites:
+            instance.display_on_sites = sites
+
+        return instance
 
     class Meta:
         model = Page
-        fields = ['name', 'keywords', 'page_type',
-                  'status', 'date_visible_start',
-                  'date_visible_end', 'is_active']
+        fields = ['name', 'keywords', 'page_type', 'status',
+                  'date_visible_start', 'date_visible_end', 'is_active',
+                  'display_on_sites']
 
 
 class PageCreateForm(forms.ModelForm):
@@ -109,6 +116,14 @@ class WidgetUpdateSelectForm(forms.Form):
 
 
 class WidgetForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(WidgetForm, self).__init__(*args, **kwargs)
+
+        order = self.fields.keyOrder
+        order.pop(order.index('display_on_sites'))
+        self.fields.keyOrder += ['display_on_sites']
+
     class Meta:
         exclude = ('container',)
         widgets = {

@@ -1,6 +1,7 @@
 from django.http import Http404
 from django.conf import settings
 from django.db.models import get_model
+from django.contrib.sites.models import Site
 
 from oscar.apps.catalogue.views import ProductCategoryView
 
@@ -12,10 +13,15 @@ class PageEditorMixin(object):
     edit_mode = False
 
     def get_object(self):
+        current_site = Site.objects.get_current()
         try:
-            return Page.objects.get(category__slug=self.kwargs.get('slug'))
+            page = Page.objects.get(category__slug=self.kwargs.get('slug'))
         except (Page.DoesNotExist, Page.MultipleObjectsReturned):
             raise Http404
+        if (page.display_on_sites.all()
+            and current_site not in page.display_on_sites.all()):
+            raise Http404("page is not visible on this page")
+        return page
 
     def get_context_data(self, **kwargs):
         kwargs.update({
@@ -40,8 +46,16 @@ class PageDetailView(PageEditorMixin, ProductCategoryView):
             return [settings.FP_DEFAULT_TEMPLATE]
         return [self.object.page_type.template_name]
 
+    def get_page(self):
+        page = self.get_categories()[0].page
+        current_site = Site.objects.get_current()
+        if (page.display_on_sites.all()
+            and current_site not in page.display_on_sites.all()):
+            raise Http404("page is not visible on this page")
+        return page
+
     def get(self, request, *args, **kwargs):
-        self.object = self.get_categories()[0].page
+        self.object = self.get_page()
         response = super(PageDetailView, self).get(request, *args, **kwargs)
 
         if request.user.is_staff:
