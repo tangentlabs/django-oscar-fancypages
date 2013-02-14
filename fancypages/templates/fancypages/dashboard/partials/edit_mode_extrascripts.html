@@ -1,2 +1,5 @@
 {% load staticfiles %}
-<script src="{% static "fancypages/js/dashboard.js" %}" type="text/javascript" charset="utf-8"></script>
+{% load compress %}
+{% compress js %}
+    <script src="{% static "fancypages/js/dashboard.js" %}" type="text/javascript" charset="utf-8"></script>
+{% endcompress %}
