@@ -222,8 +222,11 @@ class Container(models.Model):
     # this is the name of the variable used in the template tag
     # e.g. {% fancypages-container var-name %}
     title = models.CharField(max_length=100, null=True, blank=True)
-    variable_name = models.SlugField(_("Variable name"), max_length=50,
-                                     null=True, blank=True)
+    variable_name = models.SlugField(
+        _("Variable name"),
+        max_length=50,
+        null=True, blank=True
+    )
 
     # this makes the fancypages available to any type of object
     content_type = models.ForeignKey(ContentType, null=True)
@@ -258,25 +261,46 @@ class Container(models.Model):
         return tmpl.render(ctx)
 
     @classmethod
-    def get_container_by_name(cls, obj, name):
+    def get_container_by_name(cls, name, obj=None):
         """
         Get container of *obj* with the specified variable *name*. It
         assumes that *obj* has a ``containers`` attribute and returns
         the container with *name* or ``None`` if it cannot be found.
         """
-        obj_type = ContentType.objects.get_for_model(obj)
-        if obj_type is None:
+        if not obj:
+            container, __ = cls.objects.get_or_create(
+                content_type=None,
+                variable_name=name,
+                object_id=None,
+            )
+            return container
+
+        object_type = ContentType.objects.get_for_model(obj)
+        if object_type is None:
             return None
 
-        ctn, __ = cls.objects.get_or_create(content_type=obj_type,
-                                            variable_name=name,
-                                            object_id=obj.id)
+        ctn, __ = cls.objects.get_or_create(
+            content_type=object_type,
+            variable_name=name,
+            object_id=obj.id
+        )
         return ctn
 
     @classmethod
     def get_containers(cls, obj):
         obj_type = ContentType.objects.get_for_model(obj)
-        return cls.objects.filter(content_type__id=obj_type.id, object_id=obj.id)
+        return cls.objects.filter(
+            content_type__id=obj_type.id,
+            object_id=obj.id
+        )
+
+    def save(self, *args, **kwargs):
+        if not self.variable_name:
+            self.variable_name = "%s-%s" % (
+                self._meta.module_name,
+                Container.objects.count(),
+            )
+        return super(Container, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return u"Container '%s' in '%s'" % (self.variable_name, self.content_type)

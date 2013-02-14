@@ -1,3 +1,4 @@
+from django.template import loader, Context
 from django.core.exceptions import ImproperlyConfigured
 
 from fancypages import test
@@ -57,12 +58,14 @@ class TestAPage(test.FancyPagesTestCase):
         self.assertEquals(article_page.containers.count(), 2)
 
 
-class TestContainer(test.FancyPagesTestCase):
+class TestContainerWithObject(test.FancyPagesTestCase):
 
     def setUp(self):
-        super(TestContainer, self).setUp()
-        self.prepare_template_file("{% load fp_container_tags %}"
-                                   "{% fancypages_container test-container %}")
+        super(TestContainerWithObject, self).setUp()
+        self.prepare_template_file(
+            "{% load fp_container_tags %}"
+            "{% fp_object_container test-container %}"
+        )
 
         page_type = models.PageType.objects.create(
             name="Example Type",
@@ -90,10 +93,47 @@ class TestContainer(test.FancyPagesTestCase):
         self.assertEquals(self.page.containers.count(), 1)
 
     def test_can_be_retrieved_from_page_and_variable_name(self):
-        container = models.Container.get_container_by_name(self.page,
-                                                           'test-container')
+        container = models.Container.get_container_by_name(
+            name='test-container',
+            obj=self.page,
+        )
         self.assertEquals(
             container.variable_name,
             self.page.containers.all()[0].variable_name
         )
         self.assertEquals(self.page.containers.count(), 1)
+
+
+class TestContainerWithoutObject(test.FancyPagesTestCase):
+
+    def setUp(self):
+        super(TestContainerWithoutObject, self).setUp()
+        self.prepare_template_file(
+            "{% load fp_container_tags %}"
+            "{% fp_container test-container %}"
+        )
+
+    def test_can_be_used_in_template(self):
+        tmpl = loader.get_template(self.template_name)
+        tmpl.render(Context({}))
+
+        containers = models.Container.objects.all()
+        self.assertEquals(len(containers), 1)
+        self.assertEquals(containers[0].page_object, None)
+
+    def test_can_render_contained_widgets(self):
+        container = models.Container.objects.create(
+            variable_name='test-container'
+        )
+        text = "I am a fancy widget with only text"
+        text_widget = models.TextWidget.objects.create(
+            container=container,
+            text=text,
+        )
+        tmpl = loader.get_template(self.template_name)
+        content = tmpl.render(Context({}))
+        self.assertIn(text, content)
+
+        container = models.Container.objects.get(id=container.id)
+        self.assertEquals(container.widgets.count(), 1)
+        self.assertEquals(container.widgets.all()[0].id, text_widget.id)

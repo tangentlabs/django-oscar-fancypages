@@ -18,7 +18,7 @@ def get_container_names_from_template(page_template):
 
     for node in template:
         container_nodes = node.get_nodes_by_type(
-            fp_container_tags.FancyContainerNode
+            fp_container_tags.FancyObjectContainerNode
         )
 
         for cnode in container_nodes:

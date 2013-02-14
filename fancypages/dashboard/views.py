@@ -202,7 +202,7 @@ class ContentTypeMixin(object):
         cnames = get_container_names_from_template(
             self.get_content_page_template_name(model))
         for cname in cnames:
-            Container.get_container_by_name(instance, cname)
+            Container.get_container_by_name(obj=instance, name=cname)
 
         return instance
 
