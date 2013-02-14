@@ -26,7 +26,7 @@
     {% for tab in widget.tabs.all %}
         <div class="tab-pane {% if forloop.first %}active{% endif %}"
              id="tab-{{ widget.id }}-{{ forloop.counter }}">
-            {% fancypages_container tab %}
+            {% fp_object_container tab %}
         </div>
     {% endfor %}
     </div>

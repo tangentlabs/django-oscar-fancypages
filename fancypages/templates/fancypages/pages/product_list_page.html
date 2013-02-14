@@ -5,9 +5,9 @@
 {% load staticfiles %}
 
 {% block column_left %}
-    {% fancypages_container left-column-top edit_mode %}
+    {% fp_object_container left-column-top edit_mode %}
     {{ block.super }}
-    {% fancypages_container left-column-bottom edit_mode %}
+    {% fp_object_container left-column-bottom edit_mode %}
 {% endblock %}
 
 {% block content %}
@@ -17,7 +17,7 @@
 
     <div class="row-fluid">
         <div class="span12">
-            {% fancypages_container main-column-top edit_mode %}
+            {% fp_object_container main-column-top edit_mode %}
         </div>
     </div>
 
@@ -31,7 +31,7 @@
         </div>
     {% endif %}
 
-    {% fancypages_container main-column-above-products edit_mode %}
+    {% fp_object_container main-column-above-products edit_mode %}
 
     {% if products.count %}
     <section>
@@ -48,7 +48,7 @@
 	<p class="nonefound">{% trans "No products found." %}</p>
     {% endif %}
 
-    {% fancypages_container main-column-below-products edit_mode %}
+    {% fp_object_container main-column-below-products edit_mode %}
 {% endblock content %}
 
 {% block navigation %}

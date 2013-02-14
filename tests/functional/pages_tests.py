@@ -21,8 +21,8 @@ class TestAnAnonymousUser(FancyPagesWebTest):
         super(TestAnAnonymousUser, self).setUp()
         self.prepare_template_file(
             "{% load fp_container_tags%}"
-            "{% fancypages_container main-container %}"
-            "{% fancypages_container left-column %}"
+            "{% fp_object_container main-container %}"
+            "{% fp_object_container left-column %}"
         )
         page_type = PageType.objects.create(
             name='template',
@@ -73,8 +73,8 @@ class TestAStaffUser(FancyPagesWebTest):
         super(TestAStaffUser, self).setUp()
         #self.prepare_template_file(
         #    "{% load fp_container_tags%}"
-        #    "{% fancypages_container main-container %}"
-        #    "{% fancypages_container left-column %}"
+        #    "{% fp_object_container main-container %}"
+        #    "{% fp_object_container left-column %}"
         #)
         self.page = Page.add_root(name="A new page", slug='a-new-page')
         self.page_container = self.page.get_container_from_name('page-container')

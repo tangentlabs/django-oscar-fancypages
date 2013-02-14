@@ -11,10 +11,10 @@ class TestContainerNames(test.FancyPagesTestCase):
     def test_can_be_extracted_from_template(self):
         self.prepare_template_file("""{% load fp_container_tags %}
 {% block main-content %}
-{% fancypages_container first-container %}
+{% fp_object_container first-container %}
 {% templatetag opencomment %}
 {% endblock %}
-{% fancypages_container another-container %}
+{% fp_object_container another-container %}
 """)
         self.assertSequenceEqual(
             get_container_names_from_template(self.template_name),
@@ -24,8 +24,8 @@ class TestContainerNames(test.FancyPagesTestCase):
     def test_cannot_be_duplicated_in_template(self):
         self.prepare_template_file("""{% load fp_container_tags %}
 {% block main-content %}
-{% fancypages_container first-container %}
-{% fancypages_container first-container %}
+{% fp_object_container first-container %}
+{% fp_object_container first-container %}
 {% templatetag opencomment %}
 {% endblock %}
 """)
@@ -40,8 +40,8 @@ class TestAPage(test.FancyPagesTestCase):
     def test_creates_containers_when_saved(self):
         self.prepare_template_file("""{% load fp_container_tags %}
 {% block main-content %}
-{% fancypages_container first-container %}
-{% fancypages_container second-container %}
+{% fp_object_container first-container %}
+{% fp_object_container second-container %}
 {% templatetag opencomment %}
 {% endblock %}
 """)
