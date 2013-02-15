@@ -433,7 +433,7 @@ class ImageMetadataMixin(models.Model):
 # this makes sure that when a new category is created without
 # page that a page is created for the page
 def create_page_for_category(sender, instance, created, **kwargs):
-    if created:
+    if created and not kwargs.get('raw', False):
         Page.objects.get_or_create(category=instance)
 
 post_save.connect(
