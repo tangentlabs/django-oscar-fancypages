@@ -233,6 +233,22 @@ class Container(models.Model):
     object_id = models.PositiveIntegerField(null=True)
     page_object = generic.GenericForeignKey('content_type', 'object_id')
 
+    def clean(self):
+        if self.object_id and self.content_type:
+            return
+
+        from django.core.exceptions import ValidationError
+        # Don't allow draft entries to have a pub_date.
+        container_exists = Container.objects.filter(
+            variable_name=self.variable_name,
+            object_id=None,
+            content_type=None,
+        ).exists()
+        if container_exists:
+            raise ValidationError(
+                "containter with name '%s' already exists" % self.variable_name
+            )
+
     def render(self, request=None, **kwargs):
         """
         Render the container and all its contained widgets.
@@ -295,6 +311,7 @@ class Container(models.Model):
         )
 
     def save(self, *args, **kwargs):
+        self.clean()
         if not self.variable_name:
             self.variable_name = "%s-%s" % (
                 self._meta.module_name,
@@ -307,6 +324,7 @@ class Container(models.Model):
 
     class Meta:
         app_label = 'fancypages'
+        unique_together = (('variable_name', 'content_type', 'object_id'),)
 
 
 class Widget(models.Model):

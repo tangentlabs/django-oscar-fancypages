@@ -1,9 +1,13 @@
+from django.core import exceptions
+from django.db import IntegrityError
+from django.db.models import get_model
 from django.template import loader, Context
-from django.core.exceptions import ImproperlyConfigured
 
 from fancypages import test
 from fancypages import models
 from fancypages.utils import get_container_names_from_template
+
+Category = get_model('catalogue', 'Category')
 
 
 class TestContainerNames(test.FancyPagesTestCase):
@@ -30,7 +34,7 @@ class TestContainerNames(test.FancyPagesTestCase):
 {% endblock %}
 """)
         self.assertRaises(
-            ImproperlyConfigured,
+            exceptions.ImproperlyConfigured,
             get_container_names_from_template,
             self.template_name
         )
@@ -56,6 +60,64 @@ class TestAPage(test.FancyPagesTestCase):
 
         article_page = models.Page.objects.get(id=article_page.id)
         self.assertEquals(article_page.containers.count(), 2)
+
+
+class TestContainer(test.FancyPagesTestCase):
+
+    def test_without_page_object_is_unique(self):
+        var_name = 'test-container'
+        models.Container.objects.create(variable_name=var_name)
+        self.assertRaises(
+            exceptions.ValidationError,
+            models.Container.objects.create,
+            variable_name=var_name
+        )
+
+    def test_with_page_object_is_unique(self):
+        var_name = 'test-container'
+        category = Category.add_root(name="Test Category")
+        models.Container.objects.create(
+            variable_name=var_name,
+            page_object=category.page
+        )
+        self.assertRaises(
+            IntegrityError,
+            models.Container.objects.create,
+            variable_name=var_name,
+            page_object=category.page,
+        )
+
+    def test_containers_can_have_same_name_for_different_objects(self):
+        var_name = 'test-container'
+        category = Category.add_root(name="Test Category")
+        models.Container.objects.create(
+            variable_name=var_name,
+            page_object=category.page
+        )
+        other_category = Category.add_root(name="Another Test Category")
+        try:
+            models.Container.objects.create(
+                variable_name=var_name,
+                page_object=other_category.page,
+            )
+        except IntegrityError:
+            self.fail(
+                'containers with different pages do not have to be unique'
+            )
+
+    def test_containers_can_have_same_name_with_an_without_object(self):
+        var_name = 'test-container'
+        category = Category.add_root(name="Test Category")
+        models.Container.objects.create(
+            variable_name=var_name,
+            page_object=category.page
+        )
+        try:
+            models.Container.objects.create(variable_name=var_name)
+        except exceptions.ValidationError:
+            self.fail(
+                'containers with different pages do not have to be unique'
+            )
 
 
 class TestContainerWithObject(test.FancyPagesTestCase):
