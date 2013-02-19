@@ -38,7 +38,10 @@ def render_attribute(context, attr_name, *args):
         if flt:
             value = flt(value)
 
-    if not context.get('edit_mode', False):
+    user = context.get('request').user
+    if not user.is_authenticated:
+        return unicode(value)
+    if not user.is_staff:
         return unicode(value)
 
     wrapped_attr = u'<div id="widget-%d-%s">%s</div>'

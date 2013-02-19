@@ -17,15 +17,5 @@
 {% endblock %}
 
 {% block content %}
-    {% if user.is_authenticated and user.is_staff and not edit_mode %}
-    <div class="row-fluid">
-        <div class="span12">
-            <a href="{% url fp-dashboard:page-customise page.id %}">
-                <button class="span12 btn btn-success btn-full">{% trans "Customise this page" %}</button>
-            </a>
-        </div>
-    </div>
-    {% endif %}
-
     {% fp_object_container page-container %}
 {% endblock %}

@@ -14,9 +14,9 @@
 
         <div class="span2">
             {% if page.is_visible %}
-                <span class="label label-success">{% trans "visible" %}</span> 
+                <span class="label label-success">{% trans "visible" %}</span>
             {% else %}
-                <span class="label label-danger">{% trans "not visible" %}</span> 
+                <span class="label label-danger">{% trans "not visible" %}</span>
             {% endif %}
             <span class="label">{{ page.status|capfirst }}</span>
         </div>
@@ -37,11 +37,6 @@
                         <li>
                             <a href="{% url fp-dashboard:child-page-create parent_pk=page.id %}">
                                 {% trans "Add child page" %}
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{% url fp-dashboard:page-customise page.id %}">
-                                {% trans "Customise" %}
                             </a>
                         </li>
                         <li>

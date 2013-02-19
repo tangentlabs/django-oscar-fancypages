@@ -15,15 +15,10 @@ class FancypagesDashboardApplication(Application):
     page_create_view = views.PageCreateView
     page_update_view = views.PageUpdateView
     page_delete_view = views.PageDeleteView
-    page_customise_view = views.PageCustomiseView
-    page_preview_view = views.PagePreviewView
     page_select_view = views.PageSelectView
 
     widget_update_view = views.WidgetUpdateView
     widget_delete_view = views.WidgetDeleteView
-
-    content_customise_view = views.ContentCustomiseView
-    content_preview_view = views.ContentPreviewView
 
     def get_urls(self):
         urlpatterns = patterns('',
@@ -56,17 +51,6 @@ class FancypagesDashboardApplication(Application):
             ),
 
             url(
-                r'^customise/(?P<pk>\d+)/$',
-                self.page_customise_view.as_view(),
-                name='page-customise'
-            ),
-            url(
-                r'^preview/(?P<slug>[\w-]+(/[\w-]+)*)/$',
-                self.page_preview_view.as_view(),
-                name='page-preview'
-            ),
-
-            url(
                 r'^selector/$',
                 self.page_select_view.as_view(),
                 name='page-select'
@@ -81,16 +65,6 @@ class FancypagesDashboardApplication(Application):
                 r'^widget/delete/(?P<pk>\d+)/$',
                 self.widget_delete_view.as_view(),
                 name='widget-delete'
-            ),
-            url(
-                r'^content/(?P<content_type_pk>\d+)/customise/(?P<pk>\d+)/$',
-                self.content_customise_view.as_view(),
-                name='content-customise'
-            ),
-            url(
-                r'^content/(?P<content_type_pk>\d+)/preview/(?P<pk>\d+)/$',
-                self.content_preview_view.as_view(),
-                name='content-preview'
             ),
         )
         return self.post_process_urls(urlpatterns)

@@ -5,21 +5,23 @@
 
 {% if basket_warnings %}
     <h5>{% trans "Important messages about items in your basket" %}</h5>
-	{% for warning in basket_warnings %}
-	<div class="alert">{{ warning }}</div>
-	{% endfor %}
+    {% for warning in basket_warnings %}
+        <div class="alert">{{ warning }}</div>
+    {% endfor %}
 {% endif %}
 
 {% if upsell_messages %}
 <div class="well">
-	<h2>{% trans "You could be missing out on offers!" %}</h2>
-	{% for upsell in upsell_messages %}
-    {% blocktrans with message=upsell.message url=upsell.offer.get_absolute_url offer_name=upsell.offer.name %}
-	<div class="warning">{{ message }} to qualify for the <a href="{{ url }}">{{ offer_name }}</a> special offer</div>
-    {% endblocktrans %}
-	{% endfor %}
+    <h2>{% trans "You could be missing out on offers!" %}</h2>
+    {% for upsell in upsell_messages %}
+        {% blocktrans with message=upsell.message url=upsell.offer.get_absolute_url offer_name=upsell.offer.name %}
+            <div class="warning">{{ message }} to qualify for the <a href="{{ url }}">{{ offer_name }}</a> special offer</div>
+        {% endblocktrans %}
+    {% endfor %}
 </div>
 {% endif %}
+
+{% fp_container test-container %}
 
 {% if not basket.is_empty %}
 <div class="basket-title hidden-phone">
@@ -30,26 +32,28 @@
     </div>
 </div>
 
-{% fp_container test-container %}
-
 <form action="." method="post" class="basket_summary" id="basket_formset">
-	{% csrf_token %}
-	{{ formset.management_form }}
+    {% csrf_token %}
+    {{ formset.management_form }}
 
-	{% for form in formset %}
+    {% for form in formset %}
     <div class="basket-items">
         <div class="row-fluid">
 	    <div class="span6">
 	        {{ form.id }}
-		    <div class="image_container">
-					{% with image=form.instance.product.primary_image %}
-					{% thumbnail image.original "200x200" upscale=False as thumb %}
-					<a href="{{ form.instance.product.get_absolute_url }}"><img class="thumbnail" src="{{ thumb.url }}" alt="{{ product.get_title }}"></a>
-					{% endthumbnail %}
-					{% endwith %}
+                <div class="image_container">
+                    {% with image=form.instance.product.primary_image %}
+                        {% thumbnail image.original "200x200" upscale=False as thumb %}
+                            <a href="{{ form.instance.product.get_absolute_url }}">
+                                <img class="thumbnail" src="{{ thumb.url }}" alt="{{ product.get_title }}">
+                            </a>
+                        {% endthumbnail %}
+                    {% endwith %}
                 </div>
                 <h4><a href="{{ form.instance.product.get_absolute_url }}">{{ form.instance.description }}</a></h4>
-				<p class="availability {{ form.instance.product.stockrecord.availability_code }}">{{ form.instance.product.stockrecord.availability }}</p>
+                <p class="availability {{ form.instance.product.stockrecord.availability_code }}">
+                    {{ form.instance.product.stockrecord.availability }}
+                </p>
             </div>
             <div class="span4">
                 <div class="checkout-quantity control-group {% if form.errors %}error{% endif %}">
@@ -65,7 +69,7 @@
                     </div>
                     {% for field_errors in form.errors.values %}
                         {% for error in field_errors %}
-                        <span class="help-block"><i class="icon-exclamation-sign"></i> {{ error }}</span>
+                            <span class="help-block"><i class="icon-exclamation-sign"></i> {{ error }}</span>
                         {% endfor %}
                     {% endfor %}
                 </div>

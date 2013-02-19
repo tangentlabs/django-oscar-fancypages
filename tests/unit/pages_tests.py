@@ -193,7 +193,7 @@ class TestContainerWithoutObject(test.FancyPagesTestCase):
             text=text,
         )
         tmpl = loader.get_template(self.template_name)
-        content = tmpl.render(Context({}))
+        content = tmpl.render(self.client.request().context[0])
         self.assertIn(text, content)
 
         container = models.Container.objects.get(id=container.id)

@@ -106,6 +106,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.transaction.TransactionMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'oscar.apps.basket.middleware.BasketMiddleware',
+    'fancypages.middleware.EditorMiddleware',
 )
 
 ROOT_URLCONF = 'sandbox.urls'
@@ -122,6 +123,9 @@ COMPRESS_PRECOMPILERS = (
     ('text/coffeescript', 'coffee --compile --stdio'),
     ('text/less', 'lessc {infile} {outfile}'),
 )
+
+if DEBUG:
+    COMPRESS_JS_FILTERS = []
 
 from oscar import OSCAR_MAIN_TEMPLATE_DIR
 
