@@ -18,7 +18,7 @@ fancypages.eventHandlers = {
                 xhr.setRequestHeader("X-CSRFToken", fancypages.getCsrfToken());
             },
             success: function (data) {
-                parent.fancypages.dashboard.reloadPreview();
+                parent.fancypages.editor.reloadPreview();
             },
             error: function () {
                 parent.oscar.messages.error(
@@ -77,7 +77,7 @@ fancypages.eventHandlers = {
      */
     editWidget: function (ev) {
         var widget = $(this).closest('.widget');
-        fancypages.dashboard.scrollToWidget(widget);
+        fancypages.editor.scrollToWidget(widget);
 
         // Add Class to widget editing
         $('.widget').removeClass('editing');
@@ -85,7 +85,7 @@ fancypages.eventHandlers = {
 
         fancypages.panels.showEditPanel();
 
-        fancypages.dashboard.loadWidgetForm($(widget).data('widget-id'), $(widget).data('container-name'), {
+        fancypages.editor.loadWidgetForm($(widget).data('widget-id'), $(widget).data('container-name'), {
             success: function () {
                 // attach slider to column width slider
                 var sliderSelection = $('#id_left_width');
@@ -127,12 +127,12 @@ fancypages.eventHandlers = {
         widgetWrapper.html(data.rendered_form);
         $('#page-settings').hide();
 
-        fancypages.editor.init();
+        fancypages.editor.wysiwyg.init();
         $('.editor').animate({backgroundColor: "#555"}, 500)
                     .delay(500)
                     .animate({backgroundColor: "#444"}, 500);
 
-        fancypages.dashboard.updateSize();
+        fancypages.editor.updateSize();
 
         if (options && 'success' in options) {
             options.success();

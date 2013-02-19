@@ -5,9 +5,9 @@ from django.template.loader import render_to_string
 
 def replace_insensitive(string, target, replacement):
     """
-Similar to string.replace() but is case insensitive
-Code borrowed from: http://forums.devshed.com/python-programming-11/case-insensitive-string-replace-490921.html
-"""
+    Similar to string.replace() but is case insensitive
+    Code borrowed from: http://forums.devshed.com/python-programming-11/case-insensitive-string-replace-490921.html
+    """
     no_case = string.lower()
     index = no_case.rfind(target.lower())
     if index >= 0:
@@ -19,8 +19,8 @@ Code borrowed from: http://forums.devshed.com/python-programming-11/case-insensi
 class EditorMiddleware(object):
     body_tag = '</body>'
     head_tag = '</head>'
-    body_template_name = 'fancypages/partials/editor_body.html'
-    head_template_name = 'fancypages/partials/editor_head.html'
+    body_template_name = 'fancypages/editor/body.html'
+    head_template_name = 'fancypages/editor/head.html'
 
     def process_response(self, request, response):
         if not request.user.is_authenticated():

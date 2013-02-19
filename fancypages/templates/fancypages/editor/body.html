@@ -1,6 +1,20 @@
 {% load i18n staticfiles %}
 <div id="editor-panel" class="editor-hidden">
-    {% include "fancypages/dashboard/partials/nav_editor.html" with page_url=page.get_absolute_url %}
+
+    <div class="button-nav">
+        {% if form %}
+        <button data-behaviours="page-settings">
+            <span>
+                <i class="icon-file"></i>
+                <span>{% trans "Settings" %}</span>
+            </span>
+        </button>
+        {% endif %}
+        <button id="editor-close">
+            <i class="icon-large icon-close"></i>
+            {% trans "Close editor" %}
+        </button>
+    </div>
 
     <div class="sidebar-content">
         <div id="page-settings">
@@ -29,11 +43,11 @@
 <div id='editor-handle'><i class="icon-large icon-magic"></i></div>
 <div class="loading" data-behaviours="loading"></div>
 
-{# include scripst that are only required in edit mode #}
-{% include "fancypages/dashboard/partials/edit_mode_extracdnscripts.html" %}
-{% include "fancypages/dashboard/partials/edit_mode_extrascripts.html" %}
+{# include scripts that are only required in edit mode #}
+{% include "fancypages/editor/partials/cdn_scripts.html" %}
+{% include "fancypages/editor/partials/extrascripts.html" %}
 <script>
     $(document).ready(function(){
-        fancypages.dashboard.init();
+        fancypages.editor.init();
     });
 </script>

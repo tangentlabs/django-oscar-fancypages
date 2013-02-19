@@ -27,7 +27,7 @@ fancypages.assets = {
 
         $("[data-behaviours~=selectable-asset]").live('click', function (ev) {
             ev.preventDefault();
-            parent.fancypages.dashboard.setSelectedAsset(
+            parent.fancypages.editor.setSelectedAsset(
                 $(this).data('asset-type'),
                 $(this).data('asset-id'),
                 //FIXME: this should probably be the actual image url
