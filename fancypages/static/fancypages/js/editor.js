@@ -214,6 +214,7 @@ fancypages.editor = {
                 marginLeft: '-50px',
                 marginTop: '-50px'
             });
+            assetManager.attr('height', $(window).height() - 100);
         });
     },
 

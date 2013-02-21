@@ -37,9 +37,7 @@ fancypages.assets = {
         
         //Enlarge the height of the asset scrollbar 
         var modalHeight = $(window).resize().height() - 100;
-        $('#asset-gallery').closest('.modal-body').css('max-height', modalHeight).jScrollPane({
-            horizontalDragMaxWidth: 0
-        });;
+        $('#asset-gallery').closest('.modal-body').css('max-height', modalHeight);
         
     }
 };
