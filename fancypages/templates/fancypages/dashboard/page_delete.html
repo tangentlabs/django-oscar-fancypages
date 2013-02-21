@@ -9,14 +9,18 @@
 {% block breadcrumbs %}
 <ul class="breadcrumb">
     <li>
-<a href="{% url dashboard:index %}">{% trans "Dashboard" %}</a>
+        <a href="{% url dashboard:index %}">{% trans "Dashboard" %}</a>
         <span class="divider">/</span>
     </li>
     <li>
-<a href="{% url dashboard:page-list %}">{% trans "Pages" %}</a>
+        <a href="{% url fp-dashboard:page-list %}">{% trans "Pages" %}</a>
         <span class="divider">/</span>
     </li>
-<li class="active">{% blocktrans with title=page.title %}Delete page '{{ title }}'?{% endblocktrans %}</li>
+    <li>
+        <a href="{% url fp-dashboard:page-update page.pk  %}">{{ page.title }}</a>
+        <span class="divider">/</span>
+    </li>
+    <li class="active">{% trans "Delete?" %}</li>
 </ul>
 {% endblock %}
 
