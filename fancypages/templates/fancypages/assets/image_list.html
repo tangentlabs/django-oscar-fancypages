@@ -28,13 +28,11 @@
 {% endblock %}
 
 {% block content %}
-<div class="slide-pane">
-    <ul id='asset-gallery' class="thumbnails">
-    {% for image_asset in image_list %}
-        {% include "fancypages/assets/partials/image_thumbnail.html" %}
-    {% endfor %}
-    </ul>
-</div>
+<ul id='asset-gallery' class="thumbnails">
+{% for image_asset in image_list %}
+    {% include "fancypages/assets/partials/image_thumbnail.html" %}
+{% endfor %}
+</ul>
 {% endblock %}
 
 {% block extrascripts %}

@@ -6,3 +6,10 @@
     {{ block.super }}
     {% include "fancypages/partials/draft_note_block.html" %}
 {% endblock %}
+
+{% block extrascripts %}
+    {{ block.super }}
+    {% compress js %}
+    {% include "fancypages/partials/extrascripts.html" %}
+    {% endcompress %}
+{% endblock %}

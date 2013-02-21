@@ -1,6 +1,10 @@
+import re
+
 from django.template import RequestContext
 from django.utils.encoding import smart_unicode
 from django.template.loader import render_to_string
+
+BODY_STARTTAG = re.compile(r'(?P<body_tag><body[^>]+>)')
 
 
 def replace_insensitive(string, target, replacement):
@@ -38,11 +42,16 @@ class EditorMiddleware(object):
             smart_unicode(editor_head) + self.head_tag,
         )
 
+	response.content = BODY_STARTTAG.sub(
+	    r'\g<body_tag><div class="editable-page-wrapper">',
+	    response.content
+	)
+
         editor_body = render_to_string(self.body_template_name, RequestContext(request))
         response.content = replace_insensitive(
             smart_unicode(response.content),
             self.body_tag,
-            smart_unicode(editor_body) + self.body_tag,
+            "%s%s%s" % ("</div>", smart_unicode(editor_body), self.body_tag),
         )
 
         if response.get('Content-Length', None):
