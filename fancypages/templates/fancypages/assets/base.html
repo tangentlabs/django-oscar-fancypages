@@ -17,7 +17,7 @@
                     {% endblock %}
                 </aside><!-- /span3 -->
 
-                <div class="span10">
+                <div class="span10 modal-body">
                     {% block content %}
                     {% endblock %}
                 </div><!-- /span9 -->
@@ -29,6 +29,6 @@
 {% block extrastyles %}
     {{ block.super }}
     {% compress css %}
-    <link rel='stylesheet' type='text/less' href="{% static "fancypages/less/fancypages.less" %}" />
+    <link rel='stylesheet' type='text/less' href="{% static "fancypages/less/assets.less" %}" />
     {% endcompress %}
 {% endblock %}

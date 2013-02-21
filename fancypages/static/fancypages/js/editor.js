@@ -139,12 +139,12 @@ fancypages.editor = {
         $('#editor-handle').click(function (ev) {
             ev.preventDefault();
             $(this).hide();
-            $('#editor-panel').removeClass('editor-hidden');
+            $('body').removeClass('editor-hidden');
         });
         $('#editor-close').click(function (ev) {
             ev.preventDefault();
             $('#editor-handle').show();
-            $('#editor-panel').addClass('editor-hidden');
+            $('body').addClass('editor-hidden');
         });
     },
 
@@ -205,14 +205,7 @@ fancypages.editor = {
         // Initialise all the asset related stuff
         $(document).on('shown', "#asset-modal", function () {
             var assetManager = $("#asset-manager");
-            assetManager.attr('src', assetManager.data("src")).load(function () {
-                var modalHeight = $(window).height() - 100;
-                $('.slide-pane', fancypages.editor.getAssetDocument()).css('height', modalHeight - 100);
-                $('.slide-pane', fancypages.editor.getAssetDocument()).jScrollPane({
-                    horizontalDragMaxWidth: 0
-                });
-            });
-
+            assetManager.attr('src', assetManager.data("src")).load();
             $(this).css({
                 width: $(window).width() - 100,
                 height: $(window).height() - 100,
@@ -316,10 +309,9 @@ fancypages.editor = {
             navBarTop = $('.navbar-accounts').outerHeight(),
             subBarTop = $('.navbar-primary').outerHeight(),
             buttonsTop = $('.button-nav').outerHeight(),
-            buttonsBottom = $('.form-actions.fixed').outerHeight(),
-            sumHeight = pageHeight - navBarTop - subBarTop;
+            buttonsBottom = $('.form-actions.fixed').outerHeight();
 
-        $('.sidebar-content').css('height', sumHeight - buttonsTop - buttonsBottom);
+        $('.sidebar-content').css('height', pageHeight - buttonsTop - buttonsBottom);
         $('.sidebar-content').jScrollPane();
     },
     /*
@@ -452,13 +444,13 @@ fancypages.panels = {
             ev.preventDefault();
         }
         $('#editor-handle').hide();
-        $('#editor-panel').removeClass('editor-hidden');
+        $('body').removeClass('editor-hidden');
     },
     hideEditPanel: function (ev) {
         if (ev) {
             ev.preventDefault();
         }
         $('#editor-handle').show();
-        $('#editor-panel').addClass('editor-hidden');
+        $('body').addClass('editor-hidden');
     }
 };

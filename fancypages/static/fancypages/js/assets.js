@@ -34,5 +34,12 @@ fancypages.assets = {
                 $('img', this).attr('src')
             );
         });
+        
+        //Enlarge the height of the asset scrollbar 
+        var modalHeight = $(window).resize().height() - 100;
+        $('#asset-gallery').closest('.modal-body').css('max-height', modalHeight).jScrollPane({
+            horizontalDragMaxWidth: 0
+        });;
+        
     }
 };

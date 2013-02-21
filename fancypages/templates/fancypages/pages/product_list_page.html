@@ -4,6 +4,8 @@
 {% load fp_container_tags %}
 {% load staticfiles %}
 
+{% block body_class %}fp-page editor-hidden{% endblock %}
+
 {% block column_left %}
     {% fp_object_container left-column-top edit_mode %}
     {{ block.super }}
