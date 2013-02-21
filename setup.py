@@ -16,24 +16,20 @@ setup(
     include_package_data=True,
     install_requires=[
         'versiontools>=1.9.1',
-        'Django>=1.4.2',
         'dingus>=0.3.4',
         'django-oscar>=0.5-pre-alpha',
         'django-model-utils>=1.1.0',
-        'django-compressor>=1.2',
-        'South>=0.7.6',
         'django-twitter-tag>=0.4.0',
         'djangorestframework>=2.1.12',
     ],
-    dependency_links = [
-        'https://github.com/tangentlabs/django-oscar/tarball/experimental/use_virtual_node#egg=django-oscar-0.5-pre-alpha',
+    dependency_links=[
+        'https://github.com/tangentlabs/django-oscar/tarball/master#egg=django-oscar-0.5-pre-alpha',
     ],
     # See http://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
       'Environment :: Web Environment',
       'Intended Audience :: Developers',
-      #'License :: OSI Approved :: BSD License',
+      'License :: OSI Approved :: BSD License',
       'Operating System :: Unix',
-      'Programming Language :: Python'
-    ]
-)
+      'Programming Language :: Python',
+    ])
