@@ -214,6 +214,7 @@ fancypages.editor = {
                 marginLeft: '-50px',
                 marginTop: '-50px'
             });
+            // Set height of the Asset IFrame
             assetManager.attr('height', $(window).height() - 100);
         });
     },
