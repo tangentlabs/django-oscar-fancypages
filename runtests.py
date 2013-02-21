@@ -11,6 +11,7 @@ from fancypages.defaults import FANCYPAGES_SETTINGS
 from oscar import OSCAR_MAIN_TEMPLATE_DIR, OSCAR_CORE_APPS
 
 location = lambda x: os.path.join(os.path.dirname(os.path.realpath(__file__)), x)
+sandbox = lambda x: location("sandbox/%s" % x)
 
 
 def configure():
@@ -23,11 +24,11 @@ def configure():
                     'NAME': ':memory:',
                 }
             },
-            MEDIA_ROOT=location('public/media'),
+            MEDIA_ROOT=sandbox('public/media'),
             MEDIA_URL='/media/',
             STATIC_URL='/static/',
-            STATICFILES_DIRS=(location('static/'),),
-            STATIC_ROOT=location('public'),
+            STATICFILES_DIRS=(sandbox('static/'),),
+            STATIC_ROOT=sandbox('public'),
             STATICFILES_FINDERS=(
                 'django.contrib.staticfiles.finders.FileSystemFinder',
                 'django.contrib.staticfiles.finders.AppDirectoriesFinder',
@@ -60,16 +61,14 @@ def configure():
                 'django.contrib.messages.middleware.MessageMiddleware',
                 'debug_toolbar.middleware.DebugToolbarMiddleware',
                 'oscar.apps.basket.middleware.BasketMiddleware',
+                'fancypages.middleware.EditorMiddleware',
             ),
             ROOT_URLCONF='sandbox.sandbox.urls',
             TEMPLATE_DIRS=(
-                location('templates'),
+                sandbox('templates'),
                 os.path.join(OSCAR_MAIN_TEMPLATE_DIR, 'templates'),
                 OSCAR_MAIN_TEMPLATE_DIR,
             ),
-            FANCYPAGES_TEMPLATE_DIRS=[
-                location('templates/fancypages/pages'),
-            ],
             INSTALLED_APPS=[
                 'django.contrib.auth',
                 'django.contrib.contenttypes',
@@ -79,11 +78,10 @@ def configure():
                 'django.contrib.staticfiles',
                 'django.contrib.admin',
                 'compressor',
-            ] + OSCAR_CORE_APPS + [
-                'model_utils',
-
                 'fancypages',
                 'fancypages.assets',
+                'model_utils',
+            ] + OSCAR_CORE_APPS + [
             ],
             AUTHENTICATION_BACKENDS=(
                 'oscar.apps.customer.auth_backends.Emailbackend',

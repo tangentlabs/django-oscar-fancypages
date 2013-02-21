@@ -2,13 +2,12 @@
 {% load fp_widget_tags %}
 
 <div class="sortable connectedSortable" data-container-id="{{ container.id }}">
-
 {% for widget_id,rendered_widget in rendered_widgets %}
     <div id="widget-{{ widget_id }}" class="widget {{ widget.container.variable_name }}"
          data-container-name="{{ container.variable_name }}" data-widget-id="{{ widget_id }}">
-        {% if edit_mode %}<div class="edit-button btn"><i class="icon-edit"></i></div>{% endif %}
+        {% if request.user.is_authenticated and request.user.is_staff %}<div class="edit-button btn"><i class="icon-edit"></i></div>{% endif %}
             {{ rendered_widget }}
-        {% if edit_mode %}
+        {% if request.user.is_authenticated and request.user.is_staff %}
         <div class="widget-move-delete btn-group">
             <div class="btn move"><i class="icon-move"></i></div>
             <div class="btn delete"><i class="icon-trash"></i></div>
@@ -19,17 +18,18 @@
 
 </div>
 
-{% if edit_mode %}
-<div class="widget-add-control">
-    <a data-toggle="modal"
-       data-behaviours="load-modal"
-       class="btn btn-large"
-       data-target="#{{ container.variable_name }}_modal"
-       href="{% url fp-api:widget-type-list %}"
-       data-container-id="{{ container.id }}">
-       <i class="icon-plus"></i> Add content
-    </a>
-</div>
-<div id="{{ container.variable_name }}_modal" class="modal fade hide" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-</div>
+{% if request.user.is_authenticated and request.user.is_staff %}
+    <div class="widget-add-control">
+        <a data-toggle="modal"
+           data-behaviours="load-modal"
+           class="btn btn-large"
+           data-target="#{{ container.variable_name }}_modal"
+           href="{% url fp-api:widget-type-list %}"
+           data-container-id="{{ container.id }}">
+            <i class="icon-plus"></i> {% trans "Add content" %}
+        </a>
+    </div>
+    <div id="{{ container.variable_name }}_modal" class="modal fade hide"
+         role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    </div>
 {% endif %}

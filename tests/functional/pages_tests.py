@@ -21,8 +21,8 @@ class TestAnAnonymousUser(FancyPagesWebTest):
         super(TestAnAnonymousUser, self).setUp()
         self.prepare_template_file(
             "{% load fp_container_tags%}"
-            "{% fancypages_container main-container %}"
-            "{% fancypages_container left-column %}"
+            "{% fp_object_container main-container %}"
+            "{% fp_object_container left-column %}"
         )
         page_type = PageType.objects.create(
             name='template',
@@ -73,8 +73,8 @@ class TestAStaffUser(FancyPagesWebTest):
         super(TestAStaffUser, self).setUp()
         #self.prepare_template_file(
         #    "{% load fp_container_tags%}"
-        #    "{% fancypages_container main-container %}"
-        #    "{% fancypages_container left-column %}"
+        #    "{% fp_object_container main-container %}"
+        #    "{% fp_object_container left-column %}"
         #)
         self.page = Page.add_root(name="A new page", slug='a-new-page')
         self.page_container = self.page.get_container_from_name('page-container')
@@ -109,20 +109,3 @@ class TestAStaffUser(FancyPagesWebTest):
             ("You can only see this because you are logged in as "
              "a user with access rights to the dashboard")
         )
-
-    def test_can_customise_a_product_page(self):
-        product = create_product()
-        self.assertEquals(len(Container.get_containers(product)), 0)
-
-        # Loading this page creates the missing containers
-        from fancypages.templatetags.fp_container_tags import get_customise_url
-        self.get(get_customise_url({}, product))
-
-        # We need to get the preview page separately because it is
-        # rendered in an iframe and so the markup is not available in
-        # the parent page
-        from fancypages.templatetags.fp_container_tags import get_preview_url
-        page = self.get(get_preview_url({}, product))
-
-        self.assertEquals(len(Container.get_containers(product)), 4)
-        self.assertContains(page, "Add content")

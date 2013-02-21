@@ -21,6 +21,12 @@
 
 {% block dashboard_content %}
 
+<div class="well well-info">
+    <a href="{% url fp-dashboard:page-create %}" class="btn btn-primary">
+        {% trans "Create new top-level page" %}
+    </a>
+</div>
+
 {% if page_list|length %}
 <form action="." method="post">
     {% csrf_token %}

@@ -41,16 +41,13 @@
             <a href="{% url dashboard:catalogue-product product.id %}">
                 <button class="btn btn-success btn-full">{% trans "Edit this product" %}</button>
             </a>
-            <a class="pull-right" href="{% get_customise_url %}">
-                <button class="btn btn-success btn-full">{% trans "Customise this page" %}</button>
-            </a>
         </div>
     </div>
     {% endif %}
 
     <div class="row-fluid">
         <div class="span12">
-            {% fancypages_container content-container edit_mode %}
+            {% fp_object_container content-container %}
         </div>
     </div>
 
@@ -86,7 +83,7 @@
 
     <div class="row-fluid">
         <div class="span12">
-            {% fancypages_container product-description-container edit_mode %}
+            {% fp_object_container product-description-container %}
         </div>
     </div>
 
@@ -101,7 +98,7 @@
 
     <div class="row-fluid">
         <div class="span12">
-            {% fancypages_container product-info-container edit_mode %}
+            {% fp_object_container product-info-container %}
         </div>
     </div>
 
@@ -149,7 +146,7 @@
 
     <div class="row-fluid">
         <div class="span12">
-            {% fancypages_container product-review-container edit_mode %}
+            {% fp_object_container product-review-container %}
         </div>
     </div>
 

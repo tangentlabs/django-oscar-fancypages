@@ -40,7 +40,10 @@ class RenderFormFieldMixin(object):
         }
 
     def get_form_class(self, obj):
-        return modelform_factory(obj.__class__)
+        # check if the widget has a class-level attribute that
+        # defines a specific form class to be used
+        form_class = getattr(obj.__class__, 'form_class', None)
+        return modelform_factory(obj.__class__, form=form_class)
 
 
 class WidgetSerializer(RenderFormFieldMixin, serializers.ModelSerializer):
@@ -73,12 +76,14 @@ class WidgetSerializer(RenderFormFieldMixin, serializers.ModelSerializer):
         return model
 
     def get_form_class(self, obj):
-        model = obj.__class__
-        form_class = getattr(
-            forms,
-            "%sForm" % model.__name__,
-            forms.WidgetForm
-        )
+        model = self.object.__class__
+        form_class = getattr(model, 'form_class')
+        if not form_class:
+            form_class = getattr(
+                forms,
+                "%sForm" % model.__name__,
+                forms.WidgetForm
+            )
         return modelform_factory(model, form=form_class)
 
     class Meta:

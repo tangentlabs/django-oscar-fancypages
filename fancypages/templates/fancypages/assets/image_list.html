@@ -4,12 +4,6 @@
 {% load thumbnail %}
 {% load staticfiles %}
 
-{% block mainstylesheet %}
-    {% compress css %}
-    <link type="text/less" rel="stylesheet" href="{% static "oscar/less/dashboard.less" %}" />
-    {% endcompress %}
-{% endblock %}
-
 {% block body_class %}assets{% endblock %}
 
 {% block extrahead %}
@@ -49,9 +43,6 @@
     <script type="text/javascript" src="{% static "fancypages/js/jquery-file-upload/jquery.iframe-transport.js" %}"></script>
     <script type="text/javascript" src="{% static "fancypages/js/jquery-file-upload/jquery.fileupload.js" %}"></script>
     {% compress js %}
-    {% comment %}
-    <script src="{% static "oscar/js/plugins/plugins.js" %}" type="text/javascript" charset="utf-8"></script>
-    {% endcomment %}
     <script type="text/javascript" src="{% static "fancypages/js/assets.js" %}"></script>
     {% endcompress %}
 {% endblock %}

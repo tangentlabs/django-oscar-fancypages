@@ -75,7 +75,7 @@ class TestTheWidgetApi(test.FancyPagesWebTest):
         super(TestTheWidgetApi, self).setUp()
         self.prepare_template_file(
             "{% load fp_container_tags%}"
-            "{% fancypages_container page-container %}"
+            "{% fp_object_container page-container %}"
         )
 
         self.page = Page.add_root(name="A new page", slug='a-new-page')
@@ -149,8 +149,8 @@ class TestTheWidgetMoveApi(test.FancyPagesWebTest):
         super(TestTheWidgetMoveApi, self).setUp()
         self.prepare_template_file(
             "{% load fp_container_tags%}"
-            "{% fancypages_container main-container %}"
-            "{% fancypages_container left-container %}"
+            "{% fp_object_container main-container %}"
+            "{% fp_object_container left-container %}"
         )
 
         page_type = PageType.objects.create(

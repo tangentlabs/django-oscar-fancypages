@@ -18,7 +18,7 @@ class TestAWidget(test.FancyPagesWebTest):
         super(TestAWidget, self).setUp()
         self.prepare_template_file(
             "{% load fp_container_tags%}"
-            "{% fancypages_container page-container %}"
+            "{% fp_object_container page-container %}"
         )
 
         self.page = Page.add_root(name="A new page", slug='a-new-page')

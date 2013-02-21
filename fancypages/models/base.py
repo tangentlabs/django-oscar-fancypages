@@ -9,7 +9,6 @@ from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ImproperlyConfigured
 from django.contrib.contenttypes.models import ContentType
-from django.template import loader, RequestContext, Context
 from django.contrib.contenttypes.generic import GenericRelation
 
 
@@ -222,74 +221,90 @@ class Container(models.Model):
     # this is the name of the variable used in the template tag
     # e.g. {% fancypages-container var-name %}
     title = models.CharField(max_length=100, null=True, blank=True)
-    variable_name = models.SlugField(_("Variable name"), max_length=50,
-                                     null=True, blank=True)
+    variable_name = models.SlugField(
+        _("Variable name"),
+        max_length=50,
+        null=True, blank=True
+    )
 
     # this makes the fancypages available to any type of object
     content_type = models.ForeignKey(ContentType, null=True)
     object_id = models.PositiveIntegerField(null=True)
     page_object = generic.GenericForeignKey('content_type', 'object_id')
 
-    def render(self, request=None, **kwargs):
-        """
-        Render the container and all its contained widgets.
-        """
-        ordered_widgets = self.widgets.select_subclasses()
+    def clean(self):
+        if self.object_id and self.content_type:
+            return
 
-        tmpl = loader.get_template(self.template_name)
-
-        if request:
-            ctx = RequestContext(request)
-        else:
-            ctx = Context()
-
-        ctx['container'] = self
-        ctx['rendered_widgets'] = []
-
-        for widget in ordered_widgets:
-            try:
-                rendered_widget = widget.render(request, **kwargs)
-            except ImproperlyConfigured:
-                continue
-
-            ctx['rendered_widgets'].append((widget.id, rendered_widget))
-
-        ctx.update(kwargs)
-        return tmpl.render(ctx)
+        from django.core.exceptions import ValidationError
+        # Don't allow draft entries to have a pub_date.
+        container_exists = Container.objects.filter(
+            variable_name=self.variable_name,
+            object_id=None,
+            content_type=None,
+        ).exists()
+        if container_exists:
+            raise ValidationError(
+                "containter with name '%s' already exists" % self.variable_name
+            )
 
     @classmethod
-    def get_container_by_name(cls, obj, name):
+    def get_container_by_name(cls, name, obj=None):
         """
         Get container of *obj* with the specified variable *name*. It
         assumes that *obj* has a ``containers`` attribute and returns
         the container with *name* or ``None`` if it cannot be found.
         """
-        obj_type = ContentType.objects.get_for_model(obj)
-        if obj_type is None:
+        if not obj:
+            container, __ = cls.objects.get_or_create(
+                content_type=None,
+                variable_name=name,
+                object_id=None,
+            )
+            return container
+
+        object_type = ContentType.objects.get_for_model(obj)
+        if object_type is None:
             return None
 
-        ctn, __ = cls.objects.get_or_create(content_type=obj_type,
-                                            variable_name=name,
-                                            object_id=obj.id)
+        ctn, __ = cls.objects.get_or_create(
+            content_type=object_type,
+            variable_name=name,
+            object_id=obj.id
+        )
         return ctn
 
     @classmethod
     def get_containers(cls, obj):
         obj_type = ContentType.objects.get_for_model(obj)
-        return cls.objects.filter(content_type__id=obj_type.id, object_id=obj.id)
+        return cls.objects.filter(
+            content_type__id=obj_type.id,
+            object_id=obj.id
+        )
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        if not self.variable_name:
+            self.variable_name = "%s-%s" % (
+                self._meta.module_name,
+                Container.objects.count(),
+            )
+        return super(Container, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return u"Container '%s' in '%s'" % (self.variable_name, self.content_type)
 
     class Meta:
         app_label = 'fancypages'
+        unique_together = (('variable_name', 'content_type', 'object_id'),)
 
 
 class Widget(models.Model):
     name = None
     code = None
     template_name = None
-    context_object_name = 'object'
+    renderer_class = None
+    form_class = None
 
     container = models.ForeignKey(Container, verbose_name=_("Container"),
                                   related_name="widgets")
@@ -338,23 +353,9 @@ class Widget(models.Model):
                 for sub in sub.itersubclasses(_seen):
                     yield sub
 
-    def render(self, request=None, **kwargs):
-        if not self.template_name:
-            raise ImproperlyConfigured(
-                "a template name is required for a widget to be rendered"
-            )
-
-
-        if request:
-            ctx = RequestContext(request)
-        else:
-            ctx = Context()
-
-        ctx[self.context_object_name] = self
-        ctx.update(kwargs)
-
-        tmpl = loader.get_template(self.template_name)
-        return tmpl.render(ctx)
+    def get_renderer_class(self):
+        from fancypages.renderers import WidgetRenderer
+        return self.renderer_class or WidgetRenderer
 
     def save(self, **kwargs):
         if self.display_order is None:
@@ -398,7 +399,6 @@ class Widget(models.Model):
                 widget.display_order = self.display_order + idx + 1
                 widget.save()
 
-
     def __unicode__(self):
         return "Widget #%s" % self.id
 
@@ -421,9 +421,12 @@ class ImageMetadataMixin(models.Model):
     """
     Mixin for meta data for image widgets
     """
-    title = models.CharField(_("Image title"), max_length=100, blank=True, null=True)
-    alt_text = models.CharField(_("Alternative text"), max_length=100, blank=True, null=True)
-    link = models.CharField(_("Link URL"), max_length=500, blank=True, null=True)
+    title = models.CharField(_("Image title"), max_length=100, blank=True,
+                             null=True)
+    alt_text = models.CharField(_("Alternative text"), max_length=100,
+                                blank=True, null=True)
+    link = models.CharField(_("Link URL"), max_length=500, blank=True,
+                            null=True)
 
     class Meta:
         abstract = True

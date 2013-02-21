@@ -1,0 +1,53 @@
+{% load i18n staticfiles %}
+<div id="editor-panel" class="editor-hidden">
+
+    <div class="button-nav">
+        {% if form %}
+        <button data-behaviours="page-settings">
+            <span>
+                <i class="icon-file"></i>
+                <span>{% trans "Settings" %}</span>
+            </span>
+        </button>
+        {% endif %}
+        <button id="editor-close">
+            <i class="icon-large icon-close"></i>
+            {% trans "Close editor" %}
+        </button>
+    </div>
+
+    <div class="sidebar-content">
+        <div id="page-settings">
+            {% if form %}
+            <h3><i class="icon-file"></i> <span>{% trans "Page Settings" %}</span></h3>
+            <form method="post" action="." class="form-stacked">
+                {% csrf_token %}
+                {% include "oscar/partials/form_fields.html" %}
+                <div class="form-actions fixed">
+                    <div>
+                        <a href="">{% trans "Cancel" %}</a>
+
+                        <button type="submit" class="btn btn-primary pull-right">
+                            {% trans "Save" %}
+                        </button>
+                    </div>
+                </div>
+            </form>
+            {% else %}
+                <p>{% trans "Click on a widget to see editable properties." %}</p>
+            {% endif %}
+        </div>
+        <div id="widget_input_wrapper"></div>
+    </div>
+</div>
+<div id='editor-handle'><i class="icon-large icon-magic"></i></div>
+<div class="loading" data-behaviours="loading"></div>
+
+{# include scripts that are only required in edit mode #}
+{% include "fancypages/editor/partials/cdn_scripts.html" %}
+{% include "fancypages/editor/partials/extrascripts.html" %}
+<script>
+    $(document).ready(function(){
+        fancypages.editor.init();
+    });
+</script>

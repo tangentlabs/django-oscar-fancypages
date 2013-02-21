@@ -12,7 +12,7 @@ function resetCarousel() {
         minItems: 1,
         onClick: true
       });
-    }   
+    }
   });
 }
 // initialise fitVids plugin for resizing IFRAME YouTube videos
@@ -22,5 +22,5 @@ function initFitvids() {
 
 $(document).ready(function() {
     resetCarousel();
-    initFitvids();    
+    initFitvids();
 });
