@@ -9,9 +9,9 @@ import fancypages.urls
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    url(r'^', include(shop.urls)),
-    url(r'^', include(fancypages.urls)),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'', include(shop.urls)),
+    url(r'', include(fancypages.urls)),
 )
 
 if settings.DEBUG:
