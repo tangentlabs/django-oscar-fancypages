@@ -61,10 +61,9 @@ class ContainerNodeMixin(object):
         if form:
             extra_ctx['widget_create_form'] = form
 
-        return self.container.render(
-            context.get('request', None),
-            **extra_ctx
-        )
+        from fancypages.renderers import ContainerRenderer
+        renderer = ContainerRenderer(self.container, context)
+        return renderer.render(**extra_ctx)
 
 
 class FancyContainerNode(ContainerNodeMixin, template.Node):

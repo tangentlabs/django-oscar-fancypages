@@ -9,7 +9,6 @@ from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ImproperlyConfigured
 from django.contrib.contenttypes.models import ContentType
-from django.template import loader, RequestContext, Context
 from django.contrib.contenttypes.generic import GenericRelation
 
 
@@ -249,33 +248,6 @@ class Container(models.Model):
                 "containter with name '%s' already exists" % self.variable_name
             )
 
-    def render(self, request=None, **kwargs):
-        """
-        Render the container and all its contained widgets.
-        """
-        ordered_widgets = self.widgets.select_subclasses()
-
-        tmpl = loader.get_template(self.template_name)
-
-        if request:
-            ctx = RequestContext(request)
-        else:
-            ctx = Context()
-
-        ctx['container'] = self
-        ctx['rendered_widgets'] = []
-
-        for widget in ordered_widgets:
-            try:
-                rendered_widget = widget.render(request, **kwargs)
-            except ImproperlyConfigured:
-                continue
-
-            ctx['rendered_widgets'].append((widget.id, rendered_widget))
-
-        ctx.update(kwargs)
-        return tmpl.render(ctx)
-
     @classmethod
     def get_container_by_name(cls, name, obj=None):
         """
@@ -331,7 +303,7 @@ class Widget(models.Model):
     name = None
     code = None
     template_name = None
-    context_object_name = 'object'
+    renderer_class = None
     form_class = None
 
     container = models.ForeignKey(Container, verbose_name=_("Container"),
@@ -381,23 +353,9 @@ class Widget(models.Model):
                 for sub in sub.itersubclasses(_seen):
                     yield sub
 
-    def render(self, request=None, **kwargs):
-        if not self.template_name:
-            raise ImproperlyConfigured(
-                "a template name is required for a widget to be rendered"
-            )
-
-
-        if request:
-            ctx = RequestContext(request)
-        else:
-            ctx = Context()
-
-        ctx[self.context_object_name] = self
-        ctx.update(kwargs)
-
-        tmpl = loader.get_template(self.template_name)
-        return tmpl.render(ctx)
+    def get_renderer_class(self):
+        from fancypages.renderers import WidgetRenderer
+        return self.renderer_class or WidgetRenderer
 
     def save(self, **kwargs):
         if self.display_order is None:
@@ -441,7 +399,6 @@ class Widget(models.Model):
                 widget.display_order = self.display_order + idx + 1
                 widget.save()
 
-
     def __unicode__(self):
         return "Widget #%s" % self.id
 
@@ -464,9 +421,12 @@ class ImageMetadataMixin(models.Model):
     """
     Mixin for meta data for image widgets
     """
-    title = models.CharField(_("Image title"), max_length=100, blank=True, null=True)
-    alt_text = models.CharField(_("Alternative text"), max_length=100, blank=True, null=True)
-    link = models.CharField(_("Link URL"), max_length=500, blank=True, null=True)
+    title = models.CharField(_("Image title"), max_length=100, blank=True,
+                             null=True)
+    alt_text = models.CharField(_("Alternative text"), max_length=100,
+                                blank=True, null=True)
+    link = models.CharField(_("Link URL"), max_length=500, blank=True,
+                            null=True)
 
     class Meta:
         abstract = True
