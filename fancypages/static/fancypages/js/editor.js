@@ -162,13 +162,13 @@ fancypages.editor = {
     initialiseEventsOnLoadedContent: function () {
         // Listen on modal cancel buttons and hide and remove the modal
         // when clicked.
-        $("button[data-behaviours~=remove-modal]").live('click', function (ev) {
+        $(document).on('click', "button[data-behaviours~=remove-modal]", function (ev) {
             ev.preventDefault();
             fancypages.removeModal(this);
             $(this).parents('div[id$=_modal]').remove();
         });
         // Attach handler to dynamically loaded widget form for 'submit' event.
-        $('form[data-behaviours~=submit-widget-form]').live('submit', function (ev) {
+        $(document).on('submit', 'form[data-behaviours~=submit-widget-form]', function (ev) {
             console.log('remove the modal');
             ev.preventDefault();
             fancypages.removeModal(this);
@@ -176,20 +176,20 @@ fancypages.editor = {
         });
         // Listen on modal cancel buttons and hide and remove the modal
         // when clicked.
-        $("button[data-behaviours~=remove-modal]").live('click', function (ev) {
+        $(document).on('click', "button[data-behaviours~=remove-modal]", function (ev) {
             ev.preventDefault();
             fancypages.removeModal(this);
         });
         // Listen on widget form for content changes in text fields and text
         // areas
-        $("a[data-behaviours~=update-editor-field]").live('click', function (ev) {
+        $(document).on('click', "a[data-behaviours~=update-editor-field]", function (ev) {
             ev.preventDefault();
             var target = $(this).data('target');
             var src = $(this).data('src');
             $(target).val(src);
         });
-        // attach live update listener to all regular input field
-        $('div[data-behaviours~=field-live-update]').live('change keyup', function (ev) {
+        // attach update listener to all regular input field
+        $(document).on('change keyup', 'div[data-behaviours~=field-live-update]', function (ev) {
             ev.preventDefault();
 
             var fieldElem = $('input', this);
@@ -203,7 +203,7 @@ fancypages.editor = {
             previewField.html($(fieldElem).val());
         });
         // Initialise all the asset related stuff
-        $("#asset-modal").live('shown', function () {
+        $(document).on('shown', "#asset-modal", function () {
             var assetManager = $("#asset-manager");
             assetManager.attr('src', assetManager.data("src")).load(function () {
                 var modalHeight = $(window).height() - 100;
@@ -226,7 +226,7 @@ fancypages.editor = {
 
     initialiseAddWidgetModal: function () {
         // initialise modal for adding widget
-        $('form[id$=add_widget_form] input[type=radio]').live('click', function (ev) {
+        $(document).on('click', 'form[id$=add_widget_form] input[type=radio]', function (ev) {
             ev.preventDefault();
 
             var form = $(this).parents('form');

@@ -25,7 +25,7 @@ fancypages.assets = {
             }
         });
 
-        $("[data-behaviours~=selectable-asset]").live('click', function (ev) {
+        $(document).on('click', "[data-behaviours~=selectable-asset]", function (ev) {
             ev.preventDefault();
             parent.fancypages.editor.setSelectedAsset(
                 $(this).data('asset-type'),
