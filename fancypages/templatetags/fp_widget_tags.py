@@ -59,11 +59,14 @@ def get_object_visibility(context, obj):
 
 @register.simple_tag(takes_context=True)
 def render_widget_form(context, form):
-    model_name = form._meta.model.__name__.lower()
-    tmpl = loader.select_template([
+    model = form._meta.model
+    model_name = model.__name__.lower()
+    template_names = [
+        "%s/%s_form.html" % (model._meta.app_label, model_name),
         "fancypages/widgets/%s_form.html" % model_name,
         "fancypages/partials/editor_form_fields.html",
-    ])
+    ]
+    tmpl = loader.select_template(template_names)
 
     context['missing_image_url'] = "%s/%s" % (
         settings.MEDIA_URL,
