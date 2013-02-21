@@ -332,6 +332,7 @@ class Widget(models.Model):
     code = None
     template_name = None
     context_object_name = 'object'
+    form_class = None
 
     container = models.ForeignKey(Container, verbose_name=_("Container"),
                                   related_name="widgets")

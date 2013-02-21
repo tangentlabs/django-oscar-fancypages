@@ -116,11 +116,13 @@ class WidgetUpdateView(generic.UpdateView, FancypagesMixin):
 
     def get_form_class(self):
         model = self.object.__class__
-        form_class = getattr(
-            forms,
-            "%sForm" % model.__name__,
-            forms.WidgetForm
-        )
+        form_class = getattr(model, 'form_class')
+        if not form_class:
+            form_class = getattr(
+                forms,
+                "%sForm" % model.__name__,
+                forms.WidgetForm
+            )
         return modelform_factory(model, form=form_class)
 
     def get_success_url(self):
