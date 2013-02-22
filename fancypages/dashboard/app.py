@@ -15,7 +15,6 @@ class FancypagesDashboardApplication(Application):
     page_create_view = views.PageCreateView
     page_update_view = views.PageUpdateView
     page_delete_view = views.PageDeleteView
-    page_select_view = views.PageSelectView
 
     widget_update_view = views.WidgetUpdateView
     widget_delete_view = views.WidgetDeleteView
@@ -48,12 +47,6 @@ class FancypagesDashboardApplication(Application):
                 r'^delete/(?P<pk>\d+)/$',
                 self.page_delete_view.as_view(),
                 name='page-delete'
-            ),
-
-            url(
-                r'^selector/$',
-                self.page_select_view.as_view(),
-                name='page-select'
             ),
 
             url(

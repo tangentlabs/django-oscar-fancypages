@@ -71,14 +71,6 @@ class PageDeleteView(generic.DeleteView):
         return reverse('fp-dashboard:page-list')
 
 
-class PageSelectView(generic.ListView):
-    model = Page
-    template_name = "fancypages/dashboard/page_select.html"
-
-    def get_queryset(self, queryset=None):
-        return self.model.objects.filter(category__depth=1)
-
-
 class FancypagesMixin(object):
 
     def get_widget_class(self):
