@@ -1,5 +1,6 @@
 {% load i18n %}
 {% load staticfiles %}
+{% load url from future %}
 <div id="asset-input">
     <div class="thumbnail">
         <div class="image_container">
@@ -20,15 +21,18 @@
         {{ field.label_tag }}
         {% if 'link' in field.id_for_label %}
             <a data-behaviours="load-modal"
-               data-toggle="modal"
-               data-target="#pagelist_modal"
-               href="{% url fp-dashboard:page-select %}">
-               <i class="icon-plus"></i>Existing Content
+               data-target="#fullscreen-modal .modal-body"
+               data-href="/api/v1/pages/select-form">
+                <i class="icon-plus"></i>{% trans "Existing Content" %}
             </a>
         {% endif %}
         {{ field }}
     {% endfor %}
-    <a href="#asset-modal" role="button" class="btn btn-large btn-danger btn-block" data-toggle="modal">{% trans "Libary" %}</a>
-    <div id="pagelist_modal" class="modal hide fade" tabindex="-1" aria-labelledby="existing-content-modal-label" role="dialog">
-    </div>
+    <a data-behaviours="load-iframe-modal"
+       data-target="#fullscreen-modal"
+       data-iframe-id="asset-manager"
+       data-iframe-src="{% url "fp-dashboard:image-list" %}"
+       class="btn btn-large btn-danger btn-block">
+        {% trans "Libary" %}
+    </a>
 </div>

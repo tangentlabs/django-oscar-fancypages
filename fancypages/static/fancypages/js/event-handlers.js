@@ -28,20 +28,47 @@ fancypages.eventHandlers = {
         });
     },
 
+    loadIframeModal: function (ev) {
+        var iframeId = $(this).data('iframe-id');
+        if (iframeId === undefined) {
+            return;
+        }
+
+        var fullscreenModal = $("#fullscreen-modal");
+        var iframeHtml = "<iframe id='" + iframeId + "' frameborder='0' width='100%' height='100%'></iframe>";
+        $(".modal-body", fullscreenModal).html(iframeHtml);
+        fullscreenModal.modal('show');
+
+        var assetManager = $('#' + iframeId);
+        assetManager.attr('src', $(this).data('iframe-src'));
+
+        fullscreenModal.css({
+            width: $(window).width() - 100,
+            height: $(window).height() - 100,
+            top: 100,
+            left: 100,
+            marginLeft: '-50px',
+            marginTop: '-50px'
+        });
+        // Set height of the Asset IFrame
+        assetManager.attr('height', $(window).height() - 100);
+    },
+
     /**
      * Load and display the content of a modal.
      */
     loadModal: function (ev) {
         var elem = this;
         $.ajax({
-            url: $(elem).attr('href'),
+            url: $(elem).data('href'),
             type: 'GET',
             data: {
                 container: $(elem).data('container-id')
             },
             success: function (data) {
-                var target = $(elem).data('target');
-                $(target).html(data.rendered_form);
+                var target = $($(elem).data('target'));
+                target.parents('.modal').modal('show');
+                target.html(data.rendered_form);
             },
             error: function () {
                 oscar.messages.error("Unable to load list of available widgets.");

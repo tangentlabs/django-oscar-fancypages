@@ -22,17 +22,17 @@
             <div class="controls">
             {% endif %}
 
-                    {{ field }}
-                    {% for error in field.errors %}
-                        <span class="help-block">{{ error }}</span>
-                    {% endfor %}
+            {{ field }}
+            {% for error in field.errors %}
+                <span class="help-block">{{ error }}</span>
+            {% endfor %}
 
-                    {% if field.help_text %}
-                        <span class='help-block'>
-                            {# We allow HTML within form help fields #}
-                            {{ field.help_text|safe }}
-                        </span>
-                    {% endif %}
+            {% if field.help_text %}
+                <span class='help-block'>
+                    {# We allow HTML within form help fields #}
+                    {{ field.help_text|safe }}
+                </span>
+            {% endif %}
 
             </div>
         {% endif %}

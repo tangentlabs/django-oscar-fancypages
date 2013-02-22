@@ -169,7 +169,6 @@ fancypages.editor = {
         });
         // Attach handler to dynamically loaded widget form for 'submit' event.
         $(document).on('submit', 'form[data-behaviours~=submit-widget-form]', function (ev) {
-            console.log('remove the modal');
             ev.preventDefault();
             fancypages.removeModal(this);
             fancypages.editor.submitWidgetForm($(this));
@@ -201,21 +200,6 @@ fancypages.editor = {
 
             var previewField = $('#widget-' + widgetId + '-' + fieldName);
             previewField.html($(fieldElem).val());
-        });
-        // Initialise all the asset related stuff
-        $(document).on('shown', "#asset-modal", function () {
-            var assetManager = $("#asset-manager");
-            assetManager.attr('src', assetManager.data("src")).load();
-            $(this).css({
-                width: $(window).width() - 100,
-                height: $(window).height() - 100,
-                top: 100,
-                left: 100,
-                marginLeft: '-50px',
-                marginTop: '-50px'
-            });
-            // Set height of the Asset IFrame
-            assetManager.attr('height', $(window).height() - 100);
         });
     },
 
@@ -274,7 +258,7 @@ fancypages.editor = {
     },
 
     setSelectedAsset: function (assetType, assetId, assetUrl) {
-        $('#asset-modal').modal('hide');
+        $('#fullscreen-modal').modal('hide');
         var assetInput = $("#asset-input");
         $("#id_asset_id", assetInput).attr('value', assetId);
         $("#id_asset_type", assetInput).attr('value', assetType);
@@ -418,7 +402,15 @@ fancypages.editor = {
 
             //load the content of a modal via ajax
             //and display it in a modal
-            $("a[data-behaviours~=load-modal]").click(fancypages.eventHandlers.loadModal);
+            $("a[data-behaviours~=load-modal]").click(
+                fancypages.eventHandlers.loadModal
+            );
+            $("a[data-behaviours~=load-iframe-modal]").click(
+                fancypages.eventHandlers.loadIframeModal
+            );
+            $("#fullscreen-modal").on('hide', function () {
+                $("#fullscreen-modal .modal-body").html('');
+            });
         },
         /*
          * Update the content of a widget field whenever it is edited in the 
