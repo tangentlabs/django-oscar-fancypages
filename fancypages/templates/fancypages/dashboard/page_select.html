@@ -1,25 +1,8 @@
-<div class="modal-header">
-    <button class="close" data-dismiss="modal">×</button>
-    <h3 id="existing-content-modal-label">Existing Content</h3>
-</div>
+{% load category_tags %}
 
-<div class="modal-body">
-    <h4>Pages</h4>
-    <strong>Select a page from the list below:</strong>
-    <ul>
-    {% for page in object_list %}
-        <li>
-            <a data-target="#id_link"
-               data-behaviours="update-editor-field"
-               data-src="{{ page.get_absolute_url }}"
-               data-dismiss="modal"
-               href="#">
-               {{ page.title }}
-            </a>
-        </li>
-    {% endfor %}
-    </ul>
-</div>
-<div class="modal-footer">
-    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-</div>
+{% category_tree depth=3  as categories %}
+<h4>Pages</h4>
+<strong>Select a page from the list below:</strong>
+<ul>
+    {% include "fancypages/dashboard/partials/page_select_link.html" %}
+</ul>

@@ -1,0 +1,18 @@
+{% for category,subcategories in categories %}
+    <li>
+        <a data-target="#id_link"
+           data-behaviours="update-editor-field"
+           data-src="{{ category.get_absolute_url }}"
+           data-dismiss="modal"
+           href="#">
+           {{ category.name }}
+        </a>
+        {% if subcategories %}
+        <ul>
+            {% with filename="fancypages/dashboard/partials/page_select_link.html" %}
+            {% include filename with categories=subcategories %}
+            {% endwith %}
+        </ul>
+        {% endif %}
+    </li>
+{% endfor %}

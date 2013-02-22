@@ -81,6 +81,21 @@ class OrderedContainerListView(generics.ListCreateAPIView):
     permission_classes = (IsAdminUser,)
 
 
+class PageSelectFormView(APIView):
+    form_template_name = "fancypages/dashboard/page_select.html"
+
+    authentication_classes = (SessionAuthentication,)
+    permission_classes = (IsAdminUser,)
+
+    def get_rendered_form(self):
+        tmpl = loader.get_template(self.form_template_name)
+        ctx = RequestContext(self.request)
+        return tmpl.render(ctx)
+
+    def get(self, request):
+        return Response({'rendered_form': self.get_rendered_form()})
+
+
 class WidgetTypesView(APIView):
     form_template_name = "fancypages/dashboard/widget_select.html"
 
@@ -104,7 +119,6 @@ class WidgetTypesView(APIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
         return Response({
             'rendered_form': self.get_rendered_form(container),
         })

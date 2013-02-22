@@ -27,6 +27,11 @@ urlpatterns = patterns('',
         name='widget-type-list'
     ),
     url(
+        r'^pages/select-form$',
+        views.PageSelectFormView.as_view(),
+        name='pages-select-form'
+    ),
+    url(
         r'^page/(?P<pk>\d+)/move$',
         views.PageMoveView.as_view(),
         name='page-move'
