@@ -64,7 +64,7 @@ def render_widget_form(context, form):
     template_names = [
         "%s/%s_form.html" % (model._meta.app_label, model_name),
         "fancypages/widgets/%s_form.html" % model_name,
-        "fancypages/partials/editor_form_fields.html",
+        form.template_name,
     ]
     tmpl = loader.select_template(template_names)
 

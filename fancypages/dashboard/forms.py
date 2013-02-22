@@ -109,6 +109,8 @@ class WidgetUpdateSelectForm(forms.Form):
 
 
 class WidgetForm(forms.ModelForm):
+    template_name = "fancypages/partials/editor_form_fields.html"
+
     class Meta:
         exclude = ('container',)
         widgets = {
@@ -117,6 +119,7 @@ class WidgetForm(forms.ModelForm):
 
 
 class AssetWidgetForm(WidgetForm):
+    template_name = 'fancypages/widgets/assetwidget_form.html'
     asset_id = forms.IntegerField(widget=forms.HiddenInput())
     asset_type = forms.CharField(widget=forms.HiddenInput())
 
