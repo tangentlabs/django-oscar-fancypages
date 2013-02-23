@@ -9,9 +9,10 @@ Documentation for django-oscar-fancypages
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+    :maxdepth: 2
 
     getting_started
+    recipes
 
 
 Indices and tables

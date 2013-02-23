@@ -1,141 +1,149 @@
 Getting Started
 ===============
 
-The basic idea behind fancypages is to provide an easy way to 
-edit content in the Oscar e-commerce platform based on a
-visual-centric editing approach. A fancypage is based on a 
-Django template that specifies one or more **containers** which
-in turn can contain **widgets**. Whenever a new page is created
-the underlying template is evaluated and if the specified
-containers do not exists, they are created for the page.
+The basic idea behind ``django-oscar-fancypages`` is to provide a user-friendly
+and easy way to add custom content to `django-oscar`_. This sounds like yet
+another content management system (CMS) and why would we need that? The reason
+is that fancypages is **not** a CMS but more of a content enhancement system.
+It provides a user with the flexibility of creating and organising arbitrary
+content within their Oscar system without interfering with the site's design
+guidelines, its responsiveness and basic catalogue structure. 
 
-Opening a page in *edit mode* will display the containers in
-their respective places and provides additional editing controls
-to add, update and remove **widgets**. There are many widgets
-that come pre-defined with fancypages, however, you are not 
-limited to the ones that are already there. Extending widgets
-is simple and you can easily add your own personal flavour 
-of widgets.
-
-In the following chapters I will try and explain the structure
-of each individual model used in assembling a fanypage, define
-terms used to describe them and possible pitfalls in using
-them.
-
-Fancy Pages
+The concept
 -----------
 
-A fancypage is structure based on a Django template that
-defines one or more container locations. Each of these
-locations allow you to add and update widgets into the
-page and move them within and even in between containers. 
+Fancypages provides *four* major elements that allow the composition of
+(almost) any content:
 
-Containers are defined in the page's template using a 
-specific template tag. A container definition in a template
-might look like this::
+1. Containers
+2. Object(-related) containers
+3. Pages
+4. Widgets
 
-    {% load fancypages_tags %}
+The general structure of this elements is that a *page* represents a custom
+webpage with its own URL. The basic layout of a page is defined by a page type
+which provides a way of using different templates for different pages. 
 
-    <html>
-        <body>
-            <div class="content">
-                {% fancypages-container main-content %}
-            </div>
-        </body>
-    </html>
+Any django template - not only of a *page* - can have one or more *containers*
+placed in it and will give a user the ability to add widgets at the specified
+location. The different between a basic container and an object-related 
+container is explained below. 
 
-This is a very simple template but illustrates the way a
-container location is defined.
+The last element is the *widget* which comes in various shapes and forms
+(althought they are all rectangular). They provide the means to add actual 
+content and place it in container. There are also *layout* containers that
+allow a user to split a container into a multi-column layout and place widgets
+in each of these columns. Fancypages comes with a variety of built-in widgets
+but also makes it very easy to create your own project-specific widgets. This
+is explained in `howto create a custom widget`.
 
-Whenever a new page is created, the template assigned
-to the page by the ``PageType`` is evaluated and each
-``fancypages-container`` tag is results in creating a
-container to be created for this page.
+A simplified structure of a page could look like this::
 
-The name ``main-content`` passed to the template tag is
-the variable name that is used for the container and allows
-for looking up and rendering containers.
-
-
-Rendering a container
----------------------
-
-When rendering the a fancypage, the ``fancypages-container``
-template tag is processed by the template engine as it would
-any other template tag. The template tag will lookup try and
-render a container with the given variable name in two 
-ways:
-
-    1. It looks up the template variable in the context with the variable
-        name passed into the template tag
-    2. If no variable with this name can be found in the context it attempts
-       to find a ``object`` variable in the context and searches for the
-       given variable name in all of the object's containers.
-
-In accordance with the behaviour of the Django templating 
-system, the template tag will silently fail if none of the 
-above methods succeed. This means no container and therefore
-none of its widgets will be displayed.
-
-With the right container variable passed into the template it will render
-all the container's widgets using the render function of each which.
-
-
-Rendering widgets
------------------
-
-Each widget provides a ``render`` method that is inherited from the base class
+            +---------------------------------------------+
+            | An author page                              |
+            |                                             |
+            | +-----------------------------------------+ |
+            | |A container                              | |
+            | |+---------------------------------------+| |
+            | ||Text widget: a short description of the|| |
+            | ||  authours career.                     || |
+            | |+---------------------------------------+| |
+            | +-----------------------------------------+ |
+            |                                             |
+            | Here is some content that is                |
+            | defined in the template and                 |
+            | cannot be altered through                   |
+            | fancypages, e.g. a list of                  |
+            | products by this author                     |
+            |                                             |
+            | +-----------------------------------------+ |
+            | |Another container                        | |
+            | |+---------------------------------------+| |
+            | ||Video widget: a youtube video of a TED || |
+            | ||  talk by the author                   || |
+            | |+---------------------------------------+| |
+            | |+---------------------------------------+| |
+            | ||Twitter widget: pull in the latest     || |
+            | ||  tweets by the author                 || |
+            | |+---------------------------------------+| |
+            | +-----------------------------------------+ |
+            +---------------------------------------------+
 
 
+The elements that make up fancypages
+------------------------------------
 
-The fancypages CMS interface consists of several objects that
-can be assembled into editable pages. The most basic object 
-is the ``PageTemplate`` object that defines an actual Django
-template to be used with a fancy page. A template specified 
-in a ``PageTemplate`` requires a path to the template file
-that is relative to your project's template directories.
-Finding the template relies on the Django template engine and
-therefore works in the same way as any other template.
+The following will go into more detail describing the individual elements that
+are used to make up fancypages. 
 
-With a page template defined, let's say you specify the template
-to be ``fancypages/pages/article_page.html``, you can now use
-this template to define various page types. A page type is 
-modelled as ``PageType`` which uses a page template. An example
-is a page type **Article** that is based on our previously 
-defined template. We are now ready to create new pages of type
-**Article**.
+The basic container
+++++++++++++++++++
 
-A fancy ``Page`` is the actual page displayed in Oscar. It 
-contains metadata related to the page itself and a list of 
-containers that manage the various places in the template
-that can contain ``Widget``s. 
+The idea of a container is very simple. It is an element that is placed in a
+template and can *contain* an arbitrary number of widgets. A container is
+identified by a **name** and this names is unique within the Oscar site. A
+container is placed in a template by referencing its name.  
 
+Consequently, placing a container with the same name in multiple templates will
+**always** display the same content. Playing a container in a template is 
+as simple as adding the appropriate template tag::
+
+    {% load fp_container_tags %}
+    ...
+    {% fp_container my-container-name %}
 
 
+The object-related container
+++++++++++++++++++++++++++++
 
-Installation
-------------
+An object-related container is a more specific type of container to the one
+explained before. In addition to a **name**, this container requires a model
+instance (object) that it is related to. As an example, we can attach a
+container to a specific product by placing it in the template for an individual
+product::
+
+    {% load fp_container_tags %}
+    ...
+    {% fp_object_container my-container-name %}
+
+This will create a container for each product, assuming that it is available
+in the template context as ``object``. It can also be specified explicitly::
+
+    {% load fp_container_tags %}
+    ...
+    {% fp_object_container my-container-name product %}
+
+The widgets placed inside an object-related container will only be displayed
+on the page of the object they are related to. This means a user can create
+specific additional content for one product and it will only be displayed on
+that product's detail page.
+
+The (fancy) page
+++++++++++++++++
+
+Pages in fancypages are a broader interpretation of the Oscar's ``Category``. 
+In fact you can think of them as being the same thing entirely. That means you
+can have products associtated with a page as you would with a category.
+
+A page has an absolute URL by which it is identified on the page. The
+way it looks and the type of content displayed depends on the *page type* that
+you select for it. You could create a "Fancypage" which will give you a blank
+slate and leaves the whole design of the page up to you. Or you could make it
+a "Product list page" which will display all the products that are in this
+page/category. On top of that, it will give you several containers on the page
+where you can add your widgets.
+
+The widget
+++++++++++
+
+The widget is the most powerful element of them all and can range from a very
+simple *text widget* to complex, context-sensitive widgets that display the 
+most viewed products in a given category. These widgets are *content* widgets.
+To provide more flexibility, there are also *layout* widgets that allow you to
+split a container into a multi-column layout. 
+
+As previously stated, fancypages comes with a broad selection of built-in
+widgets but makes it easy to create custom widgets for your projects.
 
 
-Set up a project
-----------------
-
-Setting up a new Oscar project that uses fancypages is 
-
-
-Defining page templates
------------------------
-
-Fancypages uses a template tag to define the location of 
-
-
-Basics
-======
-
-This chapter explains the basic structure of fancypages and
-how to use it within your own project setting up page
-templates, create pages and add widgets to them.
-
-
-The structure of pages
-----------------------
+.. _`django-oscar`: http://www.oscarcommerce.com

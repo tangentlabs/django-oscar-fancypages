@@ -13,10 +13,11 @@ It is structured to allow widgets to be added to any page within an Oscar site w
 Basic Screencast for creating a new page
 ========================================
 
-Below is a screencast which was created to show how easy it is to create a basic fancy page. In this demo, the most basic widgets are used to demonstrate how easily a simple page can be created.
+Below is a screencast which was created to show how easy it is to create a basic
+fancy page. In this demo, the most basic widgets are used to demonstrate how
+easily a simple page can be created.
 
 https://www.youtube.com/watch?v=DyVD4TOQwgU
-
 
 Viewing and editing a page
 ==========================
@@ -92,7 +93,7 @@ eCommerce Widgets
 Planned Functionality
 =====================
 
-Fancy pages is still in active development with the following on the to do list. 
+Fancy pages is still in active development with the following on the to do list.
 
 v0.2 Release
 
@@ -180,35 +181,49 @@ page included in the fixture can be found here:
 Setting up your own project
 ===========================
 
-Add  fancypages to your ``INSTALLED_APPS`` in the settings file and make
-sure that ``django-compressor`` is there as well::
+Add  fancypages to your ``INSTALLED_APPS`` in the settings file as well
+as the apps it depends on::
 
     INSTALLED_APPS = [
         ...
         'compressor',
         'fancypages',
+        'fancypages.assets',
+        'rest_framework',
+        'twitter_tag',
         ...
     ]
 
-Specify the directories to search for custom page templates in the 
-``FANCYPAGES_TEMPLATE_DIRS`` settings and add it to your usual list
-of template directories::
+The editing of pages on the frontend uses an editor panel that is
+inspired by `django-debug-toolbar`_ and requires a middleware to
+be installed. Add the following anywhere to your middleware classes::
 
-    FANCYPAGES_TEMPLATE_DIRS = [
-        'templates/myfancypages',
+    MIDDLEWARE_CLASSES = [
+        ...
+        'fancypages.middleware.EditorMiddleware',
     ]
-    TEMPLATE_DIRS = [
-        'templates',
-        os.path.join(OSCAR_MAIN_TEMPLATE_DIR, 'templates'),
-        OSCAR_MAIN_TEMPLATE_DIR,
-    ] + FANCYPAGES_TEMPLATE_DIRS
+
+The middleware adds the editor panel to every page that contains at
+least one container element. The use of the editor panel is restricted
+to users that have ``is_staff`` set to ``True`` and the panel will only
+show for users with the required privileges.
 
 Finally, configure your ``urls.py`` to find the pages and the fancypages
 dashboard. It could look something like this::
 
+    import fancypages.urls
+
     urlpatterns = patterns('',
         ...
-        url(r'^', include(fancypages_app.urls)),
-        url(r'^dashboard/fancypages/', include(dashboard_app.urls)),
-        ...
+        url(r'', include(fancypages.urls)),
     )
+
+The URL patterns for fancypages should always be at the very end of your
+``urlpatterns`` to make sure that all other URLs are still working the
+way you expect them to. A page in fancypages is specified as a slug that
+determines the absolute URL on the page. The pattern is setup in a way
+that it will match any URL and then raise a ``Http404`` if that URL is
+not an actual ``Page``. So make sure all other URL patterns are defined
+before fancypages.
+
+.. _`django-debug-toolbar`: http://code.google.com/p/django-debug-toolbar
