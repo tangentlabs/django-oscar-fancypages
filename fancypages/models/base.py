@@ -417,22 +417,6 @@ class LayoutWidget(Widget):
         app_label = 'fancypages'
 
 
-class ImageMetadataMixin(models.Model):
-    """
-    Mixin for meta data for image widgets
-    """
-    title = models.CharField(_("Image title"), max_length=100, blank=True,
-                             null=True)
-    alt_text = models.CharField(_("Alternative text"), max_length=100,
-                                blank=True, null=True)
-    link = models.CharField(_("Link URL"), max_length=500, blank=True,
-                            null=True)
-
-    class Meta:
-        abstract = True
-        app_label = 'fancypages'
-
-
 # this makes sure that when a new category is created without
 # page that a page is created for the page
 def create_page_for_category(sender, instance, created, **kwargs):

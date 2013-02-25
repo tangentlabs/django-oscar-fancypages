@@ -3,7 +3,8 @@ import os
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from fancypages.models.base import Widget, ImageMetadataMixin
+from fancypages.models.base import Widget
+from fancypages.models.mixins import ImageMetadataMixin
 
 
 class TextWidget(Widget):
