@@ -25,7 +25,7 @@ class NamedLinkMixin(models.Model):
     """
     link = models.CharField(_("Link"), max_length=255, null=True, blank=True)
     link_title = models.CharField(_("Link title"), max_length=255, null=True,
-                                  blank=True)
+                                  blank=True, default="Read more")
 
     class Meta:
         abstract = True
