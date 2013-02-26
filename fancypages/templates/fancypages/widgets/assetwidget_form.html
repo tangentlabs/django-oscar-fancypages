@@ -15,22 +15,7 @@
     {% for hidden in form.hidden_fields %}
         {{ hidden }}
     {% endfor %}
-    {# Include the visible fields #}
-    {% for field in form.visible_fields %}
-        {{ field.errors }}
-        {{ field.label_tag }}
-        <div class="input-append">
-            {{ field }}
-            {% if field.name == 'link' %}
-                <a data-behaviours="load-modal"
-                   data-target="#fullscreen-modal .modal-body"
-                   data-href="/api/v1/pages/select-form"
-                   class="btn">
-                    <i class="icon-link"></i>
-                </a>
-            {% endif %}
-        </div>
-    {% endfor %}
+    {% include "fancypages/partials/editor_form_fields.html" %}
     <a data-behaviours="load-iframe-modal"
        data-target="#fullscreen-modal"
        data-iframe-id="asset-manager"
