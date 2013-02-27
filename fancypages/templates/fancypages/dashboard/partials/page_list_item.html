@@ -27,6 +27,7 @@
             <a class="btn btn-small" href="{{ page.get_absolute_url }}">{% trans "View page" %}</a>
             <a class="btn btn-small btn-success" href="{% url fp-dashboard:child-page-create parent_pk=page.id %}">{% trans "Add child page" %}</a>
             <a class="btn btn-small btn-danger" href="{% url fp-dashboard:page-delete page.id %}">{% trans "Delete" %}</a>
+            <a class="btn btn-small" href="{% url fp-dashboard:page-update page.id %}">{% trans "Edit page settings" %}</a>
             links to <a href="{{ page.get_absolute_url }}"><i class="icon-link"></i> {{ page.get_absolute_url }}</a>
         </div>
     </div>
