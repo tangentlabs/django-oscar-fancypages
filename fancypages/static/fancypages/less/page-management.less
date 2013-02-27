@@ -21,13 +21,13 @@
       line-height: 20px;
       background: url(/static/fancypages/img/node.png) transparent no-repeat;
       color: #369;
-      font-weight: bold;
     }
   }
   > li {
     border:1px solid #dddddd;
     border-top-width:0;
     padding:5px;
+    cursor:move;
     &:first-child {
       border-top-width:1px;
       background:none!important;
@@ -45,4 +45,9 @@
 }
 .tree ol li.last {
   background: #fff url(/static/fancypages/img/lastnode.png) no-repeat;
+}
+.row-actions {
+  background:#efefef;
+  padding:5px;
+  border-top:1px solid darken(#efefef, 10%);
 }

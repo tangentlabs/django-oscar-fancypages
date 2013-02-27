@@ -1,8 +1,9 @@
 {% load category_tags %}
-
-{% category_tree depth=3  as categories %}
-<h4>Pages</h4>
-<strong>Select a page from the list below:</strong>
-<ul>
-    {% include "fancypages/dashboard/partials/page_select_link.html" %}
-</ul>
+<div class="modal-body">
+    {% category_tree depth=3  as categories %}
+    <h4>Pages</h4>
+    <strong>Select a page from the list below:</strong>
+    <ul>
+        {% include "fancypages/dashboard/partials/page_select_link.html" %}
+    </ul>  
+</div>

@@ -129,7 +129,7 @@ fancypages.eventHandlers = {
                     min: minValue,
                     max: (maxValue - 1),
                     slide: function (ev, ui) {
-                        var widgetId = elem.parents('form').data('widget-id');
+                        var widgetId = $(this).parents('form').data('widget-id');
                         var previewField = $('#widget-' + widgetId);
                         var leftColumn = $('.column-left', previewField);
 
