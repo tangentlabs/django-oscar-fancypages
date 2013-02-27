@@ -113,6 +113,4 @@ TWITTER_OAUTH_SECRET = ''
 TWITTER_CONSUMER_KEY = ''
 TWITTER_CONSUMER_SECRET = ''
 
-FANCYPAGES_SETTINGS = dict(
-    [(k, v) for k, v in locals().items() if k.startswith('FP_')]
-)
+FANCYPAGES_SETTINGS = dict([(k, v) for k, v in locals().items()])

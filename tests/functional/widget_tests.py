@@ -1,3 +1,4 @@
+from django.db import models
 from django.db.models import get_model
 from django.core.urlresolvers import reverse
 
@@ -85,3 +86,32 @@ class TestAWidget(test.FancyPagesWebTest):
         container = self.page.get_container_from_name('page-container')
         Widget.objects.create(container=container)
         self.get(reverse('fancypages:page-detail', args=(self.page.category.slug,)))
+
+
+class TestWidgetRendering(test.FancyPagesWebTest):
+
+    def setUp(self):
+        super(TestWidgetRendering, self).setUp()
+        self.prepare_template_file(
+            "{% load fp_container_tags%}"
+            "{% fp_object_container page-container %}"
+        )
+        self.page = Page.add_root(name="A new page", slug='a-new-page')
+        self.page.status = Page.PUBLISHED
+        self.page.save()
+
+    def test_for_all_widget_subclasses(self):
+        for widget_class in Widget.get_widget_classes():
+            container = self.page.containers.get(variable_name='page-container')
+            widget = widget_class.objects.create(container=container)
+            page = self.get(reverse(
+                'fancypages:page-detail',
+                args=(self.page.category.slug,)
+            ))
+
+            # Just very basic testing to make sure that there's no
+            for field in widget_class._meta.fields:
+                if issubclass(field.__class__, (models.CharField, models.TextField)):
+                    self.assertContains(page, getattr(widget, field.name))
+
+            widget.delete()

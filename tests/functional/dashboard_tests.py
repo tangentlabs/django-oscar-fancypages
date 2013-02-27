@@ -17,7 +17,7 @@ class TestAStaffMember(test.FancyPagesWebTest):
 
     def test_can_create_a_new_toplevel_page(self):
         page = self.get(reverse('fp-dashboard:page-list'))
-        page = page.click("Create new top-level page")
+        page = page.click("Create new top-level page", index=0)
 
         self.assertContains(page, "Create new page")
 
