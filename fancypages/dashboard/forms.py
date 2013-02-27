@@ -132,8 +132,8 @@ class AssetWidgetForm(WidgetForm):
             self.fields['asset_type'].initial = instance.image_asset.asset_type
 
     def clean(self):
-        asset_type = self.cleaned_data.get('asset_type', '')
-        asset_id = self.cleaned_data.get('asset_id', None)
+        asset_type = self.cleaned_data.get('asset_type')
+        asset_id = self.cleaned_data.get('asset_id')
         if not asset_type and not asset_id:
             return self.cleaned_data
 
