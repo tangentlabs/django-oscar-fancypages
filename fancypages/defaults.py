@@ -106,6 +106,11 @@ OSCAR_DASHBOARD_NAVIGATION = [
 
 FP_DEFAULT_TEMPLATE = 'fancypages/pages/page.html'
 
-FANCYPAGES_SETTINGS = dict(
-    [(k, v) for k, v in locals().items() if k.startswith('FP_')]
-)
+# required for twitter_tag to not raise improperly configured
+# exception
+TWITTER_OAUTH_TOKEN = ''
+TWITTER_OAUTH_SECRET = ''
+TWITTER_CONSUMER_KEY = ''
+TWITTER_CONSUMER_SECRET = ''
+
+FANCYPAGES_SETTINGS = dict([(k, v) for k, v in locals().items()])

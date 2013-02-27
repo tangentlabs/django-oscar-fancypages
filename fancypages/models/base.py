@@ -329,6 +329,26 @@ class Widget(models.Model):
         return widget_choices
 
     @classmethod
+    def get_widget_classes(cls):
+        """
+        Get a list of concrete widget subclasses. This will check the MRO
+        for all subclasses of ``Widget`` recursively excluding abstract ones.
+        """
+        widgets = []
+        for subclass in cls.itersubclasses():
+            if not subclass._meta.abstract:
+                if not subclass.name:
+                    raise ImproperlyConfigured(
+                        "widget subclasses have to provide 'name' attributes"
+                    )
+                if not subclass.code:
+                    raise ImproperlyConfigured(
+                        "widget subclasses have to provide 'code' attributes"
+                    )
+                widgets.append(subclass)
+        return widgets
+
+    @classmethod
     def itersubclasses(cls, _seen=None):
         """
         I have taken this method from:

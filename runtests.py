@@ -4,6 +4,8 @@ import sys
 import logging
 import tempfile
 
+from argparse import ArgumentParser
+
 from django.conf import settings
 
 from oscar.defaults import OSCAR_SETTINGS
@@ -80,6 +82,7 @@ def configure():
                 'compressor',
                 'fancypages',
                 'fancypages.assets',
+                'twitter_tag',
                 'model_utils',
             ] + OSCAR_CORE_APPS + [
             ],
@@ -105,9 +108,9 @@ def configure():
 logging.disable(logging.CRITICAL)
 
 
-def run_tests(*test_args):
+def run_tests(verbosity=1, *test_args):
     from django_nose import NoseTestSuiteRunner
-    test_runner = NoseTestSuiteRunner(verbosity=1)
+    test_runner = NoseTestSuiteRunner(verbosity=verbosity)
     if not test_args:
         test_args = ['tests']
     num_failures = test_runner.run_tests(test_args)
@@ -116,5 +119,9 @@ def run_tests(*test_args):
 
 
 if __name__ == '__main__':
+    parser = ArgumentParser()
+    parser.add_argument('-v', default=1, dest='verbosity', type=int,
+                        help="Set verbosity of nose test runner [default: 1]")
+    args, remaining_args = parser.parse_known_args()
     configure()
-    run_tests(*sys.argv[1:])
+    run_tests(args.verbosity, *remaining_args)

@@ -203,6 +203,12 @@ of template directories::
         OSCAR_MAIN_TEMPLATE_DIR,
     ] + FANCYPAGES_TEMPLATE_DIRS
 
+I also recommend you import the default settings from fancypages to make
+sure that some standard settings don't cause problems when missing. Simply
+put the following somewhere towards the end of your settings file::
+
+    from fancypages.defaults import *
+
 Finally, configure your ``urls.py`` to find the pages and the fancypages
 dashboard. It could look something like this::
 
