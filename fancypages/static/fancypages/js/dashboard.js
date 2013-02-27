@@ -1,3 +1,4 @@
+var fancypages = fancypages || {};
 fancypages.dashboard = {
     pages: {
         init: function () {

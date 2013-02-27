@@ -33,13 +33,13 @@
                 </div>
             </form>
             {% else %}
-                <p>{% trans "Click on a widget to see editable properties." %}</p>
+                <p>{% trans "Hover over a widget and click" %} <big>&quot;<i class="icon-edit"></i> edit&quot;</big> {% trans "to see editable properties." %}</p>
             {% endif %}
         </div>
         <div id="widget_input_wrapper"></div>
     </div>
 </div>
-<div id='editor-handle'><i class="icon-large icon-edit"></i> edit</div>
+<div id='editor-handle'><i class="icon-large icon-edit"></i>edit</div>
 <div class="loading" data-behaviours="loading"></div>
 
 <div class="modal hide" id="fullscreen-modal" tabindex="-1" role="dialog" aria-labelledby="asset-modal-label" aria-hidden="true">

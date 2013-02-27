@@ -5,10 +5,6 @@
 @editorGutter: 20px;
 @btnBorder: #454545;
 
-label {
-  color:red;
-}
-
 //Editor Handle
 #editor-handle {
   position: fixed;
@@ -39,7 +35,7 @@ label {
     display:block;
   }
 }
-// Editor Panel
+// Edit Hidden Controls
 .editor-hidden #editor-panel,
 .editor-hidden #editor-panel .form-actions.fixed {
   left: -400px;
@@ -50,6 +46,21 @@ label {
 .editor-hidden .editable-page-wrapper {
   margin-left:0;
 }
+.editor-hidden {
+  margin-bottom:0!important;
+  .edit-button.btn,
+  .widget-move-delete,
+  .widget-add-control {
+    display:none;
+  }
+}
+.editor-hidden {
+  .widget.widget-hover,
+  .widget.editing {
+    border-color:transparent;
+  }
+}
+// Editor Panel
 #editor-panel {
   margin: 0px;
   height: 100%;
@@ -77,10 +88,10 @@ label {
     width: 100%;
     padding-left: 0;
     padding-right: 0;
+    margin-top:@baseLineHeight;
     .box-sizing(border-box);
   }
 }
-
 #editor-panel {
   background:#333;
   border-color:#000;
@@ -91,6 +102,15 @@ label {
     width:100%;
     font-size:12px;
     min-height: 35px;
+  }
+  .input-append {
+    input[type=text] {
+      width:85%;
+    }
+    .btn {
+      .box-sizing(border-box);
+      min-height: 35px;
+    }
   }
 }
 .sidebar-content {
@@ -194,7 +214,7 @@ label {
     min-height: 15px;
     padding-left: 5px;
     padding-right: 5px;
-    #gradient > .vertical(lighten(#222, 10%), lighten(#111, 10%));
+    #gradient > .vertical(lighten(#222, 10%), lighten(#111, 10%))!important;
   }
   .icon-text {
     width:auto;
@@ -209,44 +229,12 @@ label {
     padding: 15px;
     background: #555;
     font-size: 30px;
+    border:0;
     .opacity(80);
     &:hover {
       .opacity(100);
     }
   }
-  /*button, a {
-      color:#fff;
-      font-size:12px;
-      padding:0;
-      border:0;
-      width:50%;
-      float:left;
-      text-align:center;
-      display:block;
-      text-align:center;
-      .border-radius(3px);
-      .box-shadow(inset 0 1px 0 rgba(255,255,255,.2), 0 1px 2px rgba(0,0,0,.05));
-      .gradientBar(#333, #222);
-      text-shadow: 2px 2px 3px rgba(0,0,0,0.7);
-      text-align:center;
-      &:hover {
-        .gradientBar(#444, #333);
-        text-decoration:none;
-      }
-      &:active {
-        .gradientBar(#222, #333);
-      }
-      > span {
-        border: 1px solid @btnBorder;
-        border-left-width: 0;
-        display:block;
-        padding:10px 0;
-        line-height:35px;
-        > span {
-          vertical-align:middle;
-        }
-      }
-  }*/
   i {
     font-size: 35px;
     vertical-align:middle;
@@ -293,7 +281,7 @@ input[type="color"]:focus,
 //Edditor Image
 #asset-input {
   .thumbnail {
-    background:#333;
+    background:#fff;
     margin-bottom:@baseLineHeight;
     border-color:lighten(@gray,7%);
   }
@@ -335,4 +323,51 @@ input[type="color"]:focus,
     border: 1px solid black;
     background-color: gray;
     list-style: none;
+}
+//Tree
+.tree {
+  margin:0;
+  > li {
+    list-style:none;
+    border:1px solid #dddddd;
+    border-top-width:0;
+    padding:5px;
+    &:first-child {
+      border-top-width:1px;
+    }
+    &:nth-child(odd) {
+      background:#efefef;
+    }
+  }
+}
+//Table Header
+.table-header {
+  .clearfix();
+  h2,h3 {
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 28px;
+    margin:0;
+    > i {
+      padding-right: 10px;
+    }
+  }
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 0;
+  border: 1px solid #ccc;
+  border-bottom: none;
+  #gradient > .vertical(#F8F8F8, #e5e5e5);
+  color: #242424;
+  padding: 6px 10px;
+  .border-radius(3px 3px 0 0);
+  text-align: left;
+  line-height: 28px;
+  .btn-toolbar {
+    margin-top:0;
+    margin-bottom:0;
+  }
+  > i {
+    padding-right: 10px;
+  }
 }
