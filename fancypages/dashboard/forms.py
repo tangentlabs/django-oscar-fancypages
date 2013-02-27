@@ -120,8 +120,8 @@ class WidgetForm(forms.ModelForm):
 
 class AssetWidgetForm(WidgetForm):
     template_name = 'fancypages/widgets/assetwidget_form.html'
-    asset_id = forms.IntegerField(widget=forms.HiddenInput())
-    asset_type = forms.CharField(widget=forms.HiddenInput())
+    asset_id = forms.IntegerField(widget=forms.HiddenInput(), required=False)
+    asset_type = forms.CharField(widget=forms.HiddenInput(), required=False)
 
     def __init__(self, *args, **kwargs):
         super(AssetWidgetForm, self).__init__(*args, **kwargs)
@@ -133,13 +133,16 @@ class AssetWidgetForm(WidgetForm):
 
     def clean(self):
         asset_type = self.cleaned_data.get('asset_type', '')
+        asset_id = self.cleaned_data.get('asset_id', None)
+        if not asset_type and not asset_id:
+            return self.cleaned_data
+
         model = get_model('assets', asset_type)
         if model is None:
             raise forms.ValidationError(
                 "asset type %s is invalid" % asset_type
             )
 
-        asset_id = self.cleaned_data.get('asset_id', None)
         try:
             self.asset = model.objects.get(id=asset_id)
         except model.DoesNotExist:
@@ -152,9 +155,9 @@ class AssetWidgetForm(WidgetForm):
         instance = super(AssetWidgetForm, self).save(commit=False)
 
         asset_id = self.cleaned_data['asset_id']
-        model = get_model('assets', self.cleaned_data['asset_type'])
-
-        instance.image_asset = model.objects.get(id=asset_id)
+        if asset_id:
+            model = get_model('assets', self.cleaned_data['asset_type'])
+            instance.image_asset = model.objects.get(id=asset_id)
 
         if commit:
             instance.save()

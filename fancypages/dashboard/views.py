@@ -117,6 +117,13 @@ class WidgetUpdateView(generic.UpdateView, FancypagesMixin):
             )
         return modelform_factory(model, form=form_class)
 
+    def form_invalid(self, form):
+        if self.request.is_ajax():
+            # FIXME this should actually return a rendered response
+            # with the invalid form data init.
+            return http.HttpResponseBadRequest()
+        return super(WidgetUpdateView, self).form_invalid(form)
+
     def get_success_url(self):
         return reverse('fp-dashboard:widget-update',
                        args=(self.object.id,))
