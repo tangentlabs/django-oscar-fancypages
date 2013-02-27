@@ -27,9 +27,10 @@ class EditorMiddleware(object):
     head_template_name = 'fancypages/editor/head.html'
 
     def process_response(self, request, response):
-        if not request.user.is_authenticated():
+        user = getattr(request, 'user', None)
+        if not user or not user.is_authenticated():
             return response
-        if not request.user.is_staff:
+        if not user.is_staff:
             return response
 
         if 'widget-add-control' not in response.content:
