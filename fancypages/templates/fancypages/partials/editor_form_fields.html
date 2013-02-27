@@ -18,19 +18,19 @@
             {% if field.widget_type == "Textarea" %}
             <div class="wysihtml5-wrapper">
                 {% include "fancypages/partials/wysihtml5_toolbar.html" %}
+            {% elif field.name == 'link' %}
+            <div class="input-append">
             {% else %}
             <div class="controls">
             {% endif %}
-
-            <div class="input-append">
                 {{ field }}
                 {% if field.name == 'link' %}
-                    <a data-behaviours="load-modal"
-                       data-target="#fullscreen-modal .modal-body"
-                       data-href="/api/v1/pages/select-form"
-                       class="btn">
-                        <i class="icon-link"></i>
-                    </a>
+                <a data-behaviours="load-modal"
+                   data-target="#fullscreen-modal .modal-body"
+                   data-href="/api/v1/pages/select-form"
+                   class="btn">
+                    <i class="icon-link"></i>
+                </a>
                 {% endif %}
             </div>
             {% for error in field.errors %}
