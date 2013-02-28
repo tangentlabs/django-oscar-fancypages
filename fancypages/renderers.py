@@ -1,5 +1,7 @@
 from django.core.exceptions import ImproperlyConfigured
-from django.template import loader, RequestContext, Context
+
+from django import template
+from django.template import loader
 
 from fancypages.models.base import Widget, Container
 
@@ -21,12 +23,12 @@ class ContainerRenderer(object):
         """
         ordered_widgets = self.container.widgets.select_subclasses()
 
-        tmpl = loader.get_template(self.container.template_name)
+        tmpl = loader.select_template(self.container.get_template_names())
 
         if self.request:
-            ctx = RequestContext(self.request)
+            ctx = template.RequestContext(self.request)
         else:
-            ctx = Context()
+            ctx = template.Context()
 
         ctx['container'] = self
         ctx['rendered_widgets'] = []
@@ -60,18 +62,21 @@ class WidgetRenderer(object):
         return {}
 
     def render(self, **kwargs):
-        if not self.widget.template_name:
+        if not self.widget.get_template_names():
             raise ImproperlyConfigured(
                 "a template name is required for a widget to be rendered"
             )
+        try:
+            tmpl = loader.select_template(self.widget.get_template_names())
+        except template.TemplateDoesNotExist:
+            return u''
 
         if self.request:
-            ctx = RequestContext(self.request)
+            ctx = template.RequestContext(self.request)
         else:
-            ctx = Context()
+            ctx = template.Context()
 
         ctx[self.context_object_name] = self.widget
         ctx.update(kwargs)
         ctx.update(self.get_context_data())
-        tmpl = loader.get_template(self.widget.template_name)
         return tmpl.render(ctx)

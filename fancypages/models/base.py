@@ -248,6 +248,9 @@ class Container(models.Model):
                 "containter with name '%s' already exists" % self.variable_name
             )
 
+    def get_template_names(self):
+        return [self.template_name]
+
     @classmethod
     def get_container_by_name(cls, name, obj=None):
         """
@@ -312,6 +315,14 @@ class Widget(models.Model):
     display_order = models.PositiveIntegerField()
 
     objects = InheritanceManager()
+
+    def get_template_names(self):
+        if self.template_name:
+            return [self.template_name]
+        return [
+            "fancypages/widgets/%s.html" % self._meta.module_name,
+            "widgets/%s.html" % self._meta.module_name,
+        ]
 
     @classmethod
     def get_available_widgets(cls):
