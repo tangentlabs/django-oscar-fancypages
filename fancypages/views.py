@@ -9,7 +9,6 @@ Container = get_model('fancypages', 'Container')
 
 
 class PageEditorMixin(object):
-    edit_mode = False
 
     def get_object(self):
         try:
@@ -18,9 +17,6 @@ class PageEditorMixin(object):
             raise Http404
 
     def get_context_data(self, **kwargs):
-        kwargs.update({
-            'edit_mode': self.edit_mode,
-        })
         if self.object:
             for container in Container.get_containers(self.object):
                 kwargs[container.variable_name] = container
@@ -28,11 +24,11 @@ class PageEditorMixin(object):
 
 
 class PageDetailView(PageEditorMixin, ProductCategoryView):
+    context_object_name = 'fancypage'
 
     def get_context_data(self, **kwargs):
         context = super(PageDetailView, self).get_context_data(**kwargs)
         context['object'] = self.object
-        context['page'] = self.object
         return context
 
     def get_template_names(self):
