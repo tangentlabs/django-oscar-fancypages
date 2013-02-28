@@ -104,14 +104,8 @@ class TestWidgetRendering(test.FancyPagesWebTest):
         for widget_class in Widget.get_widget_classes():
             container = self.page.containers.get(variable_name='page-container')
             widget = widget_class.objects.create(container=container)
-            page = self.get(reverse(
+            self.get(reverse(
                 'fancypages:page-detail',
                 args=(self.page.category.slug,)
             ))
-
-            # Just very basic testing to make sure that there's no
-            for field in widget_class._meta.fields:
-                if issubclass(field.__class__, (models.CharField, models.TextField)):
-                    self.assertContains(page, getattr(widget, field.name))
-
             widget.delete()
