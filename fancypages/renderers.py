@@ -1,23 +1,29 @@
-from django.core.exceptions import ImproperlyConfigured
+from copy import copy
 
 from django import template
 from django.template import loader
+from django.core.exceptions import ImproperlyConfigured
 
 from fancypages.models.base import Widget, Container
 
 
 class ContainerRenderer(object):
 
-    def __init__(self, container, context):
+    def __init__(self, container, context, extra_context=None):
         if not container and not issubclass(container, Container):
             raise TypeError(
                 "widget must be a subclass of 'Widget' not '%s'" % type(container)
             )
+        if not extra_context:
+            extra_context = {}
         self.container = container
-        self.page_context = context
-        self.request = self.page_context.get('request')
+        self.context = copy(context)
+        self.context.update(extra_context)
 
-    def render(self, **kwargs):
+    def get_context_data(self, **kwargs):
+        return kwargs
+
+    def render(self):
         """
         Render the container and all its contained widgets.
         """
@@ -25,43 +31,40 @@ class ContainerRenderer(object):
 
         tmpl = loader.select_template(self.container.get_template_names())
 
-        if self.request:
-            ctx = template.RequestContext(self.request)
-        else:
-            ctx = template.Context()
-
-        ctx['container'] = self
-        ctx['rendered_widgets'] = []
-
+        rendered_widgets = []
         for widget in ordered_widgets:
-            renderer = widget.get_renderer_class()(widget, self.page_context)
+            renderer = widget.get_renderer_class()(widget, self.context)
             try:
-                rendered_widget = renderer.render(**kwargs)
+                rendered_widget = renderer.render()
             except ImproperlyConfigured:
                 continue
+            rendered_widgets.append((widget.id, rendered_widget))
 
-            ctx['rendered_widgets'].append((widget.id, rendered_widget))
-
-        ctx.update(kwargs)
-        return tmpl.render(ctx)
+        self.context['container'] = self.container
+        self.context['rendered_widgets'] = rendered_widgets
+        self.context.update(self.get_context_data())
+        return tmpl.render(self.context)
 
 
 class WidgetRenderer(object):
+    #FIXME: needs to be renamed to 'widget' to prevent collision in context
     context_object_name = 'object'
 
-    def __init__(self, widget, context):
+    def __init__(self, widget, context, extra_context=None):
         if not widget and not issubclass(widget, Widget):
             raise TypeError(
                 "widget must be a subclass of 'Widget' not '%s'" % type(widget)
             )
+        if not extra_context:
+            extra_context = {}
         self.widget = widget
-        self.page_context = context
-        self.request = self.page_context.get('request')
+        self.context = copy(context)
+        self.context.update(extra_context)
 
-    def get_context_data(self):
-        return {}
+    def get_context_data(self, **kwargs):
+        return kwargs
 
-    def render(self, **kwargs):
+    def render(self):
         if not self.widget.get_template_names():
             raise ImproperlyConfigured(
                 "a template name is required for a widget to be rendered"
@@ -71,12 +74,6 @@ class WidgetRenderer(object):
         except template.TemplateDoesNotExist:
             return u''
 
-        if self.request:
-            ctx = template.RequestContext(self.request)
-        else:
-            ctx = template.Context()
-
-        ctx[self.context_object_name] = self.widget
-        ctx.update(kwargs)
-        ctx.update(self.get_context_data())
-        return tmpl.render(ctx)
+        self.context[self.context_object_name] = self.widget
+        self.context.update(self.get_context_data())
+        return tmpl.render(self.context)
