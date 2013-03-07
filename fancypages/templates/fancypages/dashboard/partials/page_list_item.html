@@ -6,7 +6,7 @@
     <div class="row-fluid" >
         <h5 class="span10">
             {% if page.numchild %}
-            <a href="#" data-toggle="collapse" data-target="#{{ page.id }}-tree"><i class="icon-caret-down"></i></a>
+            <a href="#" data-toggle="collapse" data-target="#{{ page.id }}-tree" class="collapsed"><i class="icon-caret-down"></i></a>
             {% endif %}
             <a href="#" data-toggle="collapse" data-target="#{{ page.id }}-actions"><i class="icon-file icon-large"></i> {{ page.title }}</a>            
         </h5>
@@ -33,7 +33,7 @@
     </div>
 
     {% if page.numchild %}
-    <ol id="{{ page.id }}-tree" class="collapse in">
+    <ol id="{{ page.id }}-tree" class="collapse">
         {% with filename="fancypages/dashboard/partials/page_list_item.html" %}
         {% include filename with page_list=page.get_children %}
         {% endwith %}

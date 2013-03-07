@@ -11,6 +11,7 @@
   top: 150px;
   left: 0px;
   width: 50px;
+  z-index:10;
   border-top: 1px solid black;
   border-right: 1px solid black;
   border-bottom: 1px solid black;
@@ -113,6 +114,11 @@
     }
   }
 }
+.input-append .btn:last-child {
+  -webkit-border-radius: 0 3px 3px 0;
+  -moz-border-radius: 0 3px 3px 0;
+  border-radius: 0 3px 3px 0;
+}
 .sidebar-content {
   width:@editorWidth - 2;
 }
@@ -205,6 +211,7 @@
       -webkit-box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.125);
       -moz-box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.125);
       box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.125);
+      color:#fff;
     }
   }
   .navbar .nav > li {
@@ -218,6 +225,15 @@
   }
   .icon-text {
     width:auto;
+  }
+}
+.navbar.navbar-inverse.nav-wysiwyg {
+  #gradient > .vertical(lighten(#222, 10%), lighten(#111, 10%))!important;
+  .border-radius(4px);
+  border-color: #252525;
+  height:auto;
+  .navbar-inner {
+    height:auto;
   }
 }
 //Editor Main navigation
@@ -272,7 +288,6 @@ input[type="color"]:focus,
   height:250px;
   overflow-x:hidden;
 }
-
 .wysihtml5-toolbar {
   .btn-group {
     margin-bottom:10px;
@@ -285,8 +300,9 @@ input[type="color"]:focus,
     margin-bottom:@baseLineHeight;
     border-color:lighten(@gray,7%);
   }
-  .btn {
-    margin-top:10px;
+  .image_container {
+    line-height:155px;
+    margin-bottom:0;
   }
 }
 #fullscreen-modal {
