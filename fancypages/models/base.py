@@ -175,6 +175,7 @@ class Page(models.Model):
         parent_category = self.category.get_parent(update)
         if parent_category:
             return parent_category.page
+        return None
 
     @property
     def title(self):
