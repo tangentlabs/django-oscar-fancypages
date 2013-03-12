@@ -15,7 +15,7 @@ class Migration(DataMigration):
         )
 
     def backwards(self, orm):
-        orm.VisibilityType.object.all().delete()
+        orm.VisibilityType.objects.all().delete()
 
     models = {
         'assets.imageasset': {
