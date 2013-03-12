@@ -133,4 +133,4 @@ class PageMoveSerializer(serializers.ModelSerializer):
     class Meta:
         model = Page
         fields = ['parent', 'new_index', 'old_index']
-        read_only_fields = ['status', 'is_active']
+        read_only_fields = ['status',]

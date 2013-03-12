@@ -38,14 +38,16 @@ class PageQuerySet(QuerySet):
     def visible(self):
         now = timezone.now()
         return self.filter(
-            status=Page.PUBLISHED,
-            is_active=True,
+            status=Page.PUBLISHED
         ).filter(
             models.Q(date_visible_start=None) |
             models.Q(date_visible_start__lt=now),
             models.Q(date_visible_end=None) |
             models.Q(date_visible_end__gt=now)
         )
+
+    def visible_in(self, visibility_type):
+        return self.visible().filter(visibility_types=visibility_type)
 
 
 class PageManager(models.Manager):
@@ -73,6 +75,23 @@ class PageType(models.Model):
 
     class Meta:
         app_label = 'fancypages'
+
+
+class VisibilityType(models.Model):
+    name = models.CharField(_("Name"), max_length=128)
+    slug = models.SlugField(_("Slug"), max_length=128)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        return super(VisibilityType, self).save(*args, **kwargs)
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        app_label = 'fancypages'
+
 
 
 class Page(models.Model):
@@ -108,9 +127,10 @@ class Page(models.Model):
     date_visible_start = models.DateTimeField(_("Visible from"), null=True, blank=True)
     date_visible_end = models.DateTimeField(_("Visible until"), null=True, blank=True)
 
-    # overrides the visibility date range when set to false making the
-    # page invisible
-    is_active = models.BooleanField(_("Is active"), default=True)
+    visibility_types = models.ManyToManyField(
+        'fancypages.VisibilityType',
+        verbose_name=_("Visible in")
+    )
 
     objects = PageManager()
 
@@ -151,6 +171,12 @@ class Page(models.Model):
             category__path__range=self.category._get_children_path_interval(path)
         )
 
+    def get_parent(self, update=False):
+        parent_category = self.category.get_parent(update)
+        if parent_category:
+            return parent_category.page
+        return None
+
     @property
     def title(self):
         return self.category.name
@@ -165,9 +191,6 @@ class Page(models.Model):
 
     @property
     def is_visible(self):
-        if not self.is_active:
-            return False
-
         if self.status != Page.PUBLISHED:
             return False
 
@@ -210,6 +233,13 @@ class Page(models.Model):
         for cname in get_container_names_from_template(self.page_type.template_name):
             if cname not in existing_containers:
                 self.containers.create(page_object=self, variable_name=cname)
+
+        parent = self.get_parent()
+        if parent:
+            for visibility_type in self.visibility_types.all():
+                parent.visibility_types.add(visibility_type)
+            parent.save()
+
 
     class Meta:
         app_label = 'fancypages'

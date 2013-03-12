@@ -8,16 +8,24 @@ from fancypages.widgets import SelectWidgetRadioFieldRenderer
 Page = get_model('fancypages', 'Page')
 Category = get_model('catalogue', 'Category')
 PageType = get_model('fancypages', 'PageType')
+VisibilityType = get_model('fancypages', 'VisibilityType')
 
 
 class PageForm(forms.ModelForm):
     name = forms.CharField(max_length=128)
     page_type = forms.ModelChoiceField(PageType.objects.none(), required=True)
+    visibility_types = forms.ModelMultipleChoiceField(
+        VisibilityType.objects.none(),
+        widget=forms.CheckboxSelectMultiple(),
+        required=False
+    )
 
     def __init__(self, *args, **kwargs):
         super(PageForm, self).__init__(*args, **kwargs)
         if 'page_type' in self.fields:
             self.fields['page_type'].queryset = PageType.objects.all()
+        if 'visibility_types' in self.fields:
+            self.fields['visibility_types'].queryset = VisibilityType.objects.all()
 
     def save(self, commit=True):
         page_name = self.cleaned_data['name']
@@ -29,12 +37,17 @@ class PageForm(forms.ModelForm):
         model = Page
         fields = ['name', 'keywords', 'page_type',
                   'status', 'date_visible_start',
-                  'date_visible_end', 'is_active']
+                  'date_visible_end', 'visibility_types']
 
 
 class PageCreateForm(forms.ModelForm):
     name = forms.CharField(max_length=128)
     page_type = forms.ModelChoiceField(PageType.objects.none(), required=True)
+    visibility_types = forms.ModelMultipleChoiceField(
+        VisibilityType.objects.none(),
+        widget=forms.CheckboxSelectMultiple(),
+        required=False
+    )
 
     def __init__(self, *args, **kwargs):
         parent_id = kwargs.pop('parent_pk', None)
@@ -45,6 +58,8 @@ class PageCreateForm(forms.ModelForm):
             self.parent = None
         if 'page_type' in self.fields:
             self.fields['page_type'].queryset = PageType.objects.all()
+        if 'visibility_types' in self.fields:
+            self.fields['visibility_types'].queryset = VisibilityType.objects.all()
 
     def clean_name(self):
         name = self.cleaned_data.get('name')
@@ -77,7 +92,7 @@ class PageCreateForm(forms.ModelForm):
         model = Page
         fields = ['name', 'keywords', 'page_type',
                   'status', 'date_visible_start',
-                  'date_visible_end', 'is_active']
+                  'date_visible_end', 'visibility_types']
 
 
 class WidgetCreateSelectForm(forms.Form):
