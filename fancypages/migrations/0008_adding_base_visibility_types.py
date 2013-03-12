@@ -298,7 +298,7 @@ class Migration(DataMigration):
             'Meta': {'object_name': 'VisibilityType'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
-            'slug': ('django.db.models.fields.SlugField', [], {'max_length': '128'})
+            'slug': ('django.db.models.fields.SlugField', [], {'max_length': '128', 'null': 'True', 'blank': 'True'})
         },
         'fancypages.widget': {
             'Meta': {'ordering': "['display_order']", 'object_name': 'Widget'},
