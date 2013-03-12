@@ -4,6 +4,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from fancypages.models.base import Widget
+from fancypages.assets.fields import AssetKey
 from fancypages.models.mixins import ImageMetadataMixin
 
 
@@ -42,8 +43,8 @@ class ImageWidget(ImageMetadataMixin, Widget):
     code = 'image'
     template_name = "fancypages/widgets/imagewidget.html"
 
-    image_asset = models.ForeignKey('assets.ImageAsset', verbose_name=_("Image asset"),
-                                    related_name="image_widgets", blank=True, null=True)
+    image_asset = AssetKey('assets.ImageAsset', verbose_name=_("Image asset"),
+                           related_name="image_widgets", blank=True, null=True)
 
     def __unicode__(self):
         if self.image_asset:

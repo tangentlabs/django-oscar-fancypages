@@ -133,55 +133,6 @@ class WidgetForm(forms.ModelForm):
         }
 
 
-class AssetWidgetForm(WidgetForm):
-    template_name = 'fancypages/widgets/assetwidget_form.html'
-    asset_id = forms.IntegerField(widget=forms.HiddenInput(), required=False)
-    asset_type = forms.CharField(widget=forms.HiddenInput(), required=False)
-
-    def __init__(self, *args, **kwargs):
-        super(AssetWidgetForm, self).__init__(*args, **kwargs)
-        instance = kwargs['instance']
-        self.asset = instance.image_asset
-        if instance and instance.image_asset:
-            self.fields['asset_id'].initial = instance.image_asset.id
-            self.fields['asset_type'].initial = instance.image_asset.asset_type
-
-    def clean(self):
-        asset_type = self.cleaned_data.get('asset_type')
-        asset_id = self.cleaned_data.get('asset_id')
-        if not asset_type and not asset_id:
-            return self.cleaned_data
-
-        model = get_model('assets', asset_type)
-        if model is None:
-            raise forms.ValidationError(
-                "asset type %s is invalid" % asset_type
-            )
-
-        try:
-            self.asset = model.objects.get(id=asset_id)
-        except model.DoesNotExist:
-            raise forms.ValidationError(
-                "asset with ID %s does not exist" % asset_id
-            )
-        return self.cleaned_data
-
-    def save(self, commit=True):
-        instance = super(AssetWidgetForm, self).save(commit=False)
-
-        asset_id = self.cleaned_data['asset_id']
-        if asset_id:
-            model = get_model('assets', self.cleaned_data['asset_type'])
-            instance.image_asset = model.objects.get(id=asset_id)
-
-        if commit:
-            instance.save()
-        return instance
-
-    class Meta:
-        abstract = True
-
-
 class TextWidgetForm(WidgetForm):
     class Meta:
         exclude = ('container',)
@@ -194,29 +145,6 @@ class TextWidgetForm(WidgetForm):
 class TitleTextWidgetForm(WidgetForm):
     class Meta:
         exclude = ('container',)
-        widgets = {
-            'display_order': forms.HiddenInput(),
-            'text': forms.Textarea(attrs={'cols': 80, 'rows': 10}),
-        }
-
-
-class ImageWidgetForm(AssetWidgetForm):
-    asset_id = forms.IntegerField(widget=forms.HiddenInput())
-    asset_type = forms.CharField(widget=forms.HiddenInput())
-
-    class Meta:
-        exclude = ('container', 'image_asset')
-        widgets = {
-            'display_order': forms.HiddenInput(),
-        }
-
-
-class ImageAndTextWidgetForm(AssetWidgetForm):
-    asset_id = forms.IntegerField(widget=forms.HiddenInput())
-    asset_type = forms.CharField(widget=forms.HiddenInput())
-
-    class Meta:
-        exclude = ('container', 'image_asset')
         widgets = {
             'display_order': forms.HiddenInput(),
             'text': forms.Textarea(attrs={'cols': 80, 'rows': 10}),

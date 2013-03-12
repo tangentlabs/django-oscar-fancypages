@@ -34,6 +34,7 @@ fancypages.eventHandlers = {
             return;
         }
 
+        $(this).parents('.asset-input').addClass('editing');
         var fullscreenModal = $("#fullscreen-modal");
         var iframeHtml = "<iframe id='" + iframeId + "' frameborder='0' width='100%' height='100%'></iframe>";
         $(".modal-body", fullscreenModal).html(iframeHtml);
