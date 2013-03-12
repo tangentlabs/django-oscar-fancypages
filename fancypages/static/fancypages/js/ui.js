@@ -20,7 +20,17 @@ function initFitvids() {
   $('.widget-video').fitVids();
 }
 
+function initFlexSlider() {
+    $('.flexslider').flexslider({
+        animation: "slide",
+        pauseOnHover: true,
+        slideshow: true,
+        slideshowSpeed: 2000
+    });
+}
+
 $(document).ready(function() {
     resetCarousel();
     initFitvids();
+    //initFlexSlider();
 });

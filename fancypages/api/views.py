@@ -89,7 +89,9 @@ class PageSelectFormView(APIView):
 
     def get_rendered_form(self):
         tmpl = loader.get_template(self.form_template_name)
-        ctx = RequestContext(self.request)
+        ctx = RequestContext(self.request, {
+            'field_id': self.request.GET.get('field_id', 'id_link')
+        })
         return tmpl.render(ctx)
 
     def get(self, request):

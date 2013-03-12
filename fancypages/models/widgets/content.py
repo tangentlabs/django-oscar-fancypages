@@ -7,6 +7,8 @@ from fancypages.models.base import Widget
 from fancypages.assets.fields import AssetKey
 from fancypages.models.mixins import ImageMetadataMixin
 
+ImageAsset = models.get_model('assets', 'ImageAsset')
+
 
 class TextWidget(Widget):
     name = _("Text")
@@ -60,7 +62,7 @@ class ImageAndTextWidget(ImageMetadataMixin, Widget):
     code = 'image-text'
     template_name = "fancypages/widgets/imageandtextwidget.html"
 
-    image_asset = models.ForeignKey(
+    image_asset = AssetKey(
         'assets.ImageAsset',
         verbose_name=_("Image asset"),
         related_name="image_text_widgets",
@@ -81,6 +83,59 @@ class ImageAndTextWidget(ImageMetadataMixin, Widget):
 
     class Meta:
         app_label = 'fancypages'
+
+
+class CarouselWidget(Widget):
+    name = _("Image carousel")
+    code = 'carousel'
+    num_images = 10
+    image_field_name = "image_%d"
+    link_field_name = "link_url_%d"
+    template_name = "fancypages/widgets/carouselwidget.html"
+
+    def get_images_and_links(self):
+        results = {}
+        query = models.Q()
+        for idx in range(1, self.num_images+1):
+            image_id = getattr(self, "%s_id" % (self.image_field_name % idx))
+            link_field_name = self.link_field_name % idx
+            if image_id:
+                results[image_id] = {'link': getattr(self, link_field_name, None)}
+                query.add(models.Q(id=image_id), models.Q.OR)
+        if not query:
+            return {} 
+        for image in ImageAsset.objects.filter(query):
+            results[image.id]['image'] = image
+        return results
+
+    def __unicode__(self):
+        return u"Carousel #%s" % self.id
+
+    class Meta:
+        app_label = 'fancypages'
+
+
+# generate the image field for the CarouselWidget dynamically
+# because I am lazy ;)
+for idx in range(1, CarouselWidget.num_images + 1):
+    CarouselWidget.add_to_class(
+        CarouselWidget.image_field_name % idx,
+        AssetKey(
+            'assets.ImageAsset',
+            verbose_name=_("Image %d" % idx),
+            related_name="+",
+            blank=True,
+            null=True,
+        )
+    )
+    CarouselWidget.add_to_class(
+        CarouselWidget.link_field_name % idx,
+        models.CharField(
+            _("Link URL %d" % idx),
+            max_length=500,
+            blank=True, null=True
+        )
+    )
 
 
 class PageNavigationWidget(Widget):

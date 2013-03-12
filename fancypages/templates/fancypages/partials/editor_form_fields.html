@@ -24,10 +24,10 @@
             <div class="controls">
             {% endif %}
                 {{ field }}
-                {% if field.name == 'link' %}
+                {% if field.name == 'link' or 'link_url' in field.name %}
                 <a data-behaviours="load-modal"
                    data-target="#fullscreen-modal .modal-body"
-                   data-href="/api/v1/pages/select-form"
+                   data-href="/api/v1/pages/select-form?field_id={{ field.auto_id }}"
                    class="btn">
                     <i class="icon-link"></i>
                 </a>
