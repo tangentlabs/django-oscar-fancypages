@@ -235,9 +235,10 @@ fancypages.editor = {
 
     setSelectedAsset: function (assetType, assetId, assetUrl) {
         $('#fullscreen-modal').modal('hide');
-        var assetInput = $("#asset-input");
-        $("#id_asset_id", assetInput).attr('value', assetId);
-        $("#id_asset_type", assetInput).attr('value', assetType);
+        var assetInput = $(".asset-input.editing");
+        assetInput.removeClass('editing');
+        $("input[name$='_id']", assetInput).attr('value', assetId);
+        $("input[name$='_type']", assetInput).attr('value', assetType);
         $("img", assetInput).attr('src', assetUrl);
     },
     getAssetDocument: function (elem) {

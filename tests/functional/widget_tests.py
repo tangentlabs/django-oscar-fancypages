@@ -1,13 +1,20 @@
-from django.db import models
+import os
+import Image
+import tempfile
+
+from django.core.files import File
 from django.db.models import get_model
 from django.core.urlresolvers import reverse
 
 from fancypages import test
 
+User = get_model('auth', 'User')
 Page = get_model('fancypages', 'Page')
 Widget = get_model('fancypages', 'Widget')
-Page = get_model('fancypages', 'Page')
+ImageAsset = get_model('assets', 'ImageAsset')
+Container = get_model('fancypages', 'Container')
 TextWidget = get_model('fancypages', 'TextWidget')
+ImageWidget = get_model('fancypages', 'ImageWidget')
 PageTemplate = get_model('fancypages', 'PageTemplate')
 TitleTextWidget = get_model('fancypages', 'TitleTextWidget')
 
@@ -86,6 +93,35 @@ class TestAWidget(test.FancyPagesWebTest):
         container = self.page.get_container_from_name('page-container')
         Widget.objects.create(container=container)
         self.get(reverse('fancypages:page-detail', args=(self.page.category.slug,)))
+
+
+class TestAnAssetWidget(test.FancyPagesWebTest):
+    is_staff = True
+
+    def setUp(self):
+        super(TestAnAssetWidget, self).setUp()
+        __, self.filename = tempfile.mkstemp(prefix="assetformtest", suffix='.jpg')
+        im = Image.new("RGB", (200, 200), color=(255, 0, 0))
+        im.save(self.filename, "JPEG")
+        container = Container.objects.create(variable_name='test-container')
+        self.image_asset = ImageAsset.objects.create(
+            image=File(open(self.filename)),
+            creator=self.user,
+        )
+        self.widget = ImageWidget.objects.create(container=container)
+
+    def tearDown(self):
+        os.remove(self.filename)
+
+    def test_can_be_updated_when_no_asset_assigned(self):
+        response = self.get(reverse('fp-dashboard:widget-update',
+                                    args=(self.widget.id,)))
+        response.form['image_asset_id'] = self.image_asset.pk
+        response.form['image_asset_type'] = 'imageasset'
+        page = response.form.submit().follow()
+
+        widget = ImageWidget.objects.get(id=self.widget.id)
+        self.assertEquals(widget.image_asset.id, self.image_asset.id)
 
 
 class TestWidgetRendering(test.FancyPagesWebTest):

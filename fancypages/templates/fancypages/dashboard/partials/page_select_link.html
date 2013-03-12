@@ -1,6 +1,6 @@
 {% for category,subcategories in categories %}
     <li>
-        <a data-target="#id_link"
+        <a data-target="#{{ field_id }}"
            data-behaviours="update-editor-field"
            data-src="{{ category.get_absolute_url }}"
            data-dismiss="modal"

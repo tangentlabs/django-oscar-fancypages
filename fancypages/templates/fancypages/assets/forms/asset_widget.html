@@ -1,18 +1,18 @@
 {% load i18n %}
 {% load staticfiles %}
 {% load url from future %}
-<div id="asset-input">
+<div class="asset-input">
     <div class="thumbnail">
         <div class="image_container">
-            {% if form.asset %}
-                <img src="{{ form.asset.image.url }}"/>
+            {% if asset %}
+                <img src="{{ asset.image.url }}"/>
             {% else %}
                 <img src="{% static "fancypages/img/missing-img.png" %}" alt="Upload image" />
             {% endif %}
         </div>
     </div>
 
-    {% include "fancypages/partials/editor_form_fields.html" %}
+    {{ rendered_widgets }}
     <a data-behaviours="load-iframe-modal"
        data-target="#fullscreen-modal"
        data-iframe-id="asset-manager"
