@@ -8,10 +8,12 @@ class Migration(DataMigration):
 
     def forwards(self, orm):
         orm.VisibilityType.objects.create(
-            name="Primary Navigation"
+            name="Primary Navigation",
+            slug="primary-navigation"
         )
         orm.VisibilityType.objects.create(
-            name="Footer"
+            name="Footer",
+            slug="footer"
         )
 
     def backwards(self, orm):
