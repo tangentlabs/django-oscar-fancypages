@@ -12,7 +12,7 @@ class Migration(SchemaMigration):
         db.create_table('fancypages_visibilitytype', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=128)),
-            ('slug', self.gf('django.db.models.fields.SlugField')(max_length=128)),
+            ('slug', self.gf('django.db.models.fields.SlugField')(max_length=128, null=True, blank=True)),
         ))
         db.send_create_signal('fancypages', ['VisibilityType'])
 
@@ -322,7 +322,7 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'VisibilityType'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
-            'slug': ('django.db.models.fields.SlugField', [], {'max_length': '128'})
+            'slug': ('django.db.models.fields.SlugField', [], {'max_length': '128', 'null': 'True', 'blank': 'True'})
         },
         'fancypages.widget': {
             'Meta': {'ordering': "['display_order']", 'object_name': 'Widget'},

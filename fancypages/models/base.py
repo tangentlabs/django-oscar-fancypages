@@ -79,7 +79,7 @@ class PageType(models.Model):
 
 class VisibilityType(models.Model):
     name = models.CharField(_("Name"), max_length=128)
-    slug = models.SlugField(_("Slug"), max_length=128)
+    slug = models.SlugField(_("Slug"), max_length=128, null=True, blank=True)
 
     def save(self, *args, **kwargs):
         if not self.slug:
