@@ -5,6 +5,7 @@ from django.db.models import get_model
 from oscar.apps.catalogue.views import ProductCategoryView
 
 Page = get_model('fancypages', 'Page')
+Category = get_model('catalogue', 'Category')
 Container = get_model('fancypages', 'Container')
 
 
@@ -49,16 +50,24 @@ class PageDetailView(PageEditorMixin, ProductCategoryView):
         return response
 
 
-class FancyHomeView(PageDetailView):
+class FancyHomeView(PageEditorMixin, ProductCategoryView):
     model = Page
 
     def get(self, request, *args, **kwargs):
         self.kwargs.setdefault('category_slug', 'home')
-        return super(FancyHomeView, self).get(request, *args, **kwargs)
+        self.object = self.get_object()
+        response = super(FancyHomeView, self).get(request, *args, **kwargs)
+        if request.user.is_staff:
+            return response
+
+        if not self.object.is_visible:
+            raise Http404
+
+        return response
 
     def get_object(self):
         try:
             page = Page.objects.get(category__slug='home')
         except Page.DoesNotExist:
-            page = Page.add_root(name='Home', slug='home')
+            page = Category.add_root(name='Home', slug='home')
         return page
