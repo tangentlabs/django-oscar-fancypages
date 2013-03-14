@@ -23,6 +23,7 @@ class TestAStaffMember(test.FancyPagesWebTest):
 
         create_form = page.form
         create_form['name'] = "A new page"
+        create_form['description'] = "Some description"
         create_form['page_type'] = self.page_type.id
         page = create_form.submit()
 
@@ -38,6 +39,9 @@ class TestAStaffMember(test.FancyPagesWebTest):
         self.assertEquals(article_page.is_visible, False)
         self.assertContains(page, u"not visible")
 
+        category = article_page.category 
+        self.assertEquals(category.description, "Some description")
+
     def test_update_a_toplevel_page(self):
         fancy_page = Page.add_root(name="Test page")
 
@@ -49,10 +53,12 @@ class TestAStaffMember(test.FancyPagesWebTest):
 
         form = page.form
         form['name'] = 'Another name'
+        form['description'] = "Some description"
         page = form.submit()
 
         fancy_page = Page.objects.get(id=fancy_page.id)
         self.assertEquals(fancy_page.category.name, 'Another name')
+        self.assertEquals(fancy_page.category.description, 'Some description')
 
     def test_can_delete_a_page(self):
         Page.add_root(name="A new page")

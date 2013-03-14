@@ -11,8 +11,41 @@ PageType = get_model('fancypages', 'PageType')
 VisibilityType = get_model('fancypages', 'VisibilityType')
 
 
-class PageForm(forms.ModelForm):
+class PageFormMixin(object):
+
+    def update_field_order(self):
+        # we need to specify the key order here because 'description' and
+        # 'image' are non-model fields that cause an error when added
+        # to the metaclass field attribute below
+        self.fields.keyOrder = [
+            'name',
+            'description',
+            'image',
+            'keywords',
+            'page_type',
+            'status',
+            'date_visible_start',
+            'date_visible_end',
+            'visibility_types'
+        ]
+
+    def set_field_choices(self):
+        if 'page_type' in self.fields:
+            self.fields['page_type'].queryset = PageType.objects.all()
+        if 'visibility_types' in self.fields:
+            self.fields['visibility_types'].queryset = VisibilityType.objects.all()
+
+    def save_category_data(self, category):
+        category.name = self.cleaned_data['name']
+        category.description = self.cleaned_data['description']
+        category.image = self.cleaned_data['image']
+        category.save()
+
+
+class PageForm(PageFormMixin, forms.ModelForm):
     name = forms.CharField(max_length=128)
+    description = forms.CharField(widget=forms.Textarea, required=False)
+    image = forms.ImageField(required=False)
     page_type = forms.ModelChoiceField(PageType.objects.none(), required=True)
     visibility_types = forms.ModelMultipleChoiceField(
         VisibilityType.objects.none(),
@@ -22,26 +55,28 @@ class PageForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(PageForm, self).__init__(*args, **kwargs)
-        if 'page_type' in self.fields:
-            self.fields['page_type'].queryset = PageType.objects.all()
-        if 'visibility_types' in self.fields:
-            self.fields['visibility_types'].queryset = VisibilityType.objects.all()
+        instance = kwargs.get('instance')
+        if instance:
+            self.fields['description'].value = instance.category.description
+            self.fields['image'].value = instance.category.image
+
+        self.set_field_choices()
+        self.update_field_order()
 
     def save(self, commit=True):
-        page_name = self.cleaned_data['name']
-        self.instance.category.name = page_name
-        self.instance.category.save()
+        self.save_category_data(self.instance.category)
         return super(PageForm, self).save(commit=True)
 
     class Meta:
         model = Page
-        fields = ['name', 'keywords', 'page_type',
-                  'status', 'date_visible_start',
-                  'date_visible_end', 'visibility_types']
+        fields = ['name', 'keywords', 'page_type', 'status',
+                  'date_visible_start', 'date_visible_end', 'visibility_types']
 
 
-class PageCreateForm(forms.ModelForm):
+class PageCreateForm(PageFormMixin, forms.ModelForm):
     name = forms.CharField(max_length=128)
+    description = forms.CharField(widget=forms.Textarea, required=False)
+    image = forms.ImageField(required=False)
     page_type = forms.ModelChoiceField(PageType.objects.none(), required=True)
     visibility_types = forms.ModelMultipleChoiceField(
         VisibilityType.objects.none(),
@@ -56,10 +91,8 @@ class PageCreateForm(forms.ModelForm):
             self.parent = Category.objects.get(id=parent_id)
         except Category.DoesNotExist:
             self.parent = None
-        if 'page_type' in self.fields:
-            self.fields['page_type'].queryset = PageType.objects.all()
-        if 'visibility_types' in self.fields:
-            self.fields['visibility_types'].queryset = VisibilityType.objects.all()
+        self.set_field_choices()
+        self.update_field_order()
 
     def clean_name(self):
         name = self.cleaned_data.get('name')
@@ -79,6 +112,8 @@ class PageCreateForm(forms.ModelForm):
             category = self.parent.add_child(name=page_name)
         else:
             category = Category.add_root(name=page_name)
+        self.save_category_data(category)
+
         instance = super(PageCreateForm, self).save(commit=False)
         # this is a bit of a hack but we cannot create a new
         # instance here because it has already been created using
@@ -90,9 +125,8 @@ class PageCreateForm(forms.ModelForm):
 
     class Meta:
         model = Page
-        fields = ['name', 'keywords', 'page_type',
-                  'status', 'date_visible_start',
-                  'date_visible_end', 'visibility_types']
+        fields = ['name', 'keywords', 'page_type', 'status',
+                  'date_visible_start', 'date_visible_end', 'visibility_types']
 
 
 class WidgetCreateSelectForm(forms.Form):
