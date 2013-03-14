@@ -122,19 +122,8 @@ class WidgetTypesView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
         return Response({
-            'rendered_form': self.get_rendered_form(container),
+            'groupedWidgets': Widget.get_available_widgets()
         })
-
-    def get_rendered_form(self, container):
-        tmpl = loader.get_template(self.form_template_name)
-        ctx = RequestContext(
-            self.request,
-            {
-                'container': container,
-                'add_widget_form': forms.WidgetCreateSelectForm(),
-            }
-        )
-        return tmpl.render(ctx)
 
 
 class PageMoveView(generics.UpdateAPIView):

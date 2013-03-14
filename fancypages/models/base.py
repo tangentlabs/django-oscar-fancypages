@@ -356,16 +356,17 @@ class Widget(models.Model):
 
     @classmethod
     def get_available_widgets(cls):
-        widget_choices = []
+        widget_choices = {'default': []}
         for subclass in cls.itersubclasses():
             if not subclass._meta.abstract:
                 if not subclass.name:
                     raise ImproperlyConfigured(
                         "widget subclasses have to provide 'name' attributes"
                     )
-                widget_choices.append((
+                group = getattr(subclass, 'group', 'default')
+                widget_choices.setdefault(group, []).append((
                     subclass.code,
-                    subclass.name
+                    unicode(subclass.name)
                 ))
         return widget_choices
 
