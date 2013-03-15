@@ -48,7 +48,6 @@ fancypages.dashboard = {
                 }
             });
             $('.tree li:last-child').addClass('last');
-
         }
     }
 };

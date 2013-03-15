@@ -70,6 +70,13 @@ fancypages.eventHandlers = {
                 var target = $($(elem).data('target'));
                 target.parents('.modal').modal('show');
                 target.html(data.rendered_form);
+                
+                // prevent collapse events within the modal from closing the modal
+                target.find('#pages-sortable [id*="tree"]').on({
+                    hide: function (event) {
+                        event.stopPropagation();
+                    }
+                });
             },
             error: function () {
                 oscar.messages.error("Unable to load list of available widgets.");
