@@ -335,6 +335,7 @@ class Container(models.Model):
 class Widget(models.Model):
     name = None
     code = None
+    group = None
     template_name = None
     renderer_class = None
     form_class = None
@@ -356,15 +357,15 @@ class Widget(models.Model):
 
     @classmethod
     def get_available_widgets(cls):
-        widget_choices = {'default': []}
+        widget_choices = {}
         for subclass in cls.itersubclasses():
             if not subclass._meta.abstract:
                 if not subclass.name:
                     raise ImproperlyConfigured(
                         "widget subclasses have to provide 'name' attributes"
                     )
-                group = getattr(subclass, 'group', 'default')
-                widget_choices.setdefault(group, []).append((
+                group = getattr(subclass, 'group', _('Default'))
+                widget_choices.setdefault(unicode(group), []).append((
                     subclass.code,
                     unicode(subclass.name)
                 ))

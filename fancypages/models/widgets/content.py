@@ -13,6 +13,7 @@ ImageAsset = models.get_model('assets', 'ImageAsset')
 class TextWidget(Widget):
     name = _("Text")
     code = 'text'
+    group = _("Content")
     template_name = "fancypages/widgets/textwidget.html"
 
     text = models.TextField(_("Text"), default="Your text goes here.")
@@ -27,6 +28,7 @@ class TextWidget(Widget):
 class TitleTextWidget(Widget):
     name = _("Title and text")
     code = 'title-text'
+    group = _("Content")
     template_name = "fancypages/widgets/titletextwidget.html"
 
     title = models.CharField(_("Title"), max_length=100,
@@ -43,6 +45,7 @@ class TitleTextWidget(Widget):
 class ImageWidget(ImageMetadataMixin, Widget):
     name = _("Image")
     code = 'image'
+    group = _("Content")
     template_name = "fancypages/widgets/imagewidget.html"
 
     image_asset = AssetKey('assets.ImageAsset', verbose_name=_("Image asset"),
@@ -60,6 +63,7 @@ class ImageWidget(ImageMetadataMixin, Widget):
 class ImageAndTextWidget(ImageMetadataMixin, Widget):
     name = _("Image and text")
     code = 'image-text'
+    group = _("Content")
     template_name = "fancypages/widgets/imageandtextwidget.html"
 
     image_asset = AssetKey(
@@ -88,6 +92,7 @@ class ImageAndTextWidget(ImageMetadataMixin, Widget):
 class CarouselWidget(Widget):
     name = _("Image carousel")
     code = 'carousel'
+    group = _("Content")
     num_images = 10
     image_field_name = "image_%d"
     link_field_name = "link_url_%d"
@@ -141,6 +146,7 @@ for idx in range(1, CarouselWidget.num_images + 1):
 class PageNavigationWidget(Widget):
     name = _("Page Navigation")
     code = 'page-navigation'
+    group = _("Content")
     template_name = "fancypages/widgets/pagenavigationwidget.html"
 
     def __unicode__(self):
@@ -153,6 +159,7 @@ class PageNavigationWidget(Widget):
 class PrimaryNavigationWidget(Widget):
     name = _("Primary Navigation")
     code = 'primary-navigation'
+    group = _("Content")
     template_name = "fancypages/widgets/primarynavigationwidget.html"
 
     def __unicode__(self):

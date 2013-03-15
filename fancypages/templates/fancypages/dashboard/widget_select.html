@@ -1,12 +1,54 @@
-<div class="modal-header">
-    <button class="close" data-dismiss="modal">×</button>
-    <h3>Add content</h3>
+{% load i18n %}
+{% load url from future %}
+<div class="widget-add-control">
+    <a data-toggle="modal"
+       {#data-behaviours="load-modal"#}
+       class="btn btn-large"
+       data-target="#{{ container.variable_name }}_modal"
+       data-href="{% url "fp-api:widget-type-list" %}"
+       data-container-id="{{ container.id }}">
+        <i class="icon-plus"></i> {% trans "Add content" %}
+    </a>
 </div>
 
-<form id="{{ container.variable_name }}_add_widget_form"
-      data-behaviours='submit-widget-form' data-container-id="{{ container.id }}"
-      method="post" action="{% url fp-api:widget-list %}" class="add-content">
-    <div class="modal-body">
-        {% include "fancypages/partials/editor_form_fields.html" with form=add_widget_form %}
+<div id="{{ container.variable_name }}_modal" class="modal fade hide"
+     role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal">×</button>
+        <h3>Add content</h3>
     </div>
-</form>
+
+    <form id="{{ container.variable_name }}_add_widget_form"
+          data-behaviours='submit-widget-form' data-container-id="{{ container.id }}"
+          method="post" action="{% url "fp-api:widget-list" %}" class="add-content">
+        {% csrf_token %}
+        <input name="container" value="{{ container.id }}" type="hidden"/>
+        <div class="modal-body">
+
+            <div class='tabbable'>
+                <ul class="nav nav-tabs">
+                {% for group in grouped_widgets %}
+                    <li {% if forloop.first %}class="active"{% endif %}>
+                        <a href="#{{ group|slugify }}" data-toggle="tab">{{ group }}</a>
+                    </li>
+                {% endfor %}
+                </ul>
+                <div class="tab-content">
+                    {% for group,widget_list in grouped_widgets.items %}
+                    <div class="tab-pane {% if forloop.first %}active{% endif %}" id="{{ group|slugify }}">
+                        <ul>
+                            {% for widget in widget_list %}
+                            <li>
+                                <button type="submit" class="btn btn-primary" name="code" value="{{ widget.0 }}">
+                                    {{ widget.1 }}
+                                </button>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

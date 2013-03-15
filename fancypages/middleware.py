@@ -26,6 +26,12 @@ class EditorMiddleware(object):
     body_template_name = 'fancypages/editor/body.html'
     head_template_name = 'fancypages/editor/head.html'
 
+    def process_request(self, request):
+        edit_mode = False
+        if request.user.is_authenticated() and request.user.is_staff:
+            edit_mode = True
+        request.fancypage_edit_mode = edit_mode
+
     def process_response(self, request, response):
         user = getattr(request, 'user', None)
         if not user or not user.is_authenticated():

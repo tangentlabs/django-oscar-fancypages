@@ -9,6 +9,7 @@ from fancypages.models.containers import OrderedContainer
 class TabWidget(Widget):
     name = _("Tabbed block")
     code = 'tabbed-block'
+    group = _("Layout")
     context_object_name = "widget"
     template_name = "fancypages/widgets/tabbedblockwidget.html"
 
@@ -27,6 +28,7 @@ class TabWidget(Widget):
 class TwoColumnLayoutWidget(LayoutWidget):
     name = _("Two column layout")
     code = 'two-column-layout'
+    group = _("Layout")
     template_name = "fancypages/widgets/two_column_layout.html"
 
     LEFT_WIDTH_CHOICES = [(x, x) for x in range(1, 12)]
@@ -50,6 +52,7 @@ class TwoColumnLayoutWidget(LayoutWidget):
 class ThreeColumnLayoutWidget(LayoutWidget):
     name = _("Three column layout")
     code = 'three-column-layout'
+    group = _("Layout")
     template_name = "fancypages/widgets/three_column_layout.html"
 
     class Meta:
@@ -59,6 +62,7 @@ class ThreeColumnLayoutWidget(LayoutWidget):
 class FourColumnLayoutWidget(LayoutWidget):
     name = _("Four column layout")
     code = 'four-column-layout'
+    group = _("Layout")
     template_name = "fancypages/widgets/four_column_layout.html"
 
     class Meta:

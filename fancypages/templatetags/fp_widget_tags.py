@@ -18,13 +18,6 @@ def update_widgets_form(page, container_name):
     return forms.WidgetUpdateSelectForm(container)
 
 
-@register.assignment_tag
-def get_add_widget_form(container):
-    if not container:
-        return None
-    return forms.WidgetCreateSelectForm(container)
-
-
 @register.simple_tag(takes_context=True)
 def render_attribute(context, attr_name, *args):
     """
@@ -84,3 +77,15 @@ def depth_as_range(depth):
 @register.assignment_tag
 def get_content_type(obj):
     return ContentType.objects.get_for_model(obj.__class__)
+
+
+@register.inclusion_tag('fancypages/dashboard/widget_select.html', takes_context=True)
+def render_widget_selection(context):
+    request = context.get('request')
+    if not request or not request.fancypage_edit_mode:
+        return u''
+    grouped_widgets = get_model('fancypages', 'Widget').get_available_widgets()
+    return {
+        'container': context['container'],
+        'grouped_widgets': grouped_widgets,
+    }

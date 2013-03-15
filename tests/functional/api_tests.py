@@ -37,7 +37,6 @@ class TestTheWidgetTypeApi(test.FancyPagesWebTest):
             }
         )
         response = json.loads(page.content)
-        print page.content
         self.assertIn('groupedWidgets', response)
         #self.assertIn('test_add_widget_form', response['rendered_form'])
         #self.assertIn('two-column-layout', response['rendered_form'])

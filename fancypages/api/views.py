@@ -9,7 +9,6 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser
 from rest_framework.authentication import SessionAuthentication
 
-from fancypages.dashboard import forms
 from fancypages.api import serialisers
 
 Page = get_model('fancypages', 'Page')

@@ -144,9 +144,8 @@ fancypages.editor = {
             $(this).parents('div[id$=_modal]').remove();
         });
         // Attach handler to dynamically loaded widget form for 'submit' event.
-        $(document).on('submit', 'form[data-behaviours~=submit-widget-form]', function (ev) {
+        $(document).on('click', 'form[data-behaviours~=submit-widget-form] button[type=submit]', function (ev) {
             ev.preventDefault();
-            fancypages.removeModal(this);
             fancypages.editor.submitWidgetForm($(this));
         });
         // Listen on modal cancel buttons and hide and remove the modal
@@ -308,20 +307,23 @@ fancypages.editor = {
      * the action attribute and is removed from the editor panel right after
      * submission was successful.
      */
-    submitWidgetForm: function (form) {
-        var submitButton = $('button[type=submit]', form);
+    submitWidgetForm: function (submitButton) {
+        form = $(submitButton).parents('form');
+        formData = form.serialize();
+        formData += '&code=' + $(submitButton).val();
+
         submitButton.attr('disabled', true);
-        submitButton.data('original-text', submitButton.text());
-        submitButton.text('Processing...');
 
         if (form.data('locked')) {
             return false;
         }
         form.data('locked', true);
+
+        //formData.container = $(form).data('container-id');
         $.ajax({
             url: form.attr('action'),
             type: "POST",
-            data: form.serialize(),
+            data: formData,
             success: function (data) {
                 $('div[id=widget_input_wrapper]').html("");
                 fancypages.editor.reloadPage();
@@ -335,7 +337,6 @@ fancypages.editor = {
             }
         }).complete(function () {
             submitButton.attr('disabled', false);
-            submitButton.text(submitButton.data('original-text'));
             form.data('locked', false);
             fancypages.editor.updateSize();
         });
