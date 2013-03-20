@@ -1,5 +1,6 @@
 {% load i18n %}
 {% load fp_widget_tags %}
+{% load fp_container_tags %}
 
 <div class="sortable connectedSortable" data-container-id="{{ container.id }}">
 {% for widget_id,rendered_widget in rendered_widgets %}
@@ -18,18 +19,6 @@
 
 </div>
 
-{% if request.user.is_authenticated and request.user.is_staff %}
-    <div class="widget-add-control">
-        <a data-toggle="modal"
-           data-behaviours="load-modal"
-           class="btn btn-large"
-           data-target="#{{ container.variable_name }}_modal"
-           data-href="{% url fp-api:widget-type-list %}"
-           data-container-id="{{ container.id }}">
-            <i class="icon-plus"></i> {% trans "Add content" %}
-        </a>
-    </div>
-    <div id="{{ container.variable_name }}_modal" class="modal fade hide"
-         role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    </div>
+{% if request.fancypage_edit_mode %}
+{% render_widget_selection %}
 {% endif %}

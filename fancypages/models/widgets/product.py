@@ -9,6 +9,7 @@ Product = models.get_model('catalogue', 'Product')
 class SingleProductWidget(Widget):
     name = _("Single Product")
     code = 'single-product'
+    group = _("Catalogue")
     template_name = "fancypages/widgets/productwidget.html"
 
     product = models.ForeignKey(
@@ -27,6 +28,7 @@ class SingleProductWidget(Widget):
 class HandPickedProductsPromotionWidget(Widget):
     name = _("Hand Picked Products Promotion")
     code = 'promotion-hand-picked-products'
+    group = _("Catalogue")
     template_name = "fancypages/widgets/promotionwidget.html"
 
     promotion = models.ForeignKey(
@@ -45,6 +47,7 @@ class HandPickedProductsPromotionWidget(Widget):
 class AutomaticProductsPromotionWidget(Widget):
     name = _("Automatic Products Promotion")
     code = 'promotion-ordered-products'
+    group = _("Catalogue")
     template_name = "fancypages/widgets/promotionwidget.html"
 
     promotion = models.ForeignKey(
@@ -63,6 +66,7 @@ class AutomaticProductsPromotionWidget(Widget):
 class OfferWidget(Widget):
     name = _("Offer Products")
     code = 'products-range'
+    group = _("Catalogue")
     template_name = "fancypages/widgets/offerwidget.html"
 
     offer = models.ForeignKey(

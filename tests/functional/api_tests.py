@@ -37,9 +37,9 @@ class TestTheWidgetTypeApi(test.FancyPagesWebTest):
             }
         )
         response = json.loads(page.content)
-        self.assertIn('rendered_form', response)
-        self.assertIn('test_add_widget_form', response['rendered_form'])
-        self.assertIn('two-column-layout', response['rendered_form'])
+        self.assertIn('groupedWidgets', response)
+        #self.assertIn('test_add_widget_form', response['rendered_form'])
+        #self.assertIn('two-column-layout', response['rendered_form'])
 
     def test_returns_error_when_no_container_specified(self):
         try:

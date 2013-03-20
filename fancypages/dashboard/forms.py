@@ -3,8 +3,6 @@ from django.db.models import get_model
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
-from fancypages.widgets import SelectWidgetRadioFieldRenderer
-
 Page = get_model('fancypages', 'Page')
 Category = get_model('catalogue', 'Category')
 PageType = get_model('fancypages', 'PageType')
@@ -127,21 +125,6 @@ class PageCreateForm(PageFormMixin, forms.ModelForm):
         model = Page
         fields = ['name', 'keywords', 'page_type', 'status',
                   'date_visible_start', 'date_visible_end', 'visibility_types']
-
-
-class WidgetCreateSelectForm(forms.Form):
-    widget_code = forms.ChoiceField(
-        label=_("Add a new widget:"),
-        widget=forms.RadioSelect(renderer=SelectWidgetRadioFieldRenderer)
-    )
-
-    def __init__(self, *args, **kwargs):
-        super(WidgetCreateSelectForm, self).__init__(*args, **kwargs)
-        choices = get_model('fancypages', 'Widget').get_available_widgets()
-        self.fields['widget_code'].choices = choices
-
-        if len(choices):
-            self.fields['widget_code'].initial = choices[0][0]
 
 
 class WidgetUpdateSelectForm(forms.Form):

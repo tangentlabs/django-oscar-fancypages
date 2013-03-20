@@ -7,6 +7,7 @@ from fancypages.models.base import Widget
 class VideoWidget(Widget):
     name = _("Video")
     code = 'video'
+    group = _("Media")
     template_name = "fancypages/widgets/video.html"
 
     SOURCE_YOUTUBE = 'youtube'
@@ -29,6 +30,7 @@ class VideoWidget(Widget):
 class TwitterWidget(Widget):
     name = _("Twitter")
     code = 'twitter'
+    group = _("Media")
     template_name = "fancypages/widgets/twitter.html"
 
     username = models.CharField(_('Twitter username'), max_length=50)
