@@ -4,9 +4,9 @@
 <div class="modal-body">
     {% category_tree depth=3  as categories %}
     <div class="table-header">
-        <h3>{% trans "Select a page from the list below" %}</h3>
+        {% trans "Select a page from the list below" %}
     </div>
-    <ul class="tree">
+    <ol id="pages-sortable" class="tree">
         {% include "fancypages/dashboard/partials/page_select_link.html" %}
-    </ul>  
+    </ol>  
 </div>
