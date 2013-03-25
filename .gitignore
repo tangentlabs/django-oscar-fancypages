@@ -7,6 +7,7 @@
 .coverage
 .vagrant
 .ropeproject
+.DS_Store
 
 .tox/
 
