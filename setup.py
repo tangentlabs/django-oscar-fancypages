@@ -20,7 +20,7 @@ setup(
         'django-oscar>=0.5-pre-alpha',
         'django-model-utils>=1.1.0',
         'django-twitter-tag>=0.4.0',
-        'djangorestframework>=2.1.12',
+        'djangorestframework>=2.1.12,<2.2',
     ],
     dependency_links=[
         'https://github.com/tangentlabs/django-oscar/tarball/master#egg=django-oscar-0.5-pre-alpha',
