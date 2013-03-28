@@ -163,6 +163,11 @@ fancypages.eventHandlers = {
         $('#page-settings').hide();
 
         fancypages.editor.wysiwyg.init();
+        
+        //Init the Select2 plugin for selects in the editor
+        $('#editor-panel select').css('width', '100%');
+        $('#editor-panel select').select2();
+        
         $('.editor').animate({backgroundColor: "#555"}, 500)
                     .delay(500)
                     .animate({backgroundColor: "#444"}, 500);
