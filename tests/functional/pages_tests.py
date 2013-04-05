@@ -2,7 +2,6 @@ from webtest import AppError
 
 from django.db.models import get_model
 from django.core.urlresolvers import reverse
-from oscar_testsupport.factories import create_product
 
 from fancypages.test import FancyPagesWebTest
 
@@ -101,7 +100,8 @@ class TestAStaffUser(FancyPagesWebTest):
         self.page.status = Page.PUBLISHED
         self.page.save()
 
-        page = self.get(reverse('fancypages:page-detail', args=(self.page.category.slug,)))
+        page = self.get(reverse('fancypages:page-detail',
+                                args=(self.page.category.slug,)))
         self.assertContains(page, self.main_widget.title)
 
         self.assertNotContains(

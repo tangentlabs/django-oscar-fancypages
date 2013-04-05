@@ -10,6 +10,7 @@ from fancypages.dashboard import forms
 
 Page = get_model('fancypages', 'Page')
 Widget = get_model('fancypages', 'Widget')
+Category = get_model('catalogue', 'Category')
 Container = get_model('fancypages', 'Container')
 TabWidget = get_model('fancypages', 'TabWidget')
 OrderedContainer = get_model('fancypages', 'OrderedContainer')
@@ -51,7 +52,15 @@ class PageUpdateView(generic.UpdateView):
 
     def get_initial(self):
         initial = super(PageUpdateView, self).get_initial()
-        initial['name'] = self.object.category.name
+        try:
+            category = self.object.category
+        except Category.DoesNotExist:
+            return initial
+        # add exposed category attributes to initial values
+        # to make sure that they are displayed in the edit form
+        initial['name'] = category.name
+        initial['description'] = category.description
+        initial['image'] = category.image
         return initial
 
     def get_context_data(self, **kwargs):
