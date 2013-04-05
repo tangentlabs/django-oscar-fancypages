@@ -9,12 +9,5 @@
         {% else %}
             <p class="no-asset edit-button"><i class="icon-picture"></i> <span class="visible-editor">{% trans "Click to add an image" %}</span></p>
         {% endif %}
-
-        {% if object.code == 'image-text' %}
-        <div class="caption">
-            <p>{{ object.title|default:image_asset_name }}</p>
-            <p>{{ asset.description }}</p>
-        </div>
-        {% endif %}
     {% endwith %}
 </div>
