@@ -1,5 +1,7 @@
+from django.utils import timezone
 from django.db.models import get_model
 from django.core.urlresolvers import reverse
+from django.template.defaultfilters import date
 
 from fancypages import test
 
@@ -43,7 +45,18 @@ class TestAStaffMember(test.FancyPagesWebTest):
         self.assertEquals(category.description, "Some description")
 
     def test_update_a_toplevel_page(self):
-        fancy_page = Page.add_root(name="Test page")
+        page_name = "Test page"
+        page_description = "The old description"
+
+        now = timezone.now()
+
+        fancy_page = Page.add_root(name=page_name)
+        fancy_page.date_visible_start = now
+        fancy_page.save()
+
+        category = fancy_page.category
+        category.description = page_description
+        category.save()
 
         page = self.get(
             reverse('fp-dashboard:page-update', args=(fancy_page.id,))
@@ -52,6 +65,13 @@ class TestAStaffMember(test.FancyPagesWebTest):
         self.assertContains(page, fancy_page.category.name)
 
         form = page.form
+        self.assertEquals(form['name'].value, page_name)
+        self.assertEquals(form['description'].value, page_description)
+        self.assertEquals(
+            form['date_visible_start'].value,
+            date(now, 'Y-m-d H:i:s')
+        )
+
         form['name'] = 'Another name'
         form['description'] = "Some description"
         page = form.submit()

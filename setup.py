@@ -17,14 +17,14 @@ setup(
     install_requires=[
         'versiontools>=1.9.1',
         'dingus>=0.3.4',
-        'django-oscar>=0.5,<0.6',
+        'django-oscar==0.5-beta-1',
         'django-model-utils>=1.1.0',
         'django-twitter-tag>=0.4.0',
         'djangorestframework>=2.1.12,<2.2',
     ],
-    #dependency_links=[
-    #    'https://github.com/tangentlabs/django-oscar/tarball/master#egg=django-oscar-0.5-pre-alpha',
-    #],
+    dependency_links=[
+        'https://github.com/tangentlabs/django-oscar/tarball/releases/0.5#egg=django-oscar-0.5-beta-1',
+    ],
     # See http://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
       'Environment :: Web Environment',

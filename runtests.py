@@ -98,6 +98,7 @@ def configure():
                     'PATH': tempfile.mkdtemp()+'/whoosh_index/',
                 },
             },
+            USE_LESS=True,
             NOSE_ARGS=[
                 '-s',
                 '--with-spec',

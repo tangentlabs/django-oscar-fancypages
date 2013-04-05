@@ -54,7 +54,7 @@ class PageForm(PageFormMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(PageForm, self).__init__(*args, **kwargs)
         instance = kwargs.get('instance')
-        if instance:
+        if instance is not None:
             self.fields['description'].value = instance.category.description
             self.fields['image'].value = instance.category.image
 
