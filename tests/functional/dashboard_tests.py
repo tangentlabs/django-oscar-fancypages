@@ -69,12 +69,14 @@ class TestAStaffMember(test.FancyPagesWebTest):
         self.assertEquals(form['description'].value, page_description)
         self.assertEquals(
             form['date_visible_start'].value,
-            date(now, 'Y-m-d H:i:s')
+            date(now, 'd-m-Y')
         )
 
         form['name'] = 'Another name'
         form['description'] = "Some description"
+        form['date_visible_start'] = '30-12-2012'
         page = form.submit()
+        print page
 
         fancy_page = Page.objects.get(id=fancy_page.id)
         self.assertEquals(fancy_page.category.name, 'Another name')

@@ -9,6 +9,9 @@ PageType = get_model('fancypages', 'PageType')
 VisibilityType = get_model('fancypages', 'VisibilityType')
 
 
+DATE_FORMAT = '%d-%m-%Y'
+
+
 class PageFormMixin(object):
 
     def update_field_order(self):
@@ -45,6 +48,16 @@ class PageForm(PageFormMixin, forms.ModelForm):
     description = forms.CharField(widget=forms.Textarea, required=False)
     image = forms.ImageField(required=False)
     page_type = forms.ModelChoiceField(PageType.objects.none(), required=True)
+    date_visible_start = forms.DateTimeField(
+        widget=forms.DateInput(format=DATE_FORMAT),
+        input_formats=[DATE_FORMAT],
+        required=False
+    )
+    date_visible_end = forms.DateTimeField(
+        widget=forms.DateInput(format=DATE_FORMAT),
+        input_formats=[DATE_FORMAT],
+        required=False
+    )
     visibility_types = forms.ModelMultipleChoiceField(
         VisibilityType.objects.none(),
         widget=forms.CheckboxSelectMultiple(),
@@ -76,6 +89,16 @@ class PageCreateForm(PageFormMixin, forms.ModelForm):
     description = forms.CharField(widget=forms.Textarea, required=False)
     image = forms.ImageField(required=False)
     page_type = forms.ModelChoiceField(PageType.objects.none(), required=True)
+    date_visible_start = forms.DateTimeField(
+        widget=forms.DateInput(format=DATE_FORMAT),
+        input_formats=[DATE_FORMAT],
+        required=False
+    )
+    date_visible_end = forms.DateTimeField(
+        widget=forms.DateInput(format=DATE_FORMAT),
+        input_formats=[DATE_FORMAT],
+        required=False
+    )
     visibility_types = forms.ModelMultipleChoiceField(
         VisibilityType.objects.none(),
         widget=forms.CheckboxSelectMultiple(),
