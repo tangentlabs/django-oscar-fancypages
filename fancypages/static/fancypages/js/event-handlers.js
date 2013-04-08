@@ -40,19 +40,12 @@ fancypages.eventHandlers = {
         $(".modal-body", fullscreenModal).html(iframeHtml);
         fullscreenModal.modal('show');
 
-        var assetManager = $('#' + iframeId);
+        var assetManager = $('#' + iframeId),
+            modalHeight = fullscreenModal.height() - 100;
         assetManager.attr('src', $(this).data('iframe-src'));
 
-        fullscreenModal.css({
-            width: $(window).width() - 100,
-            height: $(window).height() - 100,
-            top: 100,
-            left: 100,
-            marginLeft: '-50px',
-            marginTop: '-50px'
-        });
         // Set height of the Asset IFrame
-        assetManager.attr('height', $(window).height() - 100);
+        assetManager.attr('height', modalHeight);
     },
 
     /**
