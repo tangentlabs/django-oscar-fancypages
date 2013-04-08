@@ -36,8 +36,9 @@ fancypages.assets = {
         });
 
         //Enlarge the height of the asset scrollbar
-        var modalHeight = $(window).resize().height() - 100;
+        var modalHeight = $('#fullscreen-modal', window.parent.document).height() - 100;
         $('#asset-gallery').closest('.modal-body').css('max-height', modalHeight);
+
 
     }
 };
