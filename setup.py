@@ -22,7 +22,7 @@ setup(
         'django-twitter-tag>=0.4.0',
         'djangorestframework>=2.1.12,<2.2',
     ],
-   # See http://pypi.python.org/pypi?%3Aaction=list_classifiers
+    # See http://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
       'Environment :: Web Environment',
       'Intended Audience :: Developers',
