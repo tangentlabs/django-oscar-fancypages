@@ -69,5 +69,5 @@ class FancyHomeView(PageEditorMixin, ProductCategoryView):
         try:
             page = Page.objects.get(category__slug='home')
         except Page.DoesNotExist:
-            page = Category.add_root(name='Home', slug='home')
+            page = Category.add_root(name='Home', slug='home').page
         return page
