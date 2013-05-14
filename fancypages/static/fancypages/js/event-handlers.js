@@ -45,7 +45,7 @@ fancypages.eventHandlers = {
         assetManager.attr('src', $(this).data('iframe-src'));
 
         // Set height of the Asset IFrame
-        assetManager.attr('height', modalHeight);
+        assetManager.attr('height', 400);
     },
 
     /**

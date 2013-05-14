@@ -6,8 +6,6 @@
     {% if object.product %}
     {% include "oscar/promotions/singleproduct.html" with product=object.product %}
     {% else %}
-    <div class="thumbnail">
-        <p class="no-asset edit-button"><i class="icon-single-product"></i> <span class="visible-editor">{% trans "Click to add a single product" %}</span></p>
-    </div>
+        <p class="no-asset fp-btn fp-btn-block edit-button"><i class="glyphicon-folder-close"></i> <span class="visible-editor">{% trans "Click to add a single product" %}</span></p>
     {% endif %}
 {% endblock %}
