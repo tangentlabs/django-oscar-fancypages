@@ -1,7 +1,7 @@
 {% load i18n %}
 {% load fp_widget_tags %}
 <div class="editing-area">
-    <h3><i class="icon-edit"></i> <span>Edit</span></h3>
+    <h3><i class="glyphicon-edit glyphicon-white"></i> <span>Edit</span></h3>
 
     <form id="{{ widget.container.variable_name }}_widget_form"
           data-widget-id='{{ widget.id }}' data-container-name="{{ widget.container.variable_name }}"
@@ -9,10 +9,10 @@
           action="{% url fp-dashboard:widget-update widget.id %}">
         {% csrf_token %}
         {% render_widget_form form %}
-        <div class="form-actions fixed">
+        <div class="fp-form-actions fixed">
             <div>
                 <a href="">{% trans "Cancel" %}</a>
-                <button type="submit" class="btn btn-large btn-primary pull-right">{% trans "Save" %}</button>
+                <button type="submit" class="btn btn-primary fp-btn pull-right">{% trans "Save" %}</button>
             </div>
         </div>
     </form>

@@ -30,5 +30,6 @@
     {{ block.super }}
     {% compress css %}
     <link rel='stylesheet' type='text/less' href="{% static "fancypages/less/assets.less" %}" />
+    <link rel="stylesheet" type="text/less" href="{% static "fancypages/less/thumbnail.less" %}">
     {% endcompress %}
 {% endblock %}
