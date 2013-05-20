@@ -76,7 +76,6 @@ class TestAStaffMember(test.FancyPagesWebTest):
         form['description'] = "Some description"
         form['date_visible_start'] = '30-12-2012'
         page = form.submit()
-        print page
 
         fancy_page = Page.objects.get(id=fancy_page.id)
         self.assertEquals(fancy_page.category.name, 'Another name')
