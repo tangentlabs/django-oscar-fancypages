@@ -17,7 +17,7 @@ setup(
     install_requires=[
         'versiontools>=1.9.1',
         'dingus>=0.3.4',
-        'django-oscar==0.5.1',
+        'django-oscar>=0.5,<0.6',
         'django-model-utils>=1.1.0',
         'django-twitter-tag>=0.4.0',
         'djangorestframework>=2.1.12,<2.2',

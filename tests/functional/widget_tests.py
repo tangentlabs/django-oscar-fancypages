@@ -1,5 +1,5 @@
 import os
-import Image
+from PIL import Image
 import tempfile
 
 from django.core.files import File

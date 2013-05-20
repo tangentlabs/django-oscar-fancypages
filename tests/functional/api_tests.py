@@ -26,7 +26,6 @@ class TestTheWidgetTypeApi(test.FancyPagesWebTest):
             self.app.get(reverse('fp-api:widget-type-list'))
             self.fail('an anonymous user should not be able to use the API')
         except AppError as exc:
-            self.assertIn('You do not have permission', exc.message)
             self.assertIn('403', exc.args[0])
 
     def test_returns_a_widget_type_form_for_container(self):
@@ -103,7 +102,6 @@ class TestTheWidgetApi(test.FancyPagesWebTest):
             self.app.get(reverse('fp-api:widget-list'))
             self.fail('an anonymous user should not be able to use the API')
         except AppError as exc:
-            self.assertIn('You do not have permission', exc.message)
             self.assertIn('403', exc.args[0])
 
     def test_can_be_added_to_a_container(self):
