@@ -63,7 +63,7 @@ fancypages.eventHandlers = {
                 var target = $($(elem).data('target'));
                 target.parents('.modal').modal('show');
                 target.html(data.rendered_form);
-                
+
                 // prevent collapse events within the modal from closing the modal
                 target.find('#pages-sortable [id*="tree"]').on({
                     hide: function (event) {
@@ -156,11 +156,11 @@ fancypages.eventHandlers = {
         $('#page-settings').hide();
 
         fancypages.editor.wysiwyg.init();
-        
+
         //Init the Select2 plugin for selects in the editor
         $('#editor-panel select').css('width', '100%');
         $('#editor-panel select').select2();
-        
+
         $('.editor').animate({backgroundColor: "#555"}, 500)
                     .delay(500)
                     .animate({backgroundColor: "#444"}, 500);
