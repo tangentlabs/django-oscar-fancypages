@@ -32,13 +32,30 @@ class PageDetailView(PageEditorMixin, ProductCategoryView):
         context['object'] = self.object
         return context
 
+    def get_categories(self):
+        """
+        Return a list of the current category and it's ancestors
+        """
+        try:
+            category = self.object.category
+        except Category.DoesNotExist:
+            raise Http404()
+
+        categories = [category]
+        categories.extend(list(category.get_descendants()))
+        return categories
+
     def get_template_names(self):
         if not self.object.page_type:
             return [settings.FP_DEFAULT_TEMPLATE]
         return [self.object.page_type.template_name]
 
     def get(self, request, *args, **kwargs):
-        self.object = self.get_categories()[0].page
+        slug = self.kwargs['category_slug']
+        try:
+            self.object = Page.objects.get(category__slug=slug)
+        except Page.DoesNotExist:
+            raise Http404()
         response = super(PageDetailView, self).get(request, *args, **kwargs)
 
         if request.user.is_staff:
