@@ -29,6 +29,8 @@ class PageDetailView(PageEditorMixin, ProductCategoryView):
 
     def get_context_data(self, **kwargs):
         context = super(PageDetailView, self).get_context_data(**kwargs)
+        context[self.context_object_name] = self.object
+        context['object'] = self.object
         context['category'] = self.category
         context['summary'] = self.category.name
         return context
