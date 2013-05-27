@@ -101,7 +101,7 @@ def configure():
             USE_LESS=True,
             NOSE_ARGS=[
                 '-s',
-                '--with-spec',
+                '--with-specplugin',
             ],
             **OSCAR_SETTINGS
         )
