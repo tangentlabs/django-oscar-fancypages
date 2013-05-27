@@ -15,3 +15,5 @@ dist/
 cover/
 public/
 docs/build/
+node_modules/
+build/
