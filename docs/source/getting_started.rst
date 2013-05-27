@@ -7,7 +7,7 @@ another content management system (CMS) and why would we need that? The reason
 is that fancypages is **not** a CMS but more of a content enhancement system.
 It provides a user with the flexibility of creating and organising arbitrary
 content within their Oscar system without interfering with the site's design
-guidelines, its responsiveness and basic catalogue structure. 
+guidelines, its responsiveness and basic catalogue structure.
 
 The concept
 -----------
@@ -22,15 +22,15 @@ Fancypages provides *four* major elements that allow the composition of
 
 The general structure of this elements is that a *page* represents a custom
 webpage with its own URL. The basic layout of a page is defined by a page type
-which provides a way of using different templates for different pages. 
+which provides a way of using different templates for different pages.
 
 Any django template - not only of a *page* - can have one or more *containers*
 placed in it and will give a user the ability to add widgets at the specified
-location. The different between a basic container and an object-related 
-container is explained below. 
+location. The different between a basic container and an object-related
+container is explained below.
 
 The last element is the *widget* which comes in various shapes and forms
-(althought they are all rectangular). They provide the means to add actual 
+(althought they are all rectangular). They provide the means to add actual
 content and place it in container. There are also *layout* containers that
 allow a user to split a container into a multi-column layout and place widgets
 in each of these columns. Fancypages comes with a variety of built-in widgets
@@ -74,7 +74,14 @@ The elements that make up fancypages
 ------------------------------------
 
 The following will go into more detail describing the individual elements that
-are used to make up fancypages. 
+are used to make up fancypages. There are four different elements that make up
+fancypages:
+
+    * Container
+        + Basic container
+        + Object-related container
+    * (Fancy) page
+    * Widget
 
 The basic container
 ++++++++++++++++++
@@ -82,10 +89,10 @@ The basic container
 The idea of a container is very simple. It is an element that is placed in a
 template and can *contain* an arbitrary number of widgets. A container is
 identified by a **name** and this names is unique within the Oscar site. A
-container is placed in a template by referencing its name.  
+container is placed in a template by referencing its name.
 
 Consequently, placing a container with the same name in multiple templates will
-**always** display the same content. Playing a container in a template is 
+**always** display the same content. Playing a container in a template is
 as simple as adding the appropriate template tag::
 
     {% load fp_container_tags %}
@@ -121,7 +128,7 @@ that product's detail page.
 The (fancy) page
 ++++++++++++++++
 
-Pages in fancypages are a broader interpretation of the Oscar's ``Category``. 
+Pages in fancypages are a broader interpretation of the Oscar's ``Category``.
 In fact you can think of them as being the same thing entirely. That means you
 can have products associtated with a page as you would with a category.
 
@@ -137,10 +144,10 @@ The widget
 ++++++++++
 
 The widget is the most powerful element of them all and can range from a very
-simple *text widget* to complex, context-sensitive widgets that display the 
+simple *text widget* to complex, context-sensitive widgets that display the
 most viewed products in a given category. These widgets are *content* widgets.
 To provide more flexibility, there are also *layout* widgets that allow you to
-split a container into a multi-column layout. 
+split a container into a multi-column layout.
 
 As previously stated, fancypages comes with a broad selection of built-in
 widgets but makes it easy to create custom widgets for your projects.
