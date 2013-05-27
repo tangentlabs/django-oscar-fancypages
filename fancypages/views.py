@@ -29,20 +29,16 @@ class PageDetailView(PageEditorMixin, ProductCategoryView):
 
     def get_context_data(self, **kwargs):
         context = super(PageDetailView, self).get_context_data(**kwargs)
-        context['object'] = self.object
+        context['category'] = self.category
+        context['summary'] = self.category.name
         return context
 
     def get_categories(self):
         """
         Return a list of the current category and it's ancestors
         """
-        try:
-            category = self.object.category
-        except Category.DoesNotExist:
-            raise Http404()
-
-        categories = [category]
-        categories.extend(list(category.get_descendants()))
+        categories = [self.category]
+        categories.extend(list(self.category.get_descendants()))
         return categories
 
     def get_template_names(self):
@@ -54,6 +50,10 @@ class PageDetailView(PageEditorMixin, ProductCategoryView):
         slug = self.kwargs['category_slug']
         try:
             self.object = Page.objects.get(category__slug=slug)
+        except Page.DoesNotExist:
+            raise Http404()
+        try:
+            self.category = self.object.category
         except Page.DoesNotExist:
             raise Http404()
         response = super(PageDetailView, self).get(request, *args, **kwargs)
