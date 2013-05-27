@@ -186,7 +186,13 @@ sure that ``django-compressor`` is there as well::
     INSTALLED_APPS = [
         ...
         'compressor',
+        'rest_framework',
+        'twitter_tag',
+        'model_utils',
+        'sorl.thumbnail',
+
         'fancypages',
+        'fancypages.assets'
         ...
     ]
 
@@ -194,9 +200,6 @@ Specify the directories to search for custom page templates in the
 ``FANCYPAGES_TEMPLATE_DIRS`` settings and add it to your usual list
 of template directories::
 
-    FANCYPAGES_TEMPLATE_DIRS = [
-        'templates/myfancypages',
-    ]
     TEMPLATE_DIRS = [
         'templates',
         os.path.join(OSCAR_MAIN_TEMPLATE_DIR, 'templates'),
