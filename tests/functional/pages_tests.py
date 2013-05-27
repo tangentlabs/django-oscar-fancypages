@@ -1,9 +1,11 @@
 from webtest import AppError
 
+from django.conf import settings
 from django.db.models import get_model
 from django.core.urlresolvers import reverse
 
 from fancypages.test import FancyPagesWebTest
+from fancypages.views import PageDetailView
 
 
 Page = get_model('fancypages', 'Page')
@@ -111,10 +113,24 @@ class TestAFancyPage(FancyPagesWebTest):
 
     def setUp(self):
         super(TestAFancyPage, self).setUp()
+        self.prepare_template_file(
+            "{% load fp_container_tags%}"
+            "{% fp_object_container main-container %}"
+            "{% fp_object_container left-column %}"
+        )
+        self.new_page_type = PageType.objects.create(
+            name='template',
+            template_name=self.template_name
+        )
+
         self.page = Page.add_root(name="A new page", slug='a-new-page')
         self.page_container = self.page.get_container_from_name('page-container')
 
-        self.child_page = self.page.add_root(name="Child page", slug="child-page")
+        self.child_page = self.page.add_root(
+            name="Child page",
+            slug="child-page",
+            page_type=self.new_page_type,
+        )
         self.child_container = self.child_page.get_container_from_name('page-container')
 
     def test_correct_category_is_placed_in_the_context(self):
@@ -134,3 +150,15 @@ class TestAFancyPage(FancyPagesWebTest):
         self.assertEquals(page.context['category'], self.child_page.category)
         self.assertIn('fancypage', page.context)
         self.assertEquals(page.context['fancypage'], self.child_page)
+
+    def test_uses_default_template_without_page_type(self):
+        view = PageDetailView()
+        view.object = self.page
+        templates = view.get_template_names()
+        self.assertEquals([settings.FP_DEFAULT_TEMPLATE], templates)
+
+    def test_uses_correct_page_type_template(self):
+        view = PageDetailView()
+        view.object = self.child_page
+        templates = view.get_template_names()
+        self.assertEquals([self.new_page_type.template_name], templates)
