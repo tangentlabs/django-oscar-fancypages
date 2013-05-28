@@ -10,7 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ImproperlyConfigured
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.generic import GenericRelation
-
+from django.conf import settings
 
 from model_utils.managers import InheritanceManager
 
@@ -91,7 +91,6 @@ class VisibilityType(models.Model):
 
     class Meta:
         app_label = 'fancypages'
-
 
 
 class Page(models.Model):
@@ -240,7 +239,6 @@ class Page(models.Model):
                 parent.visibility_types.add(visibility_type)
             parent.save()
 
-
     class Meta:
         app_label = 'fancypages'
 
@@ -358,6 +356,7 @@ class Widget(models.Model):
     @classmethod
     def get_available_widgets(cls):
         widget_choices = {}
+        excludes = getattr(settings, 'FANCYPAGES_WIDGET_EXCLUDES', [])
         for subclass in cls.itersubclasses():
             if not subclass._meta.abstract:
                 if not subclass.name:
@@ -365,10 +364,11 @@ class Widget(models.Model):
                         "widget subclasses have to provide 'name' attributes"
                     )
                 group = getattr(subclass, 'group', _('Default'))
-                widget_choices.setdefault(unicode(group), []).append((
-                    subclass.code,
-                    unicode(subclass.name)
-                ))
+                if subclass.name not in excludes:
+                    widget_choices.setdefault(unicode(group), []).append((
+                        subclass.code,
+                        unicode(subclass.name)
+                    ))
         return widget_choices
 
     @classmethod
