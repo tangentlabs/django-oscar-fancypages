@@ -1,16 +1,15 @@
 from django import forms
+from django.conf import settings
 from django.db.models import get_model
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
-from django.conf import settings
 
 Page = get_model('fancypages', 'Page')
 Category = get_model('catalogue', 'Category')
 PageType = get_model('fancypages', 'PageType')
 VisibilityType = get_model('fancypages', 'VisibilityType')
 
-
-DATE_FORMAT = settings.DATE_INPUT_FORMATS[0]
+DATE_FORMAT = getattr(settings, 'FANCYPAGES_DATE_FORMAT', '%Y-%m-%d')
 
 
 class PageFormMixin(object):

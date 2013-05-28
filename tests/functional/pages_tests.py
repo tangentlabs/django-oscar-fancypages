@@ -1,9 +1,11 @@
 from webtest import AppError
 
+from django.conf import settings
 from django.db.models import get_model
 from django.core.urlresolvers import reverse
 
 from fancypages.test import FancyPagesWebTest
+from fancypages.views import PageDetailView
 
 
 Page = get_model('fancypages', 'Page')
@@ -70,11 +72,6 @@ class TestAStaffUser(FancyPagesWebTest):
 
     def setUp(self):
         super(TestAStaffUser, self).setUp()
-        #self.prepare_template_file(
-        #    "{% load fp_container_tags%}"
-        #    "{% fp_object_container main-container %}"
-        #    "{% fp_object_container left-column %}"
-        #)
         self.page = Page.add_root(name="A new page", slug='a-new-page')
         self.page_container = self.page.get_container_from_name('page-container')
 
@@ -89,7 +86,6 @@ class TestAStaffUser(FancyPagesWebTest):
         page = self.get(url)
 
         self.assertContains(page, self.main_widget.title)
-
         self.assertContains(
             page,
             ("You can only see this because you are logged in as "
@@ -109,3 +105,60 @@ class TestAStaffUser(FancyPagesWebTest):
             ("You can only see this because you are logged in as "
              "a user with access rights to the dashboard")
         )
+
+
+class TestAFancyPage(FancyPagesWebTest):
+    fixtures = ['page_templates.json']
+    is_staff = True
+
+    def setUp(self):
+        super(TestAFancyPage, self).setUp()
+        self.prepare_template_file(
+            "{% load fp_container_tags%}"
+            "{% fp_object_container main-container %}"
+            "{% fp_object_container left-column %}"
+        )
+        self.new_page_type = PageType.objects.create(
+            name='template',
+            template_name=self.template_name
+        )
+
+        self.page = Page.add_root(name="A new page", slug='a-new-page')
+        self.page_container = self.page.get_container_from_name('page-container')
+
+        self.child_page = self.page.add_root(
+            name="Child page",
+            slug="child-page",
+            page_type=self.new_page_type,
+        )
+        self.child_container = self.child_page.get_container_from_name('page-container')
+
+    def test_correct_category_is_placed_in_the_context(self):
+        page = self.get(reverse('fancypages:page-detail',
+                                kwargs={'category_slug': self.page.slug}))
+
+        self.assertIn('category', page.context)
+        self.assertEquals(page.context['category'], self.page.category)
+        self.assertIn('fancypage', page.context)
+        self.assertEquals(page.context['fancypage'], self.page)
+
+    def test_correct_category_is_placed_in_the_context_for_child_page(self):
+        page = self.get(reverse('fancypages:page-detail',
+                                kwargs={'category_slug': self.child_page.slug}))
+
+        self.assertIn('category', page.context)
+        self.assertEquals(page.context['category'], self.child_page.category)
+        self.assertIn('fancypage', page.context)
+        self.assertEquals(page.context['fancypage'], self.child_page)
+
+    def test_uses_default_template_without_page_type(self):
+        view = PageDetailView()
+        view.object = self.page
+        templates = view.get_template_names()
+        self.assertEquals([settings.FP_DEFAULT_TEMPLATE], templates)
+
+    def test_uses_correct_page_type_template(self):
+        view = PageDetailView()
+        view.object = self.child_page
+        templates = view.get_template_names()
+        self.assertEquals([self.new_page_type.template_name], templates)

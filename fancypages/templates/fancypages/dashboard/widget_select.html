@@ -4,19 +4,19 @@
 <div class="widget-add-control">
     <a data-toggle="modal"
        {#data-behaviours="load-modal"#}
-       class="btn btn-large"
+       class="btn fp-btn"
        data-target="#{{ container.variable_name }}_modal"
        data-href="{% url "fp-api:widget-type-list" %}"
        data-container-id="{{ container.id }}">
-        <i class="icon-plus"></i> {% trans "Add content" %}
+        <i class="glyphicon-plus"></i> {% trans "Add content" %}
     </a>
 </div>
 
-<div id="{{ container.variable_name }}_modal" class="modal fade hide fullscreen"
+<div id="{{ container.variable_name }}_modal" class="fp-modal fade hide fullscreen"
      role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-header">
         <button class="close" data-dismiss="modal">×</button>
-        <h3><i class="icon-plus"></i> Add content</h3>
+        <h3><i class="glyphicon-plus"></i> Add content</h3>
     </div>
 
     <form id="{{ container.variable_name }}_add_widget_form"
@@ -27,7 +27,7 @@
         <div class="modal-body">
 
             <div class='tabbable'>
-                <ul class="nav nav-tabs">
+                <ul class="nav nav-tabs fp-nav-tabs">
                 {% for group in grouped_widgets %}
                     <li {% if forloop.first %}class="active"{% endif %}>
                         <a href="#{{container.variable_name}}-{{ group|slugify }}" data-toggle="tab">{{ group }}</a>
@@ -40,7 +40,7 @@
                         <ul>
                             {% for widget in widget_list %}
                             <li>
-                                <button type="submit" class="btn" name="code" value="{{ widget.0 }}">
+                                <button type="submit" class="btn fp-btn" name="code" value="{{ widget.0 }}">
                                     <div class="image_container">
                                         <!-- <label id="{{ widget.0 }}"> -->
                                         <img src="{% static "fancypages/img/widget_icons/" %}{{ widget.0 }}.png" class="{{ widget.0 }}" alt="{{ widget.1 }}" title="{{ widget.1 }}">

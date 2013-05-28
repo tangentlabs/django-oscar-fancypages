@@ -271,7 +271,7 @@ fancypages.editor = {
             navBarTop = $('.navbar-accounts').outerHeight(),
             subBarTop = $('.navbar-primary').outerHeight(),
             buttonsTop = $('.button-nav').outerHeight(),
-            buttonsBottom = $('.form-actions.fixed').outerHeight();
+            buttonsBottom = $('.fp-form-actions.fixed').outerHeight();
 
         $('.sidebar-content').css('height', pageHeight - buttonsTop - buttonsBottom);
         $('.sidebar-content').jScrollPane();
