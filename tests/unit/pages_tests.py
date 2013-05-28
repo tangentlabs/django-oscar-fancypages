@@ -2,6 +2,7 @@ from django.core import exceptions
 from django.db import IntegrityError
 from django.db.models import get_model
 from django.template import loader, Context
+from django.test.utils import override_settings
 
 from fancypages import test
 from fancypages import models
@@ -199,3 +200,11 @@ class TestContainerWithoutObject(test.FancyPagesTestCase):
         container = models.Container.objects.get(id=container.id)
         self.assertEquals(container.widgets.count(), 1)
         self.assertEquals(container.widgets.all()[0].id, text_widget.id)
+
+
+class TestAWidget(test.FancyPagesTestCase):
+
+    @override_settings(FANCYPAGES_WIDGET_EXCLUDES=['TextWidget'])
+    def test_can_be_excluded_using_a_setting(self):
+        widgets = models.Widget.get_available_widgets()
+        self.assertNotIn(models.TextWidget, widgets)

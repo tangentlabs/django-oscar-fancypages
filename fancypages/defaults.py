@@ -106,6 +106,10 @@ OSCAR_DASHBOARD_NAVIGATION = [
 
 FP_DEFAULT_TEMPLATE = 'fancypages/pages/page.html'
 
+# Provides the ability to exclude existing widgets from being selected
+# on the front-end
+FANCYPAGES_WIDGET_EXCLUDES = []
+
 # required for twitter_tag to not raise improperly configured
 # exception
 TWITTER_OAUTH_TOKEN = ''

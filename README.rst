@@ -238,3 +238,21 @@ not an actual ``Page``. So make sure all other URL patterns are defined
 before fancypages.
 
 .. _`django-debug-toolbar`: http://code.google.com/p/django-debug-toolbar
+
+
+Excluding Existing Widgets
+--------------------------
+
+If you don't want your users to be able to use one or more of the widgets
+that come with fancypages, you can exclude them in the settings using
+``FANCYPAGES_WIDGET_EXCLUDES``. All you have to do is list the class names
+for the widgets you want to exclude and they will not show up in the
+widget selection. An example in your ``settings.py`` could look like this::
+
+    FANCYPAGES_WIDGET_EXCLUDES = [
+        'TextWidget',
+    ]
+
+This will exclude the widget ``TextWidget``. This will only exclude the widget
+from being displayed and usable on the front-end. The migrations will still
+generate a table for excluded classes in the database.
