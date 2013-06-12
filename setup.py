@@ -8,7 +8,8 @@ setup(
     author="Sebastian Vetter",
     author_email="sebastian.vetter@tangentsnowball.com.au",
     description="Adding fancy CMS-style pages to Oscar",
-    long_description=open('README.rst').read(),
+    long_description=open('README.rst').read() + '\n\n' +
+                     open('CHANGELOG.rst').read(),
     keywords="django, oscar, e-commerce, cms, pages, flatpages",
     license='BSD',
     platforms=['linux'],
