@@ -20,7 +20,7 @@ setup(
         'django-oscar>=0.5,<0.6',
         'django-model-utils>=1.1.0',
         'django-twitter-tag>=0.4.0',
-        'djangorestframework>=2.1.12,<2.2',
+        'djangorestframework>=2.1.12,<2.4',
     ],
     dependency_links=[],
     # See http://pypi.python.org/pypi?%3Aaction=list_classifiers
