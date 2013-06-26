@@ -143,6 +143,11 @@ class PageCreateForm(PageFormMixin, forms.ModelForm):
         instance.id = category.page.id
         instance.category = category
         instance.save()
+        # the visibility types have to be added manually because
+        # not committing the page model will not store the references
+        # to the related objects as well. So more doing things by hand
+        for vtype in self.cleaned_data.get('visibility_types', []):
+            instance.visibility_types.add(vtype)
         return instance
 
     class Meta:
