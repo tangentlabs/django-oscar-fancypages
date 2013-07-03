@@ -46,7 +46,7 @@
 {% block extrascripts %}
     {{ block.super }}
     {% compress js %}
-        <script type="text/javascript" src="{% static "fancypages/js/jquery-ui-1.10.3.custom.min.js" %}"></script>
+        <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
         <script type="text/javascript" src="{% static "fancypages/js/jquery.mjs.nestedSortable.js" %}"></script>
     {% endcompress %}
 {% endblock %}
