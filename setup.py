@@ -3,11 +3,11 @@ from setuptools import setup, find_packages
 
 setup(
     name='django-oscar-fancypages',
-    version=":versiontools:fancypages:",
+    version=":versiontools:oscar_fancypages:",
     url='https://github.com/tangentlabs/django-oscar-fancypages',
     author="Sebastian Vetter",
     author_email="sebastian.vetter@tangentsnowball.com.au",
-    description="Adding fancy CMS-style pages to Oscar",
+    description="Integrate fancypages CEnS into Oscar",
     long_description=open('README.rst').read() + '\n\n' +
                      open('CHANGELOG.rst').read(),
     keywords="django, oscar, e-commerce, cms, pages, flatpages",
@@ -17,13 +17,12 @@ setup(
     include_package_data=True,
     install_requires=[
         'versiontools>=1.9.1',
-        'dingus>=0.3.4',
-        'django-oscar>=0.5,<0.6',
-        'django-model-utils>=1.1.0',
-        'django-twitter-tag>=0.4.0',
-        'djangorestframework>=2.1.12,<2.4',
+        'django-oscar>=0.5',
+        #'django-fancypages==0.0.1-dev',
     ],
-    dependency_links=[],
+    dependency_links=[
+        'https://github.com/elbaschid/django-fancypages/tarball/master#egg=django-fancypages-0.0.1-dev'
+    ],
     # See http://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
       'Environment :: Web Environment',

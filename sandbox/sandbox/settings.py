@@ -1,5 +1,9 @@
 # Django settings for sandbox project.
 import os
+
+from oscar_fancypages import get_oscar_fancypages_paths
+
+
 PROJECT_DIR = os.path.dirname(__file__)
 location = lambda x: os.path.join(os.path.dirname(os.path.realpath(__file__)), "../%s" % x)
 
@@ -18,10 +22,6 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(os.path.dirname(__file__), 'db.sqlite3'),
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': '',
-        'PORT': '',
     }
 }
 
@@ -60,7 +60,11 @@ MEDIA_ROOT = location('public/media')
 MEDIA_URL = '/media/'
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = (location('static/'),)
+
+STATICFILES_DIRS = [
+    location('static/'),
+] + get_oscar_fancypages_paths('static/')
+
 STATIC_ROOT = location('public')
 
 # List of finder classes that know how to find static files in
@@ -133,9 +137,9 @@ TEMPLATE_DIRS = [
     location('templates'),
     os.path.join(OSCAR_MAIN_TEMPLATE_DIR, 'templates'),
     OSCAR_MAIN_TEMPLATE_DIR,
-]
+] + get_oscar_fancypages_paths('templates')
 
-INSTALLED_APPS = [
+DJANGO_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -144,7 +148,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.flatpages',
     'django.contrib.admin',
+]
 
+THIRD_PARTY_APPS = [
     'django_extensions',
     'sorl.thumbnail',
     'rest_framework',
@@ -153,14 +159,16 @@ INSTALLED_APPS = [
     'compressor',
     'haystack',
     'south',
+]
 
-    'fancypages',
+FANCYPAGES_APPS = [
     'fancypages.assets',
+    'oscar_fancypages.fancypages',
     'twitter_tag',
 ]
 
 from oscar import get_core_apps
-INSTALLED_APPS += get_core_apps()
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + FANCYPAGES_APPS + get_core_apps()
 
 AUTHENTICATION_BACKENDS = (
     'oscar.apps.customer.auth_backends.Emailbackend',
@@ -176,7 +184,7 @@ DEBUG_TOOLBAR_CONFIG = {
 
 # Oscar settings
 from oscar.defaults import *
-from fancypages.defaults import *
+from oscar_fancypages.defaults import *
 
 OSCAR_ALLOW_ANON_CHECKOUT = True
 

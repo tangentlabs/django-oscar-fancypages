@@ -1,2 +1,0 @@
-API_VERSION = 'v1'
-API_BASE_URL = r'api/%s/' % API_VERSION
