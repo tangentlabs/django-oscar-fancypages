@@ -8,8 +8,10 @@ setup(
     author="Sebastian Vetter",
     author_email="sebastian.vetter@tangentsnowball.com.au",
     description="Integrate fancypages CEnS into Oscar",
-    long_description=open('README.rst').read() + '\n\n' +
-                     open('CHANGELOG.rst').read(),
+    long_description='\n\n'.join([
+        open('README.rst').read(),
+        open('CHANGELOG.rst').read(),
+    ]),
     keywords="django, oscar, e-commerce, cms, pages, flatpages",
     license='BSD',
     platforms=['linux'],
@@ -18,10 +20,10 @@ setup(
     install_requires=[
         'versiontools>=1.9.1',
         'django-oscar>=0.5',
-        #'django-fancypages==0.0.1-dev',
+        'django-fancypages>=0.1.0,<0.2',
     ],
     dependency_links=[
-        'https://github.com/elbaschid/django-fancypages/tarball/master#egg=django-fancypages-0.0.1-dev'
+        'https://github.com/tangentlabs/django-fancypages/tarball/master#egg=django-fancypages-0.1.0'
     ],
     # See http://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
