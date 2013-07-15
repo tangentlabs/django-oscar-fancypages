@@ -138,7 +138,6 @@ TEMPLATE_DIRS = [
     os.path.join(OSCAR_MAIN_TEMPLATE_DIR, 'templates'),
     OSCAR_MAIN_TEMPLATE_DIR,
 ] + get_oscar_fancypages_paths('templates')
-print TEMPLATE_DIRS
 
 DJANGO_APPS = [
     'django.contrib.auth',

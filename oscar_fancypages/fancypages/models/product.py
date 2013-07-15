@@ -10,7 +10,7 @@ class SingleProductBlock(ContentBlock):
     name = _("Single Product")
     code = 'single-product'
     group = _("Catalogue")
-    template_name = "fancypages/widgets/productwidget.html"
+    template_name = "fancypages/blocks/productblock.html"
 
     product = models.ForeignKey(
         'catalogue.Product',
@@ -29,7 +29,7 @@ class HandPickedProductsPromotionBlock(ContentBlock):
     name = _("Hand Picked Products Promotion")
     code = 'promotion-hand-picked-products'
     group = _("Catalogue")
-    template_name = "fancypages/widgets/promotionwidget.html"
+    template_name = "fancypages/blocks/promotionblock.html"
 
     promotion = models.ForeignKey(
         'promotions.HandPickedProductList',
@@ -48,7 +48,7 @@ class AutomaticProductsPromotionBlock(ContentBlock):
     name = _("Automatic Products Promotion")
     code = 'promotion-ordered-products'
     group = _("Catalogue")
-    template_name = "fancypages/widgets/promotionwidget.html"
+    template_name = "fancypages/blocks/promotionblock.html"
 
     promotion = models.ForeignKey(
         'promotions.AutomaticProductList',
@@ -67,7 +67,7 @@ class OfferBlock(ContentBlock):
     name = _("Offer Products")
     code = 'products-range'
     group = _("Catalogue")
-    template_name = "fancypages/widgets/offerwidget.html"
+    template_name = "fancypages/blocks/offerblock.html"
 
     offer = models.ForeignKey(
         'offer.ConditionalOffer',
