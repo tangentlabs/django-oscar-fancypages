@@ -1,7 +1,6 @@
 # Django settings for sandbox project.
 import os
-
-from oscar_fancypages import get_oscar_fancypages_paths
+import oscar_fancypages as ofp
 
 
 PROJECT_DIR = os.path.dirname(__file__)
@@ -63,7 +62,7 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
     location('static/'),
-] + get_oscar_fancypages_paths('static')
+] + ofp.get_oscar_fancypages_paths('static')
 
 STATIC_ROOT = location('public')
 
@@ -137,9 +136,10 @@ TEMPLATE_DIRS = [
     location('templates'),
     os.path.join(OSCAR_MAIN_TEMPLATE_DIR, 'templates'),
     OSCAR_MAIN_TEMPLATE_DIR,
-] + get_oscar_fancypages_paths('templates')
+] + ofp.get_oscar_fancypages_paths('templates')
+print TEMPLATE_DIRS
 
-DJANGO_APPS = [
+DJANGO_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -148,27 +148,16 @@ DJANGO_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.flatpages',
     'django.contrib.admin',
-]
+)
 
-THIRD_PARTY_APPS = [
-    'django_extensions',
-    'sorl.thumbnail',
-    'rest_framework',
+THIRD_PARTY_APPS = (
     'debug_toolbar',
-    'model_utils',
-    'compressor',
-    'haystack',
-    'south',
-]
+)
 
-FANCYPAGES_APPS = [
-    'fancypages.assets',
-    'oscar_fancypages.fancypages',
-    'twitter_tag',
-]
+OFP_APPS = ofp.get_required_apps() + ofp.get_oscar_fancypages_apps()
 
 from oscar import get_core_apps
-INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + FANCYPAGES_APPS + get_core_apps()
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + OFP_APPS + tuple(get_core_apps())
 
 AUTHENTICATION_BACKENDS = (
     'oscar.apps.customer.auth_backends.Emailbackend',
