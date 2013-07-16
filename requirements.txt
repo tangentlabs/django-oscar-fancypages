@@ -1,28 +1,29 @@
+# development tools
 Werkzeug>=0.6.2
-django-debug-toolbar==0.9.4
-django-dynamic-fixture==1.4.2
-django-extensions==0.9
+django-debug-toolbar>=0.9.4
+django-extensions>=0.9
 
-tox==1.4.2
-ipdb==0.2
-ipython==0.13
-South==0.7.6
+# python shell & debugger
+pudb>=2013.3.4
+bpython>=0.12
 
-nose==1.3.0
-django-nose==1.1
-nose-progressive==1.5
-spec==0.11.1
+# Testing dependencies
+spec>=0.10.0
+tox>=1.4.2
+mock>=1.0.1
+WebTest>=1.3.4
+django-nose>=1.0
+django-webtest>=1.5.3
 
-WebTest==1.3.4
-django-webtest==1.5.3
-
-docutils==0.8.1
-Sphinx>=1.1.3
-
+# Code style and coverage
+flake8>=0.8
 coverage>=3.5.1
-pyflakes==0.5.0
-flake8==0.8
+pyflakes>=0.5.0
+coveralls>=0.1.1,<0.2
 
-Whoosh==2.4.1
+# documentation
+Sphinx>=1.1.3
+docutils>=0.8.1
 
-django-oscar-testsupport==0.2
+# Search
+Whoosh>=2.4.1
