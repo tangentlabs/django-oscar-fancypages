@@ -1,17 +1,14 @@
-=====================================
-Changelog for django-oscar-fancypages
-=====================================
+=========
+Changelog
+=========
 
+Version 0.2.0
+-------------
 
-0.1.1
------
+* Integrate django-fancypages with django-oscar
 
-* Update the version range for django-rest-framework to include the latest
-  bug fixes in 2.3.x.
-* Add a changelog file.
+Vetsion 0.1.0
+-------------
 
-
-0.1
----
-
-* First version of the project
+* First internal release before splitting it into django-fancypages and
+  django-oscar-fancypages
