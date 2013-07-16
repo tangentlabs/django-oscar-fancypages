@@ -8,7 +8,7 @@ Oscar. The *fancy pages* integrate with the category structure of Oscar by
 wrapping around the ``ProductCategory`` model, plugging them into the
 category tree of Oscar. As a result, the existing category structure is
 available as fancy pages after installing ``django-oscar-fancypages`` (OFP) and
-creating a fancypage creates a ``ProductCategory`` that can be used to 
+creating a fancypage creates a ``ProductCategory`` that can be used to
 display products.
 
 For more details on fancy pages refer to `django-fancypages`_
