@@ -2,10 +2,13 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from fancypages.models import ContentBlock
+from fancypages.library import register_content_block
+
 
 Product = models.get_model('catalogue', 'Product')
 
 
+@register_content_block
 class SingleProductBlock(ContentBlock):
     name = _("Single Product")
     code = 'single-product'
@@ -25,6 +28,7 @@ class SingleProductBlock(ContentBlock):
         app_label = 'fancypages'
 
 
+@register_content_block
 class HandPickedProductsPromotionBlock(ContentBlock):
     name = _("Hand Picked Products Promotion")
     code = 'promotion-hand-picked-products'
@@ -44,6 +48,7 @@ class HandPickedProductsPromotionBlock(ContentBlock):
         app_label = 'fancypages'
 
 
+@register_content_block
 class AutomaticProductsPromotionBlock(ContentBlock):
     name = _("Automatic Products Promotion")
     code = 'promotion-ordered-products'
@@ -63,6 +68,7 @@ class AutomaticProductsPromotionBlock(ContentBlock):
         app_label = 'fancypages'
 
 
+@register_content_block
 class OfferBlock(ContentBlock):
     name = _("Offer Products")
     code = 'products-range'
