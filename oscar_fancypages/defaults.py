@@ -2,7 +2,7 @@ from __future__ import absolute_import
 
 from django.utils.translation import ugettext_lazy as _
 
-from fancypages.default import *
+from fancypages.defaults import *
 
 
 # Menu structure of the dashboard navigation
