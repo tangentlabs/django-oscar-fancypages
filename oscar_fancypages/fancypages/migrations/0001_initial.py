@@ -7,50 +7,21 @@ from django.db import models
 
 class Migration(SchemaMigration):
 
-    depends_on = (
-        ('assets', '0001_initial'),
-    )
-
     def forwards(self, orm):
-        # Adding model 'AbstractPageType'
-        db.create_table('fancypages_abstractpagetype', (
+        # Adding model 'PageType'
+        db.create_table('fancypages_pagetype', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=128)),
             ('slug', self.gf('django.db.models.fields.SlugField')(max_length=128)),
             ('template_name', self.gf('django.db.models.fields.CharField')(max_length=255)),
         ))
-        db.send_create_signal('fancypages', ['AbstractPageType'])
-
-        # Adding model 'AbstractVisibilityType'
-        db.create_table('fancypages_abstractvisibilitytype', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=128)),
-            ('slug', self.gf('django.db.models.fields.SlugField')(max_length=128, null=True, blank=True)),
-        ))
-        db.send_create_signal('fancypages', ['AbstractVisibilityType'])
-
-        # Adding model 'AbstractContainer'
-        db.create_table('fancypages_abstractcontainer', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.SlugField')(max_length=50, blank=True)),
-            ('title', self.gf('django.db.models.fields.CharField')(max_length=100, blank=True)),
-            ('content_type', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['contenttypes.ContentType'], null=True)),
-            ('object_id', self.gf('django.db.models.fields.PositiveIntegerField')(null=True)),
-        ))
-        db.send_create_signal('fancypages', ['AbstractContainer'])
-
-        # Adding unique constraint on 'AbstractContainer', fields ['name', 'content_type', 'object_id']
-        db.create_unique('fancypages_abstractcontainer', ['name', 'content_type_id', 'object_id'])
-
-        # Adding model 'PageType'
-        db.create_table('fancypages_pagetype', (
-            ('abstractpagetype_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.AbstractPageType'], unique=True, primary_key=True)),
-        ))
         db.send_create_signal('fancypages', ['PageType'])
 
         # Adding model 'VisibilityType'
         db.create_table('fancypages_visibilitytype', (
-            ('abstractvisibilitytype_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.AbstractVisibilityType'], unique=True, primary_key=True)),
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('name', self.gf('django.db.models.fields.CharField')(max_length=128)),
+            ('slug', self.gf('django.db.models.fields.SlugField')(max_length=128, null=True, blank=True)),
         ))
         db.send_create_signal('fancypages', ['VisibilityType'])
 
@@ -82,7 +53,11 @@ class Migration(SchemaMigration):
 
         # Adding model 'Container'
         db.create_table('fancypages_container', (
-            ('abstractcontainer_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fancypages.AbstractContainer'], unique=True, primary_key=True)),
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('name', self.gf('django.db.models.fields.SlugField')(max_length=50, blank=True)),
+            ('title', self.gf('django.db.models.fields.CharField')(max_length=100, blank=True)),
+            ('content_type', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['contenttypes.ContentType'], null=True)),
+            ('object_id', self.gf('django.db.models.fields.PositiveIntegerField')(null=True)),
         ))
         db.send_create_signal('fancypages', ['Container'])
 
@@ -246,18 +221,6 @@ class Migration(SchemaMigration):
 
 
     def backwards(self, orm):
-        # Removing unique constraint on 'AbstractContainer', fields ['name', 'content_type', 'object_id']
-        db.delete_unique('fancypages_abstractcontainer', ['name', 'content_type_id', 'object_id'])
-
-        # Deleting model 'AbstractPageType'
-        db.delete_table('fancypages_abstractpagetype')
-
-        # Deleting model 'AbstractVisibilityType'
-        db.delete_table('fancypages_abstractvisibilitytype')
-
-        # Deleting model 'AbstractContainer'
-        db.delete_table('fancypages_abstractcontainer')
-
         # Deleting model 'PageType'
         db.delete_table('fancypages_pagetype')
 
@@ -493,27 +456,6 @@ class Migration(SchemaMigration):
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
-        'fancypages.abstractcontainer': {
-            'Meta': {'unique_together': "(('name', 'content_type', 'object_id'),)", 'object_name': 'AbstractContainer'},
-            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']", 'null': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.SlugField', [], {'max_length': '50', 'blank': 'True'}),
-            'object_id': ('django.db.models.fields.PositiveIntegerField', [], {'null': 'True'}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'})
-        },
-        'fancypages.abstractpagetype': {
-            'Meta': {'object_name': 'AbstractPageType'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
-            'slug': ('django.db.models.fields.SlugField', [], {'max_length': '128'}),
-            'template_name': ('django.db.models.fields.CharField', [], {'max_length': '255'})
-        },
-        'fancypages.abstractvisibilitytype': {
-            'Meta': {'object_name': 'AbstractVisibilityType'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
-            'slug': ('django.db.models.fields.SlugField', [], {'max_length': '128', 'null': 'True', 'blank': 'True'})
-        },
         'fancypages.automaticproductspromotionblock': {
             'Meta': {'ordering': "['display_order']", 'object_name': 'AutomaticProductsPromotionBlock', '_ormbases': ['fancypages.ContentBlock']},
             'contentblock_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['fancypages.ContentBlock']", 'unique': 'True', 'primary_key': 'True'}),
@@ -544,8 +486,12 @@ class Migration(SchemaMigration):
             'link_url_9': ('django.db.models.fields.CharField', [], {'max_length': '500', 'null': 'True', 'blank': 'True'})
         },
         'fancypages.container': {
-            'Meta': {'object_name': 'Container', '_ormbases': ['fancypages.AbstractContainer']},
-            'abstractcontainer_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['fancypages.AbstractContainer']", 'unique': 'True', 'primary_key': 'True'})
+            'Meta': {'object_name': 'Container'},
+            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']", 'null': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.SlugField', [], {'max_length': '50', 'blank': 'True'}),
+            'object_id': ('django.db.models.fields.PositiveIntegerField', [], {'null': 'True'}),
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'})
         },
         'fancypages.contentblock': {
             'Meta': {'ordering': "['display_order']", 'object_name': 'ContentBlock'},
@@ -611,8 +557,11 @@ class Migration(SchemaMigration):
             'contentblock_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['fancypages.ContentBlock']", 'unique': 'True', 'primary_key': 'True'})
         },
         'fancypages.pagetype': {
-            'Meta': {'object_name': 'PageType', '_ormbases': ['fancypages.AbstractPageType']},
-            'abstractpagetype_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['fancypages.AbstractPageType']", 'unique': 'True', 'primary_key': 'True'})
+            'Meta': {'object_name': 'PageType'},
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
+            'slug': ('django.db.models.fields.SlugField', [], {'max_length': '128'}),
+            'template_name': ('django.db.models.fields.CharField', [], {'max_length': '255'})
         },
         'fancypages.primarynavigationblock': {
             'Meta': {'ordering': "['display_order']", 'object_name': 'PrimaryNavigationBlock', '_ormbases': ['fancypages.ContentBlock']},
@@ -660,8 +609,10 @@ class Migration(SchemaMigration):
             'video_code': ('django.db.models.fields.CharField', [], {'max_length': '50'})
         },
         'fancypages.visibilitytype': {
-            'Meta': {'object_name': 'VisibilityType', '_ormbases': ['fancypages.AbstractVisibilityType']},
-            'abstractvisibilitytype_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['fancypages.AbstractVisibilityType']", 'unique': 'True', 'primary_key': 'True'})
+            'Meta': {'object_name': 'VisibilityType'},
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
+            'slug': ('django.db.models.fields.SlugField', [], {'max_length': '128', 'null': 'True', 'blank': 'True'})
         },
         'offer.benefit': {
             'Meta': {'object_name': 'Benefit'},
