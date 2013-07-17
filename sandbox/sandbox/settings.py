@@ -1,6 +1,6 @@
 # Django settings for sandbox project.
 import os
-import oscar_fancypages as ofp
+import oscar_fancypages.utils as ofp
 
 
 PROJECT_DIR = os.path.dirname(__file__)
@@ -137,7 +137,6 @@ TEMPLATE_DIRS = [
     os.path.join(OSCAR_MAIN_TEMPLATE_DIR, 'templates'),
     OSCAR_MAIN_TEMPLATE_DIR,
 ] + ofp.get_oscar_fancypages_paths('templates')
-print TEMPLATE_DIRS
 
 DJANGO_APPS = (
     'django.contrib.auth',
