@@ -7,6 +7,10 @@ from django.db import models
 
 class Migration(SchemaMigration):
 
+    depends_on = (
+        ('assets', '0001_initial'),
+    )
+
     def forwards(self, orm):
         # Adding model 'AbstractPageType'
         db.create_table('fancypages_abstractpagetype', (
