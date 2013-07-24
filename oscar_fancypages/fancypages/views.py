@@ -1,6 +1,7 @@
 from django.http import Http404
 from django.conf import settings
 from django.db.models import get_model
+from django.template.defaultfilters import slugify
 
 from oscar.apps.catalogue.views import ProductCategoryView
 
@@ -10,6 +11,12 @@ Container = get_model('fancypages', 'Container')
 
 
 class FancyPageEditorMixin(object):
+    DEFAULT_TEMPLATE = getattr(settings, 'FP_DEFAULT_TEMPLATE')
+
+    def get_template_names(self):
+        if not self.object.page_type:
+            return [self.DEFAULT_TEMPLATE]
+        return [self.object.page_type.template_name]
 
     def get_object(self):
         try:
@@ -18,10 +25,12 @@ class FancyPageEditorMixin(object):
             raise Http404
 
     def get_context_data(self, **kwargs):
+        ctx = super(FancyPageEditorMixin, self).get_context_data(**kwargs)
         if self.object:
+            ctx['object'] = self.object
             for container in Container.get_containers(self.object):
-                kwargs[container.name] = container
-        return super(FancyPageEditorMixin, self).get_context_data(**kwargs)
+                ctx[container.name] = container
+        return ctx
 
 
 class FancyPageDetailView(FancyPageEditorMixin, ProductCategoryView):
@@ -41,11 +50,6 @@ class FancyPageDetailView(FancyPageEditorMixin, ProductCategoryView):
         categories = [self.object]
         categories.extend(list(self.object.get_descendants()))
         return categories
-
-    def get_template_names(self):
-        if not self.object.page_type:
-            return [settings.FP_DEFAULT_TEMPLATE]
-        return [self.object.page_type.template_name]
 
     def get(self, request, *args, **kwargs):
         slug = self.kwargs['slug']
@@ -67,8 +71,10 @@ class FancyPageDetailView(FancyPageEditorMixin, ProductCategoryView):
 class FancyHomeView(FancyPageEditorMixin, ProductCategoryView):
     model = FancyPage
 
+    HOMEPAGE_NAME = getattr(settings, 'FP_HOMEPAGE_NAME', 'Home')
+
     def get(self, request, *args, **kwargs):
-        self.kwargs.setdefault('category_slug', 'home')
+        self.kwargs.setdefault('category_slug', slugify(self.HOMEPAGE_NAME))
         self.object = self.get_object()
         response = super(FancyHomeView, self).get(request, *args, **kwargs)
         if request.user.is_staff:
@@ -80,8 +86,13 @@ class FancyHomeView(FancyPageEditorMixin, ProductCategoryView):
         return response
 
     def get_object(self):
+        slug = slugify(self.HOMEPAGE_NAME)
         try:
-            page = FancyPage.objects.get(category__slug='home')
+            page = FancyPage.objects.get(slug=slug)
         except FancyPage.DoesNotExist:
-            page = Category.add_root(name='Home', slug='home').page
+            page = FancyPage.add_root(
+                name=self.HOMEPAGE_NAME,
+                slug=slug,
+                status=FancyPage.PUBLISHED,
+            )
         return page

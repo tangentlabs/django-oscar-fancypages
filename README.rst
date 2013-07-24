@@ -2,7 +2,25 @@
 Fancy CMS-style page editing for Oscar
 ======================================
 
-This Django app is an extension that integrates `django-fancypages`_ with
+.. image:: https://travis-ci.org/tangentlabs/django-oscar-fancypages.png
+    :target: https://travis-ci.org/tangentlabs/django-oscar-fancypages?branch=master
+
+.. image:: https://coveralls.io/repos/tangentlabs/django-oscar-fancypages/badge.png?branch=master
+    :target: https://coveralls.io/r/tangentlabs/django-oscar-fancypages?branch=master
+
+Warning
+-------
+
+I just commited a bug fix that will break for existing projects using
+django-oscar-fancypages as I had to regenerate the initial migration.  Since
+this is an import issue and not an actual model change, I didn't see a way
+around this via migrations. Sorry for any inconvenience.
+
+**Keep in mind that this is still under development and breaking changes like
+the one above are not unlikely. Use with care and hold off on that production
+build until the first proper release.**
+
+
 `django-oscar`_ and provides it's features as a content enhancement system to
 Oscar. The *fancy pages* integrate with the category structure of Oscar by
 wrapping around the ``ProductCategory`` model, plugging them into the

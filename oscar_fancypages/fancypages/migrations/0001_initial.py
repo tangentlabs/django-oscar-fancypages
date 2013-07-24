@@ -9,9 +9,29 @@ class Migration(SchemaMigration):
 
     depends_on = (
         ('assets', '0001_initial'),
+        ('catalogue', '0001_initial'),
     )
 
     def forwards(self, orm):
+        # Adding model 'FancyPage'
+        db.create_table('fancypages_fancypage', (
+            ('category_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['catalogue.Category'], unique=True, primary_key=True)),
+            ('page_type', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='pages', null=True, to=orm['fancypages.PageType'])),
+            ('keywords', self.gf('django.db.models.fields.CharField')(max_length=255, blank=True)),
+            ('status', self.gf('django.db.models.fields.CharField')(default=u'draft', max_length=15)),
+            ('date_visible_start', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
+            ('date_visible_end', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
+        ))
+        db.send_create_signal('fancypages', ['FancyPage'])
+
+        # Adding M2M table for field visibility_types on 'FancyPage'
+        db.create_table('fancypages_fancypage_visibility_types', (
+            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
+            ('fancypage', models.ForeignKey(orm['fancypages.fancypage'], null=False)),
+            ('visibilitytype', models.ForeignKey(orm['fancypages.visibilitytype'], null=False))
+        ))
+        db.create_unique('fancypages_fancypage_visibility_types', ['fancypage_id', 'visibilitytype_id'])
+
         # Adding model 'PageType'
         db.create_table('fancypages_pagetype', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -29,32 +49,6 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('fancypages', ['VisibilityType'])
 
-        # Adding model 'FancyPage'
-        db.create_table('fancypages_fancypage', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('path', self.gf('django.db.models.fields.CharField')(unique=True, max_length=255)),
-            ('depth', self.gf('django.db.models.fields.PositiveIntegerField')()),
-            ('numchild', self.gf('django.db.models.fields.PositiveIntegerField')(default=0)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=255, db_index=True)),
-            ('slug', self.gf('django.db.models.fields.SlugField')(max_length=255)),
-            ('image', self.gf('django.db.models.fields.files.ImageField')(max_length=100, null=True, blank=True)),
-            ('description', self.gf('django.db.models.fields.TextField')(blank=True)),
-            ('page_type', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='pages', null=True, to=orm['fancypages.PageType'])),
-            ('keywords', self.gf('django.db.models.fields.CharField')(max_length=255, blank=True)),
-            ('status', self.gf('django.db.models.fields.CharField')(default=u'draft', max_length=15)),
-            ('date_visible_start', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
-            ('date_visible_end', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
-        ))
-        db.send_create_signal('fancypages', ['FancyPage'])
-
-        # Adding M2M table for field visibility_types on 'FancyPage'
-        db.create_table('fancypages_fancypage_visibility_types', (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('fancypage', models.ForeignKey(orm['fancypages.fancypage'], null=False)),
-            ('visibilitytype', models.ForeignKey(orm['fancypages.visibilitytype'], null=False))
-        ))
-        db.create_unique('fancypages_fancypage_visibility_types', ['fancypage_id', 'visibilitytype_id'])
-
         # Adding model 'Container'
         db.create_table('fancypages_container', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -64,6 +58,9 @@ class Migration(SchemaMigration):
             ('object_id', self.gf('django.db.models.fields.PositiveIntegerField')(null=True)),
         ))
         db.send_create_signal('fancypages', ['Container'])
+
+        # Adding unique constraint on 'Container', fields ['name', 'content_type', 'object_id']
+        db.create_unique('fancypages_container', ['name', 'content_type_id', 'object_id'])
 
         # Adding model 'OrderedContainer'
         db.create_table('fancypages_orderedcontainer', (
@@ -225,17 +222,20 @@ class Migration(SchemaMigration):
 
 
     def backwards(self, orm):
-        # Deleting model 'PageType'
-        db.delete_table('fancypages_pagetype')
-
-        # Deleting model 'VisibilityType'
-        db.delete_table('fancypages_visibilitytype')
+        # Removing unique constraint on 'Container', fields ['name', 'content_type', 'object_id']
+        db.delete_unique('fancypages_container', ['name', 'content_type_id', 'object_id'])
 
         # Deleting model 'FancyPage'
         db.delete_table('fancypages_fancypage')
 
         # Removing M2M table for field visibility_types on 'FancyPage'
         db.delete_table('fancypages_fancypage_visibility_types')
+
+        # Deleting model 'PageType'
+        db.delete_table('fancypages_pagetype')
+
+        # Deleting model 'VisibilityType'
+        db.delete_table('fancypages_visibilitytype')
 
         # Deleting model 'Container'
         db.delete_table('fancypages_container')
@@ -490,7 +490,7 @@ class Migration(SchemaMigration):
             'link_url_9': ('django.db.models.fields.CharField', [], {'max_length': '500', 'null': 'True', 'blank': 'True'})
         },
         'fancypages.container': {
-            'Meta': {'object_name': 'Container'},
+            'Meta': {'unique_together': "(('name', 'content_type', 'object_id'),)", 'object_name': 'Container'},
             'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']", 'null': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.SlugField', [], {'max_length': '50', 'blank': 'True'}),
@@ -504,19 +504,12 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
         },
         'fancypages.fancypage': {
-            'Meta': {'object_name': 'FancyPage'},
+            'Meta': {'ordering': "['full_name']", 'object_name': 'FancyPage', '_ormbases': ['catalogue.Category']},
+            'category_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['catalogue.Category']", 'unique': 'True', 'primary_key': 'True'}),
             'date_visible_end': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'date_visible_start': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
-            'depth': ('django.db.models.fields.PositiveIntegerField', [], {}),
-            'description': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'image': ('django.db.models.fields.files.ImageField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
             'keywords': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '255', 'db_index': 'True'}),
-            'numchild': ('django.db.models.fields.PositiveIntegerField', [], {'default': '0'}),
             'page_type': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'pages'", 'null': 'True', 'to': "orm['fancypages.PageType']"}),
-            'path': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '255'}),
-            'slug': ('django.db.models.fields.SlugField', [], {'max_length': '255'}),
             'status': ('django.db.models.fields.CharField', [], {'default': "u'draft'", 'max_length': '15'}),
             'visibility_types': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['fancypages.VisibilityType']", 'symmetrical': 'False'})
         },

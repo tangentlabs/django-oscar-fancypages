@@ -109,6 +109,7 @@ OSCAR_DASHBOARD_NAVIGATION = [
     },
 ]
 
+FP_HOMEPAGE_NAME = 'Home'
 FP_DEFAULT_TEMPLATE = 'fancypages/pages/page.html'
 
 # Provides the ability to exclude existing widgets from being selected
