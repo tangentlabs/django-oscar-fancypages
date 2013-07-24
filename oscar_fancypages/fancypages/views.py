@@ -14,9 +14,9 @@ class FancyPageEditorMixin(object):
     DEFAULT_TEMPLATE = getattr(settings, 'FP_DEFAULT_TEMPLATE')
 
     def get_template_names(self):
-        if not self.object.page_type:
+        if not self.category.page_type:
             return [self.DEFAULT_TEMPLATE]
-        return [self.object.page_type.template_name]
+        return [self.category.page_type.template_name]
 
     def get_object(self):
         try:
@@ -26,9 +26,9 @@ class FancyPageEditorMixin(object):
 
     def get_context_data(self, **kwargs):
         ctx = super(FancyPageEditorMixin, self).get_context_data(**kwargs)
-        if self.object:
-            ctx['object'] = self.object
-            for container in Container.get_containers(self.object):
+        if self.category:
+            ctx['object'] = self.category
+            for container in Container.get_containers(self.category):
                 ctx[container.name] = container
         return ctx
 
@@ -38,23 +38,23 @@ class FancyPageDetailView(FancyPageEditorMixin, ProductCategoryView):
 
     def get_context_data(self, **kwargs):
         context = super(FancyPageDetailView, self).get_context_data(**kwargs)
-        context[self.context_object_name] = self.object
-        context['object'] = self.object
-        context['summary'] = self.object.name
+        context[self.context_object_name] = self.category
+        context['object'] = self.category
+        context['summary'] = self.category.name
         return context
 
     def get_categories(self):
         """
         Return a list of the current page/category and it's ancestors
         """
-        categories = [self.object]
-        categories.extend(list(self.object.get_descendants()))
+        categories = [self.category]
+        categories.extend(list(self.category.get_descendants()))
         return categories
 
     def get(self, request, *args, **kwargs):
         slug = self.kwargs['slug']
         try:
-            self.object = FancyPage.objects.get(slug=slug)
+            self.category = FancyPage.objects.get(slug=slug)
         except FancyPage.DoesNotExist:
             raise Http404()
         response = super(FancyPageDetailView, self).get(request, *args, **kwargs)
@@ -62,7 +62,7 @@ class FancyPageDetailView(FancyPageEditorMixin, ProductCategoryView):
         if request.user.is_staff:
             return response
 
-        if not self.object.is_visible:
+        if not self.category.is_visible:
             raise Http404
 
         return response
@@ -75,12 +75,12 @@ class FancyHomeView(FancyPageEditorMixin, ProductCategoryView):
 
     def get(self, request, *args, **kwargs):
         self.kwargs.setdefault('category_slug', slugify(self.HOMEPAGE_NAME))
-        self.object = self.get_object()
+        self.category = self.get_object()
         response = super(FancyHomeView, self).get(request, *args, **kwargs)
         if request.user.is_staff:
             return response
 
-        if not self.object.is_visible:
+        if not self.category.is_visible:
             raise Http404
 
         return response
