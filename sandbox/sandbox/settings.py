@@ -182,8 +182,7 @@ OSCAR_SHOP_TAGLINE = 'Make your pages sparkle and shine!'
 # Haystack settings
 HAYSTACK_CONNECTIONS = {
     'default': {
-        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
-        'PATH': os.path.join(os.path.dirname(__file__), 'whoosh_index'),
+        'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
     },
 }
 
