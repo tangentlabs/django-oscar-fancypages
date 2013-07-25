@@ -27,7 +27,7 @@ class FancyPageEditorMixin(object):
     def get_context_data(self, **kwargs):
         ctx = super(FancyPageEditorMixin, self).get_context_data(**kwargs)
         if self.category:
-            ctx['object'] = self.category
+            ctx['object'] = ctx[self.context_object_name] = self.category
             for container in Container.get_containers(self.category):
                 ctx[container.name] = container
         return ctx
@@ -70,6 +70,7 @@ class FancyPageDetailView(FancyPageEditorMixin, ProductCategoryView):
 
 class FancyHomeView(FancyPageEditorMixin, ProductCategoryView):
     model = FancyPage
+    context_object_name = 'fancypage'
 
     HOMEPAGE_NAME = getattr(settings, 'FP_HOMEPAGE_NAME', 'Home')
 
