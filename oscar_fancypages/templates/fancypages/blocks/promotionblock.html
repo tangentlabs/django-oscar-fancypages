@@ -3,7 +3,7 @@
 {% load promotion_tags %}
 
 {% block block_content %}
-{% if object.promotion %}
-{% render_promotion object.promotion %}
+{% if fp_block.promotion %}
+{% render_promotion fp_block.promotion %}
 {% endif %}
 {% endblock %}

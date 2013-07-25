@@ -3,8 +3,8 @@
 {% load i18n %}
 
 {% block block_content %}
-    {% if object.product %}
-    {% include "oscar/promotions/singleproduct.html" with product=object.product %}
+    {% if fp_block.product %}
+    {% include "oscar/promotions/singleproduct.html" with product=fp_block.product %}
     {% else %}
         <p class="no-asset fp-btn fp-btn-block edit-button"><i class="glyphicon-folder-close"></i> <span class="visible-editor">{% trans "Click to add a single product" %}</span></p>
     {% endif %}

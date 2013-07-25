@@ -3,16 +3,16 @@
 
 {% load i18n %}
 {% block block_content %}
-    {% if object.offer %}
+    {% if fp_block.offer %}
         <div class="sub-header">
-            <h2>{{ object.offer.name }}</h2>
+            <h2>{{ fp_block.offer.name }}</h2>
         </div>
-        {% if object.offer.description %}
+        {% if fp_block.offer.description %}
             <div class="well">
-                {{ object.offer.description|safe }}
+                {{ fp_block.offer.description|safe }}
             </div>
         {% endif %}
-        {% with object.products as products %}
+        {% with fp_block.products as products %}
             {% if products.count %}
                 <section>
                     <div class="mod-offer mod">
