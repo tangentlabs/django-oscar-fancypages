@@ -1,5 +1,7 @@
 from __future__ import absolute_import
 
+# This is required for the dashboard configuation of Oscar. It
+# allows for the navigation elements to be translatable
 from django.utils.translation import ugettext_lazy as _
 
 from fancypages.defaults import *
@@ -108,19 +110,5 @@ OSCAR_DASHBOARD_NAVIGATION = [
         'url_name': 'dashboard:reports-index',
     },
 ]
-
-FP_HOMEPAGE_NAME = 'Home'
-FP_DEFAULT_TEMPLATE = 'fancypages/pages/page.html'
-
-# Provides the ability to exclude existing widgets from being selected
-# on the front-end
-FANCYPAGES_WIDGET_EXCLUDES = []
-
-# required for twitter_tag to not raise improperly configured
-# exception
-TWITTER_OAUTH_TOKEN = ''
-TWITTER_OAUTH_SECRET = ''
-TWITTER_CONSUMER_KEY = ''
-TWITTER_CONSUMER_SECRET = ''
 
 FANCYPAGES_SETTINGS = dict([(k, v) for k, v in locals().items()])
