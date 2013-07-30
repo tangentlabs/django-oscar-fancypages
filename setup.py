@@ -25,6 +25,9 @@ setup(
     dependency_links=[
         'https://github.com/tangentlabs/django-fancypages/tarball/master#egg=django-fancypages-0.1.0'
     ],
+    setup_requires = [
+        'versiontools >= 1.8',
+    ],
     # See http://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
       'Environment :: Web Environment',
