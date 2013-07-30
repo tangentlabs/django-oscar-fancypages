@@ -9,7 +9,9 @@ class Migration(SchemaMigration):
 
     depends_on = (
         ('assets', '0001_initial'),
-        ('catalogue', '0001_initial'),
+        ('catalogue', '0009_auto__add_field_product_rating'),
+        ('promotions', '0001_initial'),
+        ('offer', '0001_initial'),
     )
 
     def forwards(self, orm):
