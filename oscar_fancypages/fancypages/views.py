@@ -8,8 +8,6 @@ from oscar.apps.catalogue.views import ProductCategoryView
 from . import mixins
 
 FancyPage = get_model('fancypages', 'FancyPage')
-Category = get_model('catalogue', 'Category')
-Container = get_model('fancypages', 'Container')
 
 
 class FancyPageDetailView(mixins.OscarFancyPageMixin, ProductCategoryView):
