@@ -6,6 +6,7 @@
 
 .coverage
 .vagrant
+.cache
 .ropeproject
 .DS_Store
 
