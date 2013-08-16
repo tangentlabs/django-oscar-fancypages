@@ -26,6 +26,15 @@ class Command(NoArgsCommand):
             FancyPage = get_model('fancypages', 'FancyPage')
 
         for category in Category.objects.all():
+            # let's check if a FP for this category already exists. If so
+            # we just ignore it since we don't want to override any data
+            try:
+                FancyPage.objects.get(slug=category.slug)
+            except FancyPage.DoesNotExist:
+                pass
+            else:
+                continue
+            # there seems to be no FP for this category so let's create one.
             fp = FancyPage()
             for field in category._meta.fields:
                 setattr(fp, field.attname, getattr(category, field.attname))
