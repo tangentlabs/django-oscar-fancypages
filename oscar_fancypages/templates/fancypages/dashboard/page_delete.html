@@ -3,7 +3,7 @@
 {% load url from future %}
 
 {% block title %}
-{% blocktrans with title=page.title %}Delete page '{{ title }}'?{% endblocktrans %}
+{% blocktrans with name=fancypage.name %}Delete page '{{ name }}'?{% endblocktrans %}
 | {{ block.super }}
 {% endblock %}
 
@@ -18,7 +18,7 @@
         <span class="divider">/</span>
     </li>
     <li>
-        <a href="{% url "fp-dashboard:page-update" page.pk  %}">{{ page.title }}</a>
+        <a href="{% url "fp-dashboard:page-update" fancypage.pk  %}">{{ fancypage.name }}</a>
         <span class="divider">/</span>
     </li>
     <li class="active">{% trans "Delete?" %}</li>
@@ -27,7 +27,7 @@
 
 {% block header %}
 <div class="page-header">
-<h1>{% blocktrans with title=page.title %}Delete page '{{ title }}'?{% endblocktrans %}</h1>
+<h1>{% blocktrans with name=fancypage.name %}Delete page '{{ name }}'?{% endblocktrans %}</h1>
 </div>
 {% endblock header%}
 
@@ -36,8 +36,8 @@
     {% csrf_token %}
     {{ form }}
     <p>
-        {% blocktrans with title=page.title %}
-        Delete page <strong>{{ title }}</strong> - are you sure?
+        {% blocktrans with name=fancypage.name %}
+        Delete page <strong>{{ name }}</strong> - are you sure?
         {% endblocktrans %}
     </p>
     <div class="form-actions">
