@@ -41,55 +41,54 @@ setup `django-oscar`_ properly. If you haven't done so, please check the
 Oscar documentation for installation instructions. Come back here after you
 have successfully set up your Oscar sandbox and follow these steps:
 
-    1. Install ``django-oscar-fancypages`` from the github repo using ``pip``.
-       Currently there's no PyPI release available. To install run the
-       following command::
+1. Install ``django-oscar-fancypages`` from the github repo using ``pip``.
+   Currently there's no PyPI release available. To install run the
+   following command::
 
-        $ pip install git+https://github.com/tangentlabs/django-oscar-fancypages/tarball/master
+    $ pip install git+https://github.com/tangentlabs/django-oscar-fancypages.git
 
-    2. Add all required third-party apps and the OFP apps to your
-       ``INSTALLED_APPS``. There are convenience functions available to make
-       it easier::
+2. Add all required third-party apps and the OFP apps to your
+   ``INSTALLED_APPS``. There are convenience functions available to make
+   it easier::
 
-        import oscar_fancypages as ofp
-        INSTALLED_APPS = (
-            ...
-        ) + ofp.get_required_apps() + ofp.get_oscar_fancypages_apps()
-
-    3. For all the static files and templates that are required from
-       ``django-fancypages``, you have to add a couple of extra lines to
-       make sure that these files can be overwritten locally by putting the
-       search locations in the right order. Again, there's a convenience
-       function available::
-
-        TEMPLATE_DIRS = [
-            ...
-        ] + ofp.get_oscar_fancypages_paths('templates')
-
+    import oscar_fancypages as ofp
+    INSTALLED_APPS = (
         ...
+    ) + ofp.get_required_apps() + ofp.get_oscar_fancypages_apps()
 
-        STATICFILES_DIRS = [
-            ...
-        ] + ofp.get_oscar_fancypages_paths('static')
+3. For all the static files and templates that are required from
+   ``django-fancypages``, you have to add a couple of extra lines to
+   make sure that these files can be overwritten locally by putting the
+   search locations in the right order. Again, there's a convenience
+   function available::
 
-    4. Next, you have to add the editor middleware that let's you access
-       the editor panel on pages with a fancypage container::
+    TEMPLATE_DIRS = [
+        ...
+    ] + ofp.get_oscar_fancypages_paths('templates')
 
-        MIDDLEWARE_CLASSES = (
-            ...
-            'fancypages.middleware.EditorMiddleware',
-        )
+    ...
 
-    5. Finally, it makes sense to add all the default settings for OFP to
-       your ``settings.py`` to prevent errors caused by missing settings, e.g.
-       the twitter package does not allow unset API keys and tokens. Use
-       the following at the end of your ``settings.py`` before overriding any
-       of the settings::
+    STATICFILES_DIRS = [
+        ...
+    ] + ofp.get_oscar_fancypages_paths('static')
 
-        from oscar_fancypages.defaults import *
+4. Next, you have to add the editor middleware that let's you access
+   the editor panel on pages with a fancypage container::
+
+    MIDDLEWARE_CLASSES = (
+        ...
+        'fancypages.middleware.EditorMiddleware',
+    )
+
+5. Finally, it makes sense to add all the default settings for OFP to
+   your ``settings.py`` to prevent errors caused by missing settings, e.g.
+   the twitter package does not allow unset API keys and tokens. Use
+   the following at the end of your ``settings.py`` before overriding any
+   of the settings::
+
+    from oscar_fancypages.defaults import *
 
 .. _`django-oscar`: https://github.com/tangentlabs/django-oscar
-
 
 License
 -------
