@@ -64,7 +64,7 @@ def pytest_configure():
             sandbox('templates'),
             OSCAR_MAIN_TEMPLATE_DIR,
         ] + ofp_utils.get_oscar_fancypages_paths('templates'),
-        INSTALLED_APPS=(
+        INSTALLED_APPS=[
             'django.contrib.auth',
             'django.contrib.contenttypes',
             'django.contrib.sessions',
@@ -78,7 +78,7 @@ def pytest_configure():
             'twitter_tag',
             'sorl.thumbnail',
             'rest_framework',
-        ) + ofp_utils.get_oscar_fancypages_apps() + tuple(get_core_apps([])),
+        ] + ofp_utils.get_oscar_fancypages_apps() + get_core_apps([]),
         AUTHENTICATION_BACKENDS=(
             'django.contrib.auth.backends.ModelBackend',
         ),

@@ -93,3 +93,17 @@ class OfferBlock(ContentBlock):
 
     class Meta:
         app_label = 'fancypages'
+
+
+@register_content_block
+class PrimaryNavigationBlock(ContentBlock):
+    name = _("Primary Navigation")
+    code = 'primary-navigation'
+    group = _("Content")
+    template_name = "fancypages/blocks/primary_navigation_block.html"
+
+    def __unicode__(self):
+        return u'Primary Navigation'
+
+    class Meta:
+        app_label = 'fancypages'

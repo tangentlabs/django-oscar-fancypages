@@ -40,7 +40,6 @@ class FancyPage(Category, abstract_models.AbstractFancyPage):
         # creating a new object
         newobj = self.__class__(**kwargs)
         newobj.depth = self.depth + 1
-        print Category.objects.all()
         if not self.is_leaf():
             # adding the new child as the last one
             newobj.path = self._inc_path(self.get_last_child().path)
@@ -172,11 +171,8 @@ class FancyPage(Category, abstract_models.AbstractFancyPage):
         # generate the sql that will do the actual moving of nodes
         oldpath, newpath = self._move_add_sibling_aux(pos, newpos, newdepth,
             target, siblings, stmts, oldpath, True)
-        print stmts
         # updates needed for mysql and children count in parents
         self._updates_after_move(oldpath, newpath, stmts)
-
-        print stmts
 
         cursor = connection.cursor()
         for sql, vals in stmts:
@@ -250,7 +246,7 @@ class FancyPage(Category, abstract_models.AbstractFancyPage):
 # the wrong one.
 from fancypages.models import (
     FancyPage,
-    VisibilityType,
+    PageGroup,
     PageType,
     Container,
     OrderedContainer,
@@ -264,7 +260,6 @@ from fancypages.models import (
     TextBlock,
     TitleTextBlock,
     PageNavigationBlock,
-    PrimaryNavigationBlock,
     VideoBlock,
     TwitterBlock
 )
@@ -274,5 +269,6 @@ from .product import (
     SingleProductBlock,
     HandPickedProductsPromotionBlock,
     AutomaticProductsPromotionBlock,
+    PrimaryNavigationBlock,
     OfferBlock,
 )
