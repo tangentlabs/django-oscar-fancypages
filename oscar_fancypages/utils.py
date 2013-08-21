@@ -17,7 +17,7 @@ def get_required_apps():
 
 
 def get_oscar_fancypages_apps():
-    ofp_apps = ('oscar_fancypages.fancypages',)
+    ofp_apps = ['oscar_fancypages.fancypages']
     app_labels = []
     for app_name in ofp_apps:
         app_label = app_name.rsplit('.', 1)[-1]
@@ -28,4 +28,4 @@ def get_oscar_fancypages_apps():
         app_label = app_name.rsplit('.', 1)[-1]
         if app_label not in app_labels:
             fp_apps.append(app_name)
-    return tuple(fp_apps) + ofp_apps
+    return fp_apps + ofp_apps

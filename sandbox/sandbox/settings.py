@@ -138,7 +138,7 @@ TEMPLATE_DIRS = [
     OSCAR_MAIN_TEMPLATE_DIR,
 ] + ofp.get_oscar_fancypages_paths('templates')
 
-DJANGO_APPS = (
+DJANGO_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -147,16 +147,16 @@ DJANGO_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.flatpages',
     'django.contrib.admin',
-)
+]
 
-THIRD_PARTY_APPS = (
+THIRD_PARTY_APPS = [
     'debug_toolbar',
-)
+]
 
 OFP_APPS = ofp.get_required_apps() + ofp.get_oscar_fancypages_apps()
 
 from oscar import get_core_apps
-INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + OFP_APPS + tuple(get_core_apps())
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + OFP_APPS + get_core_apps()
 
 AUTHENTICATION_BACKENDS = (
     'oscar.apps.customer.auth_backends.Emailbackend',
