@@ -51,10 +51,10 @@ have successfully set up your Oscar sandbox and follow these steps:
    ``INSTALLED_APPS``. There are convenience functions available to make
    it easier::
 
-    import oscar_fancypages as ofp
-    INSTALLED_APPS = (
+    import oscar_fancypages.utils as ofp_utils
+    INSTALLED_APPS = [
         ...
-    ) + ofp.get_required_apps() + ofp.get_oscar_fancypages_apps()
+    ] + ofp_utils.get_required_apps() + ofp_utils.get_oscar_fancypages_apps()
 
 3. For all the static files and templates that are required from
    ``django-fancypages``, you have to add a couple of extra lines to
@@ -64,13 +64,13 @@ have successfully set up your Oscar sandbox and follow these steps:
 
     TEMPLATE_DIRS = [
         ...
-    ] + ofp.get_oscar_fancypages_paths('templates')
+    ] + ofp_utils.get_oscar_fancypages_paths('templates')
 
     ...
 
     STATICFILES_DIRS = [
         ...
-    ] + ofp.get_oscar_fancypages_paths('static')
+    ] + ofp_utils.get_oscar_fancypages_paths('static')
 
 4. Next, you have to add the editor middleware that let's you access
    the editor panel on pages with a fancypage container::
