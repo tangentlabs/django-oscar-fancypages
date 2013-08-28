@@ -21,6 +21,7 @@ setup(
         'versiontools>=1.9.1',
         'django-oscar>=0.5',
         'django-fancypages>=0.1.0,<0.2',
+        'django-treebeard>=2.0b1',
     ],
     dependency_links=[
         'https://github.com/tangentlabs/django-fancypages/tarball/master#egg=django-fancypages-0.1.0'

@@ -38,15 +38,10 @@ class TestAStaffMember(test.FancyPagesWebTest):
         create_form['page_type'] = self.page_type.id
         page = create_form.submit()
 
-        #print page.context[0]['form'].errors
-
         self.assertRedirects(page, reverse('fp-dashboard:page-list'))
         page = page.follow()
 
         article_page = FancyPage.objects.get(name="A new page")
-        # we use the default template for this page with only has one
-        # container
-        #self.assertEquals(article_page.containers.count(), 1)
 
         self.assertEquals(article_page.status, FancyPage.DRAFT)
         self.assertEquals(article_page.is_visible, False)
