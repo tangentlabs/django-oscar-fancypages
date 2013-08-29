@@ -1,4 +1,4 @@
-.PHONY: docs
+.PHONY: docs tests install sandbox
 
 install:
 	pip install -e . > /dev/null
@@ -12,3 +12,6 @@ sandbox: install
 
 docs:
 	$(MAKE) -C docs html
+
+tests:
+	py.test --pyargs fancypages -m 'not fp_only'

@@ -112,7 +112,7 @@ MIDDLEWARE_CLASSES = (
     'fancypages.middleware.EditorMiddleware',
 )
 
-ROOT_URLCONF = 'sandbox.urls'
+ROOT_URLCONF = 'sandbox.ofp_urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'sandbox.wsgi.application'

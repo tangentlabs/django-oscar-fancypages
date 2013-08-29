@@ -12,7 +12,7 @@ from oscar_fancypages.defaults import FANCYPAGES_SETTINGS
 
 
 location = lambda x: os.path.join(os.path.dirname(os.path.realpath(__file__)), x)
-sandbox = lambda x: location("sandbox/%s" % x)
+sandbox = lambda x: location("oscar_sandbox/%s" % x)
 
 
 def pytest_configure():
@@ -20,6 +20,7 @@ def pytest_configure():
     SETTINGS.update(FANCYPAGES_SETTINGS)
 
     settings.configure(
+        DEBUG=True,
         DATABASES={
             'default': {
                 'ENGINE': 'django.db.backends.sqlite3',
@@ -59,7 +60,7 @@ def pytest_configure():
             'django.contrib.messages.middleware.MessageMiddleware',
             'fancypages.middleware.EditorMiddleware',
         ),
-        ROOT_URLCONF='sandbox.sandbox.urls',
+        ROOT_URLCONF='oscar_sandbox.sandbox.urls',
         TEMPLATE_DIRS=[
             sandbox('templates'),
             OSCAR_MAIN_TEMPLATE_DIR,
@@ -78,7 +79,8 @@ def pytest_configure():
             'twitter_tag',
             'sorl.thumbnail',
             'rest_framework',
-        ] + ofp_utils.get_oscar_fancypages_apps() + get_core_apps([]),
+            'django_extensions',
+        ] + ofp_utils.get_oscar_fancypages_apps() + get_core_apps(),
         AUTHENTICATION_BACKENDS=(
             'django.contrib.auth.backends.ModelBackend',
         ),
@@ -89,5 +91,6 @@ def pytest_configure():
         },
         LOGIN_REDIRECT_URL='/accounts/',
         APPEND_SLASH=True,
+        SITE_ID=1,
         **SETTINGS
     )
