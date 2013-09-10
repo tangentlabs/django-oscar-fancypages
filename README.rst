@@ -21,6 +21,7 @@ the one above are not unlikely. Use with care and hold off on that production
 build until the first proper release.**
 
 
+This Django app is an extension that integrates `django-fancypages`_ with
 `django-oscar`_ and provides it's features as a content enhancement system to
 Oscar. The *fancy pages* integrate with the category structure of Oscar by
 wrapping around the ``ProductCategory`` model, plugging them into the
@@ -31,7 +32,6 @@ display products.
 
 For more details on fancy pages refer to `django-fancypages`_
 
-.. _`django-fancypages`: https://github.com/tangentlabs/django-fancypages
 
 Installation
 ------------
@@ -80,7 +80,20 @@ have successfully set up your Oscar sandbox and follow these steps:
         'fancypages.middleware.EditorMiddleware',
     )
 
-5. Finally, it makes sense to add all the default settings for OFP to
+5. To hook up all the pages, the dashboard and the integrated asset manager
+   you need to add the URL patterns to your project's ``urls.py``. The basic
+   URLs can be included using::
+
+    urlpatterns = patterns('',
+        ...
+        url(r'', include('oscar_fancypages.urls')),
+    )
+
+   Make sure that you add it **after** all your other pages to make sure that
+   it only looks for OFP pages when all other lookups have failed. Otherwise
+   you won't be able to see anything but OFP pages.
+
+6. Finally, it makes sense to add all the default settings for OFP to
    your ``settings.py`` to prevent errors caused by missing settings, e.g.
    the twitter package does not allow unset API keys and tokens. Use
    the following at the end of your ``settings.py`` before overriding any
@@ -89,6 +102,7 @@ have successfully set up your Oscar sandbox and follow these steps:
     from oscar_fancypages.defaults import *
 
 .. _`django-oscar`: https://github.com/tangentlabs/django-oscar
+.. _`django-fancypages`: https://github.com/tangentlabs/django-fancypages
 
 License
 -------
