@@ -113,3 +113,9 @@ License
 .. _`New BSD license`:
     https://github.com/tangentlabs/django-oscar-fancypages/blob/master/LICENSE
 
+
+
+.. image:: https://d2weczhvl823v0.cloudfront.net/tangentlabs/django-oscar-fancypages/trend.png
+   :alt: Bitdeli badge
+   :target: https://bitdeli.com/free
+
