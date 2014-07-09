@@ -52,8 +52,6 @@ class ImageWidget(ImageMetadataMixin, Widget):
                            related_name="image_widgets", blank=True, null=True)
 
     def __unicode__(self):
-        if self.image_asset:
-            return u"Image '%s'" % os.path.basename(self.image_asset.image.path)
         return u"Image #%s" % self.id
 
     class Meta:
@@ -81,8 +79,6 @@ class ImageAndTextWidget(ImageMetadataMixin, Widget):
     )
 
     def __unicode__(self):
-        if self.image_asset:
-            return u"Image with text '%s'" % os.path.basename(self.image_asset.image.path)
         return u"Image with text #%s" % self.id
 
     class Meta:
@@ -108,7 +104,7 @@ class CarouselWidget(Widget):
                 results[image_id] = {'link': getattr(self, link_field_name, None)}
                 query.add(models.Q(id=image_id), models.Q.OR)
         if not query:
-            return {} 
+            return {}
         for image in ImageAsset.objects.filter(query):
             results[image.id]['image'] = image
         return results
