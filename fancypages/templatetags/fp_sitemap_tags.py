@@ -37,7 +37,7 @@ def get_pages(visibility_type):
         visibility_type_instance = VisibilityType.objects.get(slug=visibility_type)
     except VisibilityType.DoesNotExist:
         return Page.objects.none()
-    return Page.object.visible_in(visibility_type_instance)
+    return Page.objects.all().visible_in(visibility_type_instance)
 
 
 @register.assignment_tag
