@@ -27,7 +27,7 @@ class ContainerRenderer(object):
         """
         Render the container and all its contained widgets.
         """
-        ordered_widgets = self.container.widgets.select_subclasses()
+        ordered_widgets = self.container.widgets.select_subclasses().filter(container=self.container)
 
         tmpl = loader.select_template(self.container.get_template_names())
 
