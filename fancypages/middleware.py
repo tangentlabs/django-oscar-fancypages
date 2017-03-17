@@ -3,6 +3,7 @@ import re
 from django.template import RequestContext
 from django.utils.encoding import smart_unicode
 from django.template.loader import render_to_string
+from django.template.response import SimpleTemplateResponse
 
 BODY_STARTTAG = re.compile(r'(?P<body_tag><body[^>]+>)')
 
@@ -39,6 +40,9 @@ class EditorMiddleware(object):
         if not user.is_staff:
             return response
 
+        if isinstance(response, SimpleTemplateResponse):
+            response.render()
+
         if 'widget-add-control' not in response.content:
             return response
 
@@ -49,10 +53,10 @@ class EditorMiddleware(object):
             smart_unicode(editor_head) + self.head_tag,
         )
 
-	response.content = BODY_STARTTAG.sub(
-	    r'\g<body_tag><div class="editable-page-wrapper">',
-	    response.content
-	)
+        response.content = BODY_STARTTAG.sub(
+            r'\g<body_tag><div class="editable-page-wrapper">',
+            response.content
+        )
 
         editor_body = render_to_string(self.body_template_name, RequestContext(request))
         response.content = replace_insensitive(
